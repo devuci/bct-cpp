@@ -21,7 +21,7 @@ gsl_matrix* bct::makefractalCIJ(int mx_lvl, double E, int sz_cl, int* K) {
 	// sz_cl = sz_cl-1;
 	sz_cl--;
 	
-	gsl_matrix* CIJ;
+	gsl_matrix* CIJ = NULL;
 	
 	// for lvl=1:mx_lvl-1
 	for (int lvl = 1; lvl <= mx_lvl - 1; lvl++) {

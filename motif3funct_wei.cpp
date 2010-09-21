@@ -200,8 +200,8 @@ gsl_matrix* bct::motif3funct_wei(const gsl_matrix* W, gsl_matrix** Q, gsl_matrix
 							double IQF_cols[] = { (double)u, (double)v1, (double)v2 };
 							gsl_vector_view IQF_cols_vv = gsl_vector_view_array(IQF_cols, 3);
 							gsl_matrix* I_idx = ordinal_index(I, idu, &IQF_cols_vv.vector);
-							gsl_matrix* Q_idx;
-							gsl_matrix* F_idx;
+							gsl_matrix* Q_idx = NULL;
+							gsl_matrix* F_idx = NULL;
 							if (Q != NULL) {
 								Q_idx = ordinal_index(*Q, idu, &IQF_cols_vv.vector);
 							}

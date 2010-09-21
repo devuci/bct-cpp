@@ -27,7 +27,7 @@ gsl_matrix* bct::makeevenCIJ(int N, int K, int sz_cl) {
 	// N = Nlvl;
 	N = (int)Nlvl;
 	
-	gsl_matrix* CIJ;
+	gsl_matrix* CIJ = NULL;
 	
 	// for lvl=1:mx_lvl-1
 	for (int lvl = 1; lvl <= mx_lvl - 1; lvl++) {
