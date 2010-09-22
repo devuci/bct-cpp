@@ -204,6 +204,6 @@ namespace bct {
 	gsl_matrix* to_gslm(PyObject*);
 	std::vector<gsl_matrix*> to_gsl3dm(PyObject*);
 #endif
-};
+}
 
 #endif

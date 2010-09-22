@@ -198,4 +198,4 @@ namespace matlab {
 	// Utility
 	MATRIX_TYPE* permute_columns(const gsl_permutation*, const MATRIX_TYPE*);
 	MATRIX_TYPE* permute_rows(const gsl_permutation*, const MATRIX_TYPE*);
-};
+}
