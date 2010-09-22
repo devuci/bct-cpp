@@ -197,10 +197,12 @@ namespace bct {
 #ifdef BCT_SWIG
 	PyObject* from_gsl(const gsl_vector*);
 	PyObject* from_gsl(const gsl_matrix*);
+	PyObject* from_gsl(const std::vector<gsl_matrix*>&);
 	gsl_vector* to_gslv(const double*, int);
 	gsl_matrix* to_gslm(const double*, int, int);
 	gsl_vector* to_gslv(PyObject*);
 	gsl_matrix* to_gslm(PyObject*);
+	std::vector<gsl_matrix*> to_gsl3dm(PyObject*);
 #endif
 };
 
