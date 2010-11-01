@@ -1,4 +1,5 @@
 CXXFLAGS                 = -Wall
+# OUTPUT_OPTION            = -o .obj/$@
 swig_flags               = -Wall -c++ -python
 objects                  = assortativity.o \
                            betweenness_bin.o \
@@ -76,6 +77,11 @@ objects                  = assortativity.o \
 
 include Makefile.vars
 
+# To make a multi-architecture library:
+# Compile once for each architecture
+# Add -arch to CXXFLAGS and LDFLAGS during compilation
+# lipo -create <architecture-specific libraries> -output <universal library>
+
 .PHONY: all clean install swig uninstall
 
 all: libbct.a
@@ -84,9 +90,9 @@ libbct.a: $(objects)
 	$(AR) rcs libbct.a $(objects)
 
 swig: $(objects)
-	swig $(swig_flags) -o bct_wrap.cpp bct.h
-	$(CXX) $(CXXFLAGS) -c -DBCT_SWIG -I$(python_dir) -include bct.h bct_wrap.cpp swig.cpp
-	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct.so $(objects) bct_wrap.o swig.o
+	swig $(swig_flags) -o bct_wrap.cpp bct.i
+	$(CXX) $(CXXFLAGS) -c -I$(python_dir) bct_swig.cpp bct_wrap.cpp
+	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct.so $(objects) bct_swig.o bct_wrap.o
 
 $(objects): matlab/matlab.h bct.h
 
@@ -109,4 +115,4 @@ uninstall:
 	-rm $(install_dir)/lib/libbct.a
 
 clean:
-	-rm _bct.so bct.py bct.pyc bct_wrap.cpp bct_wrap.o libbct.a swig.o $(objects)
+	-rm _bct.so bct.py bct.pyc bct_swig.o bct_wrap.cpp bct_wrap.o libbct.a $(objects)

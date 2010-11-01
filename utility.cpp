@@ -1,7 +1,5 @@
 #include "bct.h"
-#include <cmath>
 #include <gsl/gsl_errno.h>
-#include <gsl/gsl_math.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
 #include <sstream>
@@ -60,90 +58,4 @@ int bct::number_of_edges_und(const gsl_matrix* m) {
  */
 int bct::number_of_nodes(const gsl_matrix* m) {
 	return (int)m->size1;
-}
-
-// TODO: These belong in matlab/functions.cpp
-// Move them and remove unnecessary #includes when SWIG-accessible
-
-double bct::mean(const gsl_vector* v, const std::string& opt) {
-	if (opt == "a") {
-		double sum = 0.0;
-		for (int i = 0; i < (int)v->size; i++) {
-			sum += gsl_vector_get(v, i);
-		}
-		return sum / (double)v->size;
-	} else if (opt == "g") {
-		double product = 1.0;
-		for (int i = 0; i < (int)v->size; i++) {
-			product *= gsl_vector_get(v, i);
-		}
-		return std::pow(product, 1.0 / (double)v->size);
-	} else if (opt == "h") {
-		double sum = 0.0;
-		for (int i = 0; i < (int)v->size; i++) {
-			sum += 1.0 / gsl_vector_get(v, i);
-		}
-		return (double)v->size / sum;
-	} else {
-		return GSL_NAN;
-	}
-}
-
-gsl_vector* bct::mean(const gsl_matrix* m, int dim, const std::string& opt) {
-	if (dim == 1) {
-		gsl_vector* mean_v = gsl_vector_alloc(m->size2);
-		for (int i = 0; i < (int)m->size2; i++) {
-			gsl_vector_const_view m_col_i = gsl_matrix_const_column(m, i);
-			double value = mean(&m_col_i.vector, opt);
-			gsl_vector_set(mean_v, i, value);
-		}
-		return mean_v;
-	} else if (dim == 2) {
-		gsl_vector* mean_v = gsl_vector_alloc(m->size1);
-		for (int i = 0; i < (int)m->size1; i++) {
-			gsl_vector_const_view m_row_i = gsl_matrix_const_row(m, i);
-			double value = mean(&m_row_i.vector, opt);
-			gsl_vector_set(mean_v, i, value);
-		}
-		return mean_v;
-	} else {
-		return NULL;
-	}
-}
-
-double bct::std(const gsl_vector* v, int opt) {
-	double mu = mean(v);
-	double err = 0.0;
-	for (int i = 0; i < (int)v->size; i++) {
-		err += std::pow(gsl_vector_get(v, i) - mu, 2);
-	}
-	if (opt == 0) {
-		return std::sqrt(err / (double)(v->size - 1));
-	} else if (opt == 1) {
-		return std::sqrt(err / (double)v->size);
-	} else {
-		return GSL_NAN;
-	}
-}
-
-gsl_vector* bct::std(const gsl_matrix* m, int opt, int dim) {
-	if (dim == 1) {
-		gsl_vector* std_v = gsl_vector_alloc(m->size2);
-		for (int i = 0; i < (int)m->size2; i++) {
-			gsl_vector_const_view m_col_i = gsl_matrix_const_column(m, i);
-			double value = bct::std(&m_col_i.vector, opt);
-			gsl_vector_set(std_v, i, value);
-		}
-		return std_v;
-	} else if (dim == 2) {
-		gsl_vector* std_v = gsl_vector_alloc(m->size1);
-		for (int i = 0; i < (int)m->size1; i++) {
-			gsl_vector_const_view m_row_i = gsl_matrix_const_row(m, i);
-			double value = bct::std(&m_row_i.vector, opt);
-			gsl_vector_set(std_v, i, value);
-		}
-		return std_v;
-	} else {
-		return NULL;
-	}
 }

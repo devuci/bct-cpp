@@ -291,6 +291,52 @@ VECTOR_TYPE* matlab::max(const MATRIX_TYPE* m, int dim) {
 	}
 }
 
+FP_TYPE matlab::mean(const VECTOR_TYPE* v, const std::string& opt) {
+	if (opt == "a") {
+		FP_TYPE sum = 0.0;
+		for (int i = 0; i < (int)v->size; i++) {
+			sum += VECTOR_ID(get)(v, i);
+		}
+		return sum / (FP_TYPE)v->size;
+	} else if (opt == "g") {
+		FP_TYPE product = 1.0;
+		for (int i = 0; i < (int)v->size; i++) {
+			product *= VECTOR_ID(get)(v, i);
+		}
+		return std::pow(product, (FP_TYPE)1.0 / (FP_TYPE)v->size);
+	} else if (opt == "h") {
+		FP_TYPE sum = 0.0;
+		for (int i = 0; i < (int)v->size; i++) {
+			sum += 1.0 / VECTOR_ID(get)(v, i);
+		}
+		return (FP_TYPE)v->size / sum;
+	} else {
+		return GSL_NAN;
+	}
+}
+
+VECTOR_TYPE* matlab::mean(const MATRIX_TYPE* m, int dim, const std::string& opt) {
+	if (dim == 1) {
+		VECTOR_TYPE* mean_v = VECTOR_ID(alloc)(m->size2);
+		for (int i = 0; i < (int)m->size2; i++) {
+			VECTOR_ID(const_view) m_col_i = MATRIX_ID(const_column)(m, i);
+			FP_TYPE value = mean(&m_col_i.vector, opt);
+			VECTOR_ID(set)(mean_v, i, value);
+		}
+		return mean_v;
+	} else if (dim == 2) {
+		VECTOR_TYPE* mean_v = VECTOR_ID(alloc)(m->size1);
+		for (int i = 0; i < (int)m->size1; i++) {
+			VECTOR_ID(const_view) m_row_i = MATRIX_ID(const_row)(m, i);
+			FP_TYPE value = mean(&m_row_i.vector, opt);
+			VECTOR_ID(set)(mean_v, i, value);
+		}
+		return mean_v;
+	} else {
+		return NULL;
+	}
+}
+
 FP_TYPE matlab::min(FP_TYPE x, FP_TYPE y) {
 	if (gsl_isnan((double)x) == 1) {
 		return y;
@@ -629,6 +675,43 @@ MATRIX_TYPE* matlab::sortrows(const MATRIX_TYPE* m, VECTOR_TYPE** ind) {
 		}
 	}
 	return sort_m;
+}
+
+FP_TYPE matlab::std(const VECTOR_TYPE* v, int opt) {
+	FP_TYPE mu = mean(v);
+	FP_TYPE err = 0.0;
+	for (int i = 0; i < (int)v->size; i++) {
+		err += std::pow(VECTOR_ID(get)(v, i) - mu, 2);
+	}
+	if (opt == 0) {
+		return std::sqrt(err / (FP_TYPE)(v->size - 1));
+	} else if (opt == 1) {
+		return std::sqrt(err / (FP_TYPE)v->size);
+	} else {
+		return GSL_NAN;
+	}
+}
+
+VECTOR_TYPE* matlab::std(const MATRIX_TYPE* m, int opt, int dim) {
+	if (dim == 1) {
+		VECTOR_TYPE* std_v = VECTOR_ID(alloc)(m->size2);
+		for (int i = 0; i < (int)m->size2; i++) {
+			VECTOR_ID(const_view) m_col_i = MATRIX_ID(const_column)(m, i);
+			FP_TYPE value = matlab::std(&m_col_i.vector, opt);
+			VECTOR_ID(set)(std_v, i, value);
+		}
+		return std_v;
+	} else if (dim == 2) {
+		VECTOR_TYPE* std_v = VECTOR_ID(alloc)(m->size1);
+		for (int i = 0; i < (int)m->size1; i++) {
+			VECTOR_ID(const_view) m_row_i = MATRIX_ID(const_row)(m, i);
+			FP_TYPE value = matlab::std(&m_row_i.vector, opt);
+			VECTOR_ID(set)(std_v, i, value);
+		}
+		return std_v;
+	} else {
+		return NULL;
+	}
 }
 
 FP_TYPE matlab::sum(const VECTOR_TYPE* v) {

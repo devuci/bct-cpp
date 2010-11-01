@@ -1,6 +1,8 @@
+#include "bct_swig.h"
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
 #include <Python.h>
+#include <vector>
 
 /*
  * Converts a gsl_vector* to a Python list.

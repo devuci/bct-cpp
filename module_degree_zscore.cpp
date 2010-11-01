@@ -26,7 +26,7 @@ gsl_vector* bct::module_degree_zscore(const gsl_matrix* A, const gsl_vector* Ci)
 		gsl_matrix_free(A_idx);
 		
 		// Z(Ci==i)=(Koi-mean(Koi))./std(Koi);
-		double std_Koi = bct::std(Koi);
+		double std_Koi = matlab::std(Koi);
 		gsl_vector_add_constant(Koi, -mean(Koi));
 		gsl_vector_scale(Koi, 1.0 / std_Koi);
 		logical_index_assign(Z, Ci_eq_i, Koi);

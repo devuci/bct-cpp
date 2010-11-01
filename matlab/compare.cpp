@@ -1,6 +1,9 @@
 #include <cmath>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
+#include <limits>
+
+FP_TYPE matlab::FP_ID(epsilon) = std::numeric_limits<FP_TYPE>::epsilon();
 
 /*
  * Compares two floating-point numbers.
