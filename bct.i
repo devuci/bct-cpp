@@ -1,4 +1,5 @@
 %module bct
+%include "std_string.i"
 %feature("autodoc", "1");
 %{
 #include "bct.h"
@@ -21,7 +22,7 @@ namespace bct {
 	gsl_matrix* matching_ind(const gsl_matrix* CIJ);
 	gsl_matrix* matching_ind_in(const gsl_matrix* CIJ);
 	gsl_matrix* matching_ind_out(const gsl_matrix* CIJ);
-	gsl_vector* strengths_dir(const gsl_matrix* CIJ, gsl_vector** is = NULL, gsl_vector** os = NULL);
+	gsl_vector* strengths_dir(const gsl_matrix* CIJ, gsl_vector** _is = NULL, gsl_vector** os = NULL);
 	gsl_vector* strengths_und(const gsl_matrix* CIJ);
 
 	// Clustering
@@ -93,7 +94,7 @@ namespace bct {
 	gsl_matrix* makerandCIJ_wd_wp(const gsl_matrix* m);
 	gsl_matrix* makerandCIJ_wu(int N, int K, double wmin, double wmax);
 	gsl_matrix* makerandCIJ_wu_wp(const gsl_matrix* m);
-	gsl_matrix* makerandCIJdegreesfixed(const gsl_vector* in, const gsl_vector* out);
+	gsl_matrix* makerandCIJdegreesfixed(const gsl_vector* _in, const gsl_vector* out);
 	gsl_matrix* makerandCIJdegreesfixed(const gsl_matrix* m);
 	gsl_matrix* makeringlatticeCIJ(int N, int K);
 	gsl_matrix* maketoeplitzCIJ(int N, int K, double s);
