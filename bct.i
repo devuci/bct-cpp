@@ -1,9 +1,20 @@
 %module bct
 %include "std_string.i"
+%include "typemaps.i"
 %feature("autodoc", "1");
+
+%apply int* OUTPUT { int* qstop, int* K };
+%apply double* OUTPUT { double* radius, double* diameter, double* eta, double* fs };
+
+%typemap(in, numinputs = 0) gsl_vector** (gsl_vector* temp) { $1 = &temp; }
+%typemap(argout) gsl_vector** { %append_output(SWIG_NewPointerObj(*$1, $descriptor(gsl_vector*), 0)); }
+
+%typemap(in, numinputs = 0) gsl_matrix** (gsl_matrix* temp) { $1 = &temp; }
+%typemap(argout) gsl_matrix** { %append_output(SWIG_NewPointerObj(*$1, $descriptor(gsl_matrix*), 0)); }
+
 %{
-#include "bct.h"
-#include "bct_swig.h"
+	#include "bct.h"
+	#include "bct_swig.h"
 %}
 
 namespace bct {
@@ -11,7 +22,7 @@ namespace bct {
 	// Density, degree, and assortativity
 	double assortativity_dir(const gsl_matrix* CIJ);
 	double assortativity_und(const gsl_matrix* CIJ);
-	gsl_vector* degrees_dir(const gsl_matrix* CIJ, gsl_vector** id = NULL, gsl_vector** od = NULL);
+	gsl_vector* degrees_dir(const gsl_matrix* CIJ, gsl_vector** id, gsl_vector** od);
 	gsl_vector* degrees_und(const gsl_matrix* CIJ);
 	double density_dir(const gsl_matrix* CIJ);
 	double density_und(const gsl_matrix* CIJ);
@@ -22,7 +33,7 @@ namespace bct {
 	gsl_matrix* matching_ind(const gsl_matrix* CIJ);
 	gsl_matrix* matching_ind_in(const gsl_matrix* CIJ);
 	gsl_matrix* matching_ind_out(const gsl_matrix* CIJ);
-	gsl_vector* strengths_dir(const gsl_matrix* CIJ, gsl_vector** _is = NULL, gsl_vector** os = NULL);
+	gsl_vector* strengths_dir(const gsl_matrix* CIJ, gsl_vector** _is, gsl_vector** os);
 	gsl_vector* strengths_und(const gsl_matrix* CIJ);
 
 	// Clustering
@@ -33,9 +44,9 @@ namespace bct {
 	gsl_vector* efficiency_local(const gsl_matrix* G);
 
 	// Paths, distances, and cycles
-	gsl_vector* breadth(const gsl_matrix* CIJ, int source, gsl_vector** branch = NULL);
-	gsl_matrix* breadthdist(const gsl_matrix* CIJ, gsl_matrix** D = NULL);
-	gsl_vector* charpath_ecc(const gsl_matrix* D, double* radius = NULL, double* diameter = NULL);
+	gsl_vector* breadth(const gsl_matrix* CIJ, int source, gsl_vector** branch);
+	gsl_matrix* breadthdist(const gsl_matrix* CIJ, gsl_matrix** D);
+	gsl_vector* charpath_ecc(const gsl_matrix* D, double* radius, double* diameter);
 	double charpath_lambda(const gsl_matrix* D);
 	double connectivity_length(const gsl_matrix* D);
 	gsl_vector* cycprob_fcyc(const std::vector<gsl_matrix*>& Pq);
@@ -43,17 +54,17 @@ namespace bct {
 	gsl_matrix* distance_bin(const gsl_matrix* G);
 	gsl_matrix* distance_wei(const gsl_matrix* G); 
 	gsl_matrix* efficiency_global(const gsl_matrix* G);
-	std::vector<gsl_matrix*> findpaths(const gsl_matrix* CIJ, const gsl_vector* sources, int qmax, gsl_vector** plq = NULL, int* qstop = NULL, gsl_matrix** allpths = NULL, gsl_matrix** util = NULL);
-	std::vector<gsl_matrix*> findwalks(const gsl_matrix* CIJ, gsl_vector** wlq = NULL);
+	std::vector<gsl_matrix*> findpaths(const gsl_matrix* CIJ, const gsl_vector* sources, int qmax, gsl_vector** plq, int* qstop, gsl_matrix** allpths, gsl_matrix** util);
+	std::vector<gsl_matrix*> findwalks(const gsl_matrix* CIJ, gsl_vector** wlq);
 	double normalized_path_length(const gsl_matrix* D, double wmax = 1.0);
-	gsl_matrix* reachdist(const gsl_matrix* CIJ, gsl_matrix** D = NULL);
+	gsl_matrix* reachdist(const gsl_matrix* CIJ, gsl_matrix** D);
 
 	// Centrality
 	gsl_vector* betweenness_bin(const gsl_matrix* G);
 	gsl_vector* betweenness_wei(const gsl_matrix* G);
-	gsl_matrix* edge_betweenness_bin(const gsl_matrix* G, gsl_vector** BC = NULL);
-	gsl_matrix* edge_betweenness_wei(const gsl_matrix* G, gsl_vector** BC = NULL);
-	gsl_matrix* erange(const gsl_matrix* CIJ, double* eta = NULL, gsl_matrix** Eshort = NULL, double* fs = NULL);
+	gsl_matrix* edge_betweenness_bin(const gsl_matrix* G, gsl_vector** BC);
+	gsl_matrix* edge_betweenness_wei(const gsl_matrix* G, gsl_vector** BC);
+	gsl_matrix* erange(const gsl_matrix* CIJ, double* eta, gsl_matrix** Eshort, double* fs);
 
 	// Motifs
 	enum motif_mode_enum { MILO, SPORNS };
@@ -62,31 +73,31 @@ namespace bct {
 	void set_motif_mode(motif_mode_enum motif_mode);
 	std::vector<gsl_matrix*> find_motif34(int m, int n);
 	int find_motif34(const gsl_matrix* m);
-	gsl_vector* motif3funct_bin(const gsl_matrix* W, gsl_matrix** F = NULL);
-	gsl_matrix* motif3funct_wei(const gsl_matrix* W, gsl_matrix** Q = NULL, gsl_matrix** F = NULL);
-	gsl_vector* motif3funct_wei_v(const gsl_matrix* W, gsl_vector** Q = NULL, gsl_vector** F = NULL);
-	gsl_matrix* motif3generate(gsl_vector** ID = NULL, gsl_vector** N = NULL);
-	gsl_vector* motif3struct_bin(const gsl_matrix* A, gsl_matrix** F = NULL);
-	gsl_matrix* motif3struct_wei(const gsl_matrix* W, gsl_matrix** Q = NULL, gsl_matrix** F = NULL);
-	gsl_vector* motif3struct_wei_v(const gsl_matrix* W, gsl_vector** Q = NULL, gsl_vector** F = NULL);
-	gsl_matrix* motif4generate(gsl_vector** ID = NULL, gsl_vector** N = NULL);
-	gsl_vector* motif4funct_bin(const gsl_matrix* W, gsl_matrix** F = NULL);
-	gsl_matrix* motif4funct_wei(const gsl_matrix* W, gsl_matrix** Q = NULL, gsl_matrix** F = NULL);
-	gsl_vector* motif4funct_wei_v(const gsl_matrix* W, gsl_vector** Q = NULL, gsl_vector** F = NULL);
-	gsl_vector* motif4struct_bin(const gsl_matrix* A, gsl_matrix** F = NULL);
-	gsl_matrix* motif4struct_wei(const gsl_matrix* W, gsl_matrix** Q = NULL, gsl_matrix** F = NULL);
-	gsl_vector* motif4struct_wei_v(const gsl_matrix* W, gsl_vector** Q = NULL, gsl_vector** F = NULL);
+	gsl_vector* motif3funct_bin(const gsl_matrix* W, gsl_matrix** F);
+	gsl_matrix* motif3funct_wei(const gsl_matrix* W, gsl_matrix** Q, gsl_matrix** F);
+	gsl_vector* motif3funct_wei_v(const gsl_matrix* W, gsl_vector** Q, gsl_vector** F);
+	gsl_matrix* motif3generate(gsl_vector** ID, gsl_vector** N);
+	gsl_vector* motif3struct_bin(const gsl_matrix* A, gsl_matrix** F);
+	gsl_matrix* motif3struct_wei(const gsl_matrix* W, gsl_matrix** Q, gsl_matrix** F);
+	gsl_vector* motif3struct_wei_v(const gsl_matrix* W, gsl_vector** Q, gsl_vector** F);
+	gsl_matrix* motif4generate(gsl_vector** ID, gsl_vector** N);
+	gsl_vector* motif4funct_bin(const gsl_matrix* W, gsl_matrix** F);
+	gsl_matrix* motif4funct_wei(const gsl_matrix* W, gsl_matrix** Q, gsl_matrix** F);
+	gsl_vector* motif4funct_wei_v(const gsl_matrix* W, gsl_vector** Q, gsl_vector** F);
+	gsl_vector* motif4struct_bin(const gsl_matrix* A, gsl_matrix** F);
+	gsl_matrix* motif4struct_wei(const gsl_matrix* W, gsl_matrix** Q, gsl_matrix** F);
+	gsl_vector* motif4struct_wei_v(const gsl_matrix* W, gsl_vector** Q, gsl_vector** F);
 
 	// Modularity and community structure
-	double modularity_dir(const gsl_matrix* A, gsl_vector** Ci = NULL);
-	double modularity_und(const gsl_matrix* A, gsl_vector** Ci = NULL);
-	double modularity_und_louvain(const gsl_matrix* W, gsl_vector** Ci = NULL, int N = 100);
+	double modularity_dir(const gsl_matrix* A, gsl_vector** Ci);
+	double modularity_und(const gsl_matrix* A, gsl_vector** Ci);
+	double modularity_und_louvain(const gsl_matrix* W, gsl_vector** Ci, int N = 100);
 	gsl_vector* module_degree_zscore(const gsl_matrix* A, const gsl_vector* Ci);
 	gsl_vector* participation_coef(const gsl_matrix* A, const gsl_vector* Ci);
 	
 	// Synthetic connection networks
 	gsl_matrix* makeevenCIJ(int N, int K, int sz_cl);
-	gsl_matrix* makefractalCIJ(int mx_lvl, double E, int sz_cl, int* K = NULL);
+	gsl_matrix* makefractalCIJ(int mx_lvl, double E, int sz_cl, int* K);
 	gsl_matrix* makelatticeCIJ(int N, int K);
 	gsl_matrix* makerandCIJ_bd(int N, int K);
 	gsl_matrix* makerandCIJ_bu(int N, int K);
@@ -241,10 +252,10 @@ namespace matlab {
 	gsl_vector* rand_vector_double(int size);
 	gsl_vector* reverse(const gsl_vector* v);
 	gsl_vector* setxor(const gsl_vector* v1, const gsl_vector* v2);
-	gsl_vector* sort(const gsl_vector* v, const std::string& mode = "ascend", gsl_vector** ind = NULL);
-	gsl_matrix* sort(const gsl_matrix* m, int dim = 1, const std::string& mode = "ascend", gsl_matrix** ind = NULL);
-	gsl_vector* sortrows(const gsl_vector* v, gsl_vector** ind = NULL);
-	gsl_matrix* sortrows(const gsl_matrix* m, gsl_vector** ind = NULL);
+	gsl_vector* sort(const gsl_vector* v, const std::string& mode, gsl_vector** ind);
+	gsl_matrix* sort(const gsl_matrix* m, int dim, const std::string& mode, gsl_matrix** ind);
+	gsl_vector* sortrows(const gsl_vector* v, gsl_vector** ind);
+	gsl_matrix* sortrows(const gsl_matrix* m, gsl_vector** ind);
 	double std(const gsl_vector* v, int opt = 0);
 	gsl_vector* std(const gsl_matrix* m, int opt = 0, int dim = 1);
 	double sum(const gsl_vector* v);
@@ -252,9 +263,9 @@ namespace matlab {
 	gsl_matrix* toeplitz(const gsl_vector* column, const gsl_vector* row = NULL);
 	gsl_matrix* tril(const gsl_matrix* m, int k = 0);
 	gsl_matrix* triu(const gsl_matrix* m, int k = 0);
-	gsl_vector* unique(const gsl_vector* v, const std::string& first_or_last = "last", gsl_vector** i = NULL, gsl_vector** j = NULL);
-	gsl_vector* unique(const gsl_matrix* m, const std::string& first_or_last = "last", gsl_vector** i = NULL, gsl_vector** j = NULL);
-	gsl_matrix* unique_rows(const gsl_matrix* m, const std::string& first_or_last = "last", gsl_vector** i = NULL, gsl_vector** j = NULL);
+	gsl_vector* unique(const gsl_vector* v, const std::string& first_or_last, gsl_vector** i, gsl_vector** j);
+	gsl_vector* unique(const gsl_matrix* m, const std::string& first_or_last, gsl_vector** i, gsl_vector** j);
+	gsl_matrix* unique_rows(const gsl_matrix* m, const std::string& first_or_last, gsl_vector** i, gsl_vector** j);
 	gsl_matrix* zeros_double(int size);
 	gsl_matrix* zeros_double(int size1, int size2);
 	gsl_vector* zeros_vector_double(int size);
