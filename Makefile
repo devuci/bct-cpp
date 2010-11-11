@@ -91,8 +91,8 @@ libbct.a: $(objects)
 
 swig: $(objects)
 	swig $(swig_flags) -o bct_wrap.cpp bct.i
-	$(CXX) $(CXXFLAGS) -c -I$(python_dir) bct_swig.cpp bct_wrap.cpp
-	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct.so $(objects) bct_swig.o bct_wrap.o
+	$(CXX) $(CXXFLAGS) -c -I$(python_dir) bct_wrap.cpp
+	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct.so $(objects) bct_wrap.o
 
 $(objects): matlab/matlab.h bct.h
 
