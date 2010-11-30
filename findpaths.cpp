@@ -252,6 +252,7 @@ std::vector<gsl_matrix*> bct::findpaths(const gsl_matrix* CIJ, const gsl_vector*
 	// plq = reshape(sum(sum(Pq)),1,qmax)
 	if (plq != NULL) {
 		*plq = gsl_vector_alloc(qmax + 1);
+		gsl_vector_set(*plq, 0, 0.0);
 		for (int i = 1; i <= qmax; i++) {
 			gsl_vector* sum_Pq_i = sum(Pq[i]);
 			gsl_vector_set(*plq, i, sum(sum_Pq_i));

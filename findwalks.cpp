@@ -49,6 +49,7 @@ std::vector<gsl_matrix*> bct::findwalks(const gsl_matrix* CIJ, gsl_vector** wlq)
 	// wlq = reshape(sum(sum(Wq)),1,N);
 	if (wlq != NULL) {
 		*wlq = gsl_vector_alloc(N + 1);
+		gsl_vector_set(*wlq, 0, 0.0);
 		for (int i = 1; i <= N; i++) {
 			gsl_vector* sum_Wq_i = sum(Wq[i]);
 			gsl_vector_set(*wlq, i, sum(sum_Wq_i));
