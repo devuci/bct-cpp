@@ -121,12 +121,12 @@ namespace bct {
 	gsl_matrix* randmio_und_connected(const gsl_matrix* R, int ITER);
 
 	// Data sets
-	extern const double cat_all[95 * 95];
-	extern const double cat_ctx[52 * 52];
-	extern const double fve30[30 * 30];
-	extern const double fve32[32 * 32];
-	extern const double macaque47[47 * 47];
-	extern const double macaque71[71 * 71];
+	gsl_matrix* get_cat_all();
+	gsl_matrix* get_cat_ctx();
+	gsl_matrix* get_fve30();
+	gsl_matrix* get_fve32();
+	gsl_matrix* get_macaque47();
+	gsl_matrix* get_macaque71();
 	
 	// Matrix status checking
 	enum status {

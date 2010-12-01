@@ -1,4 +1,5 @@
 #include "bct.h"
+#include <gsl/gsl_matrix.h>
 
 const double bct::macaque47[47 * 47] = {
 	0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -123,3 +124,17 @@ const double bct::macaque71[71 * 71] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0
 };
+
+gsl_matrix* bct::get_macaque47() {
+	gsl_matrix_const_view mv = gsl_matrix_const_view_array(macaque47, 47, 47);
+	gsl_matrix* m = gsl_matrix_alloc(47, 47);
+	gsl_matrix_memcpy(m, &mv.matrix);
+	return m;
+}
+
+gsl_matrix* bct::get_macaque71() {
+	gsl_matrix_const_view mv = gsl_matrix_const_view_array(macaque71, 71, 71);
+	gsl_matrix* m = gsl_matrix_alloc(71, 71);
+	gsl_matrix_memcpy(m, &mv.matrix);
+	return m;
+}
