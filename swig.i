@@ -1,6 +1,9 @@
 %{
+	#include <cmath>
 	#include <gsl/gsl_matrix.h>
+	#include <gsl/gsl_permutation.h>
 	#include <gsl/gsl_vector.h>
+	#include <limits>
 	#include <Python.h>
 	#include <vector>
 	
@@ -41,6 +44,35 @@
 	 */
 	bool is_gsl3dm(PyObject* object) {
 		return is_ndim_list(object, 3);
+	}
+	
+	/*
+	 * Checks if a PyObject* can be converted to a gsl_permutation*.
+	 */
+	bool is_gslp(PyObject* object) {
+		if (!is_ndim_list(object, 1)) {
+			return false;
+		}
+		int n = PyList_Size(object);
+		std::vector<bool> found(n, false);
+		for (int i = 0; i < n; i++) {
+			double value = PyFloat_AsDouble(PyList_GetItem(object, i));
+			if (value < 0.0) {
+				return false;
+			}
+			double int_part;
+			double frac_part = std::modf(value, &int_part);
+			if (frac_part > std::numeric_limits<double>::epsilon()) {
+				return false;
+			}
+			int index = (int)int_part;
+			if (index >= n || found[index]) {
+				return false;
+			} else {
+				found[index] = true;
+			}
+		}
+		return true;
 	}
 	
 	/*
@@ -91,6 +123,18 @@
 					}
 				}
 			}
+		}
+		return list;
+	}
+	
+	/*
+	 * Converts a gsl_permutation* to a Python list.
+	 */
+	PyObject* from_gsl(const gsl_permutation* p) {
+		PyObject* list = PyList_New(p->size);
+		for (int i = 0; i < (int)p->size; i++) {
+			PyObject* value = PyFloat_FromDouble(gsl_permutation_get(p, i));
+			PyList_SetItem(list, i, value);
 		}
 		return list;
 	}
@@ -150,5 +194,22 @@
 			}
 		}
 		return m;
+	}
+	
+	/*
+	 * Converts a Python list to a gsl_permutation*.
+	 */
+	gsl_permutation* to_gslp(PyObject* list) {
+		int n = PyList_Size(list);
+		gsl_permutation* p = gsl_permutation_alloc(n);
+		for (int i = 0; i < n; i++) {
+			p->data[i] = (int)PyFloat_AsDouble(PyList_GetItem(list, i));
+		}
+		if (gsl_permutation_valid(p) == 1) {
+			gsl_permutation_free(p);
+			return NULL;
+		} else {
+			return p;
+		}
 	}
 %}

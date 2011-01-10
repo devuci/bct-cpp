@@ -164,6 +164,7 @@ namespace bct {
 	void gsl_free(gsl_vector* v);
 	void gsl_free(gsl_matrix* m);
 	void gsl_free(std::vector<gsl_matrix*>& m);
+	void gsl_free(gsl_permutation* p);
 	void init();
 	int number_of_edges_dir(const gsl_matrix* m);
 	int number_of_edges_und(const gsl_matrix* m);

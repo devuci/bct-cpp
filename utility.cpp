@@ -1,6 +1,7 @@
 #include "bct.h"
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_matrix.h>
+#include <gsl/gsl_permutation.h>
 #include <gsl/gsl_vector.h>
 #include <sstream>
 #include <string>
@@ -28,6 +29,7 @@ void bct::gsl_free(std::vector<gsl_matrix*>& m) {
 		}
 	}
 }
+void bct::gsl_free(gsl_permutation* p) { gsl_permutation_free(p); }
 
 /*
  * Initializes the BCT library for external use.

@@ -26,6 +26,11 @@
 %typemap(freearg) std::vector<gsl_matrix*> { bct::gsl_free($1); }
 %typemap(out) std::vector<gsl_matrix*> { %append_output(from_gsl($1)); bct::gsl_free($1); }
 
+%typemap(typecheck) gsl_permutation* { $1 = is_gslp($input) ? 1 : 0; }
+%typemap(in) gsl_permutation* { $1 = to_gslp($input); }
+%typemap(freearg) gsl_permutation* { bct::gsl_free($1); }
+%typemap(out) gsl_permutation* { %append_output(from_gsl($1)); bct::gsl_free($1); }
+
 %typemap(in, numinputs = 0) gsl_vector** (gsl_vector* temp) { $1 = &temp; }
 %typemap(argout) gsl_vector** { %append_output(from_gsl(*$1)); bct::gsl_free(*$1); }
 

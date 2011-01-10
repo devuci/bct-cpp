@@ -164,6 +164,7 @@ namespace bct {
 	void gsl_free(gsl_vector* v);
 	void gsl_free(gsl_matrix* m);
 	void gsl_free(std::vector<gsl_matrix*>& m);
+	void gsl_free(gsl_permutation* p);
 	void init();
 	int number_of_edges_dir(const gsl_matrix* m);
 	int number_of_edges_und(const gsl_matrix* m);
@@ -380,6 +381,8 @@ namespace matlab {
 PyObject* from_gsl(const gsl_vector* v);
 PyObject* from_gsl(const gsl_matrix* m);
 PyObject* from_gsl(const std::vector<gsl_matrix*>& m);
+PyObject* from_gsl(const gsl_permutation* p);
 gsl_vector* to_gslv(PyObject* list);
 gsl_matrix* to_gslm(PyObject* list);
 std::vector<gsl_matrix*> to_gsl3dm(PyObject* list);
+gsl_permutation* to_gslp(PyObject* list);
