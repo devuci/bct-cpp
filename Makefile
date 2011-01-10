@@ -1,6 +1,6 @@
 CXXFLAGS                 = -Wall
 # OUTPUT_OPTION            = -o .obj/$@
-swig_flags               = -Wall -c++ -python
+swig_flags               = -Wall -c++ -python -outputtuple
 objects                  = assortativity.o \
                            betweenness_bin.o \
                            betweenness_wei.o \
@@ -90,9 +90,12 @@ libbct.a: $(objects)
 	$(AR) rcs libbct.a $(objects)
 
 swig: $(objects)
-	swig $(swig_flags) -o bct_wrap.cpp bct.i
-	$(CXX) $(CXXFLAGS) -c -I$(python_dir) bct_wrap.cpp
-	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct.so $(objects) bct_wrap.o
+	swig $(swig_flags) -o bct_gsl_wrap.cpp bct_gsl.i
+	swig $(swig_flags) -o bct_py_wrap.cpp bct_py.i
+	$(CXX) $(CXXFLAGS) -c -I$(python_dir) bct_gsl_wrap.cpp
+	$(CXX) $(CXXFLAGS) -c -I$(python_dir) bct_py_wrap.cpp
+	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct_gsl.so $(objects) bct_gsl_wrap.o
+	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct_py.so $(objects) bct_py_wrap.o
 
 $(objects): matlab/matlab.h bct.h
 
@@ -115,4 +118,4 @@ uninstall:
 	-rm $(install_dir)/lib/libbct.a
 
 clean:
-	-rm _bct.so bct.py bct.pyc bct_swig.o bct_wrap.cpp bct_wrap.o libbct.a $(objects)
+	-rm _bct_gsl.so _bct_py.so bct_gsl.py bct_py.py bct_gsl.pyc bct_py.pyc bct_gsl_wrap.cpp bct_py_wrap.cpp bct_gsl_wrap.o bct_py_wrap.o libbct.a $(objects)
