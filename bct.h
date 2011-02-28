@@ -42,6 +42,7 @@ namespace bct {
 	gsl_vector* clustering_coef_wd(const gsl_matrix* W);
 	gsl_vector* clustering_coef_wu(const gsl_matrix* W);
 	gsl_vector* efficiency_local(const gsl_matrix* G);
+	gsl_vector_float* efficiency_local(const gsl_matrix_float* G);
 
 	// Paths, distances, and cycles
 	gsl_vector* breadth(const gsl_matrix* CIJ, int source, gsl_vector** branch = NULL);
@@ -54,6 +55,8 @@ namespace bct {
 	gsl_matrix* distance_bin(const gsl_matrix* G);
 	gsl_matrix* distance_wei(const gsl_matrix* G); 
 	gsl_matrix* efficiency_global(const gsl_matrix* G);
+	gsl_matrix_float* efficiency_global(const gsl_matrix_float* G);
+
 	std::vector<gsl_matrix*> findpaths(const gsl_matrix* CIJ, const gsl_vector* sources, int qmax, gsl_vector** plq = NULL, int* qstop = NULL, gsl_matrix** allpths = NULL, gsl_matrix** util = NULL);
 	std::vector<gsl_matrix*> findwalks(const gsl_matrix* CIJ, gsl_vector** wlq = NULL);
 	double normalized_path_length(const gsl_matrix* D, double wmax = 1.0);
@@ -65,6 +68,9 @@ namespace bct {
 	gsl_matrix* edge_betweenness_bin(const gsl_matrix* G, gsl_vector** BC = NULL);
 	gsl_matrix* edge_betweenness_wei(const gsl_matrix* G, gsl_vector** BC = NULL);
 	gsl_matrix* erange(const gsl_matrix* CIJ, double* eta = NULL, gsl_matrix** Eshort = NULL, double* fs = NULL);
+	gsl_vector* eigenvector_centrality(const gsl_matrix* G);
+	gsl_vector_float* eigenvector_centrality(const gsl_matrix_float* G);
+
 
 	// Motifs
 	enum motif_mode_enum { MILO, SPORNS };
@@ -139,18 +145,30 @@ namespace bct {
 	extern bool safe_mode;
 	bool get_safe_mode();
 	void set_safe_mode(bool safe_mode);
+
 	bool check_status(const gsl_matrix* m, int flags, const std::string& text);
+	bool check_status(const gsl_matrix_float* m, int flags, const std::string& text);
 	bool is_square(const gsl_matrix* m);
+	bool is_square(const gsl_matrix_float* m);
 	bool is_rectangular(const gsl_matrix* m);
+	bool is_rectangular(const gsl_matrix_float* m);
 	bool is_undirected(const gsl_matrix* m);
+	bool is_undirected(const gsl_matrix_float* m);
 	bool is_directed(const gsl_matrix* m);
+	bool is_directed(const gsl_matrix_float* m);
 	bool is_binary(const gsl_matrix* m);
+	bool is_binary(const gsl_matrix_float* m);
 	bool is_weighted(const gsl_matrix* m);
+	bool is_weighted(const gsl_matrix_float* m);
 	bool is_positive(const gsl_matrix* m);
+	bool is_positive(const gsl_matrix_float* m);
 	bool is_signed(const gsl_matrix* m);
+	bool is_signed(const gsl_matrix_float* m);
 	bool has_loops(const gsl_matrix* m);
+	bool has_loops(const gsl_matrix_float* m);
 	bool has_no_loops(const gsl_matrix* m);
-	
+	bool has_no_loops(const gsl_matrix_float* m);
+
 	// Matrix conversion
 	gsl_matrix* invert_elements(const gsl_matrix* m);
 	gsl_matrix* remove_loops(const gsl_matrix* m);

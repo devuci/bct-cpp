@@ -1,4 +1,7 @@
 CXXFLAGS                 = -Wall
+#To enable parallel algorithms, use following (assuming gcc)
+#CXXFLAGS                 = -Wall -fopenmp
+
 # OUTPUT_OPTION            = -o .obj/$@
 swig_flags               = -Wall -c++ -python -outputtuple
 objects                  = assortativity.o \
@@ -23,6 +26,7 @@ objects                  = assortativity.o \
                            distance_bin.o \
                            distance_wei.o \
                            efficiency.o \
+			   eigenvector_centrality.o \
                            erange.o \
                            find_motif34.o \
                            findpaths.o \
