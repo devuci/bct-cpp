@@ -62,6 +62,8 @@ gsl_vector* bct::efficiency_local(const gsl_matrix* G) {
 				
 				// E(u)=sum(e(:))./(k.^2-k);
 				gsl_vector* e_v = to_vector(e);
+				gsl_matrix_free(e);
+
 				double sum_e = sum(e_v);
 				gsl_vector_free(e_v);
 				gsl_vector_set(E, u, sum_e / (double)(k * (k - 1)));
@@ -109,6 +111,8 @@ gsl_vector_float* bct::efficiency_local(const gsl_matrix_float* G) {
 				
 				// E(u)=sum(e(:))./(k.^2-k);
 				gsl_vector_float* e_v = to_vector(e);
+				gsl_matrix_float_free(e);
+
 				double sum_e = sum(e_v);
 				gsl_vector_float_free(e_v);
 				gsl_vector_float_set(E, u, sum_e / (double)(k * (k - 1)));

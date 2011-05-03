@@ -15,6 +15,9 @@ gsl_vector* bct::clustering_coef_bu(const gsl_matrix* G) {
 	gsl_vector* C = zeros_vector_double(n);
 	
 	// for u=1:n
+#ifdef _OPENMP
+#pragma omp parallel for shared(C)
+#endif
 	for (int u = 0; u < n; u++) {
 		
 		// V=find(G(u,:));
@@ -37,6 +40,48 @@ gsl_vector* bct::clustering_coef_bu(const gsl_matrix* G) {
 			}
 			
 			gsl_vector_free(V);
+		}
+	}
+	
+	return C;
+}
+
+
+gsl_vector_float* bct::clustering_coef_bu(const gsl_matrix_float* G) {
+	if (safe_mode) check_status(G, SQUARE | BINARY | UNDIRECTED, "clustering_coef_bu");
+	
+	// n=length(G);
+	int n = length(G);
+	
+	// C=zeros(n,1);
+	gsl_vector_float* C = zeros_vector_float(n);
+	
+	// for u=1:n
+#ifdef _OPENMP
+#pragma omp parallel for shared(C)
+#endif
+	for (int u = 0; u < n; u++) {
+		
+		// V=find(G(u,:));
+		// k=length(V);
+		// if k>=2;
+		gsl_vector_float_const_view G_row_u = gsl_matrix_float_const_row(G, u);
+		gsl_vector_float* V = find(&G_row_u.vector);
+		if (V != NULL) {
+			int k = length(V);
+			if (k >= 2) {
+				
+				// S=G(V,V);
+				gsl_matrix_float* S = ordinal_index(G, V, V);
+				
+				// C(u)=sum(S(:))/(k^2-k);
+				gsl_vector_float* sum_S = sum(S);
+				gsl_matrix_float_free(S);
+				gsl_vector_float_set(C, u, sum(sum_S) / (double)(k * (k - 1)));
+				gsl_vector_float_free(sum_S);
+			}
+			
+			gsl_vector_float_free(V);
 		}
 	}
 	
