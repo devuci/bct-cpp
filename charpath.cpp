@@ -17,6 +17,45 @@ double bct::charpath_lambda(const gsl_matrix* D) {
 	return ret;
 }
 
+/**
+ * Computes capped characteristic path length.
+ */
+double bct::capped_charpath_lambda(const gsl_matrix* G) {
+	int N = G->size1;
+	gsl_matrix* L = invert_elements(G);
+	int nonzeros = 0;
+	double lmean = 0.0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (i == j) {
+				continue;
+			}
+			double l = gsl_matrix_get(L, i, j);
+			if (fp_nonzero(l)) {
+				nonzeros++;
+				lmean += l;
+			}
+		}
+	}
+	lmean /= nonzeros;
+	gsl_matrix* D = distance_wei(L);
+	gsl_matrix_free(L);
+	double dmax = (double)N * lmean;
+	double dmean = 0.0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (i == j) {
+				continue;
+			}
+			double d = gsl_matrix_get(D, i, j);
+			dmean += (d > dmax) ? d : dmax;
+		}
+	}
+	dmean /= N * (N - 1);
+	gsl_matrix_free(D);
+	return dmean;
+}
+
 /*
  * Given a distance matrix, computes eccentricity, radius, and diameter.
  */

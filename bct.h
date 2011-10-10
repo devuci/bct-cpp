@@ -24,8 +24,10 @@ namespace bct {
 	double assortativity_und(const gsl_matrix* CIJ);
 	gsl_vector* degrees_dir(const gsl_matrix* CIJ, gsl_vector** id = NULL, gsl_vector** od = NULL);
 	gsl_vector* degrees_und(const gsl_matrix* CIJ);
+	gsl_vector_float* degrees_und(const gsl_matrix_float* CIJ);
 	double density_dir(const gsl_matrix* CIJ);
 	double density_und(const gsl_matrix* CIJ);
+	float density_und(const gsl_matrix_float* CIJ);
 	gsl_matrix* jdegree(const gsl_matrix* CIJ);
 	int jdegree_bl(const gsl_matrix* J);
 	int jdegree_id(const gsl_matrix* J);
@@ -39,6 +41,7 @@ namespace bct {
 	// Clustering
 	gsl_vector* clustering_coef_bd(const gsl_matrix* A);
 	gsl_vector* clustering_coef_bu(const gsl_matrix* G);
+	gsl_vector_float* clustering_coef_bu(const gsl_matrix_float* G);
 	gsl_vector* clustering_coef_wd(const gsl_matrix* W);
 	gsl_vector* clustering_coef_wu(const gsl_matrix* W);
 	gsl_vector* efficiency_local(const gsl_matrix* G);
@@ -49,6 +52,7 @@ namespace bct {
 	gsl_matrix* breadthdist(const gsl_matrix* CIJ, gsl_matrix** D = NULL);
 	gsl_vector* charpath_ecc(const gsl_matrix* D, double* radius = NULL, double* diameter = NULL);
 	double charpath_lambda(const gsl_matrix* D);
+	double capped_charpath_lambda(const gsl_matrix* G);
 	double connectivity_length(const gsl_matrix* D);
 	gsl_vector* cycprob_fcyc(const std::vector<gsl_matrix*>& Pq);
 	gsl_vector* cycprob_pcyc(const std::vector<gsl_matrix*>& Pq);
@@ -56,10 +60,10 @@ namespace bct {
 	gsl_matrix* distance_wei(const gsl_matrix* G); 
 	gsl_matrix* efficiency_global(const gsl_matrix* G);
 	gsl_matrix_float* efficiency_global(const gsl_matrix_float* G);
-
 	std::vector<gsl_matrix*> findpaths(const gsl_matrix* CIJ, const gsl_vector* sources, int qmax, gsl_vector** plq = NULL, int* qstop = NULL, gsl_matrix** allpths = NULL, gsl_matrix** util = NULL);
 	std::vector<gsl_matrix*> findwalks(const gsl_matrix* CIJ, gsl_vector** wlq = NULL);
 	double normalized_path_length(const gsl_matrix* D, double wmax = 1.0);
+	double normalized_path_length_m(const gsl_matrix* G, double wmax = 1.0);
 	gsl_matrix* reachdist(const gsl_matrix* CIJ, gsl_matrix** D = NULL);
 
 	// Centrality
@@ -70,7 +74,6 @@ namespace bct {
 	gsl_matrix* erange(const gsl_matrix* CIJ, double* eta = NULL, gsl_matrix** Eshort = NULL, double* fs = NULL);
 	gsl_vector* eigenvector_centrality(const gsl_matrix* G);
 	gsl_vector_float* eigenvector_centrality(const gsl_matrix_float* G);
-
 
 	// Motifs
 	enum motif_mode_enum { MILO, SPORNS };
