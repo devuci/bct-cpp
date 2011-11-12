@@ -3,6 +3,12 @@
 #include <gsl/gsl_vector.h>
 
 /*
+ * IMPORTANT WARNING:  charpath_lambda() takes a distance matrix,
+ * but capped_charpath_lambda() takes a connection matrix.  Both should
+ * be lengths, not weights (called distances in CalcMetric).
+ */
+
+/*
  * Given a distance matrix, computes characteristic path length.
  */
 double bct::charpath_lambda(const gsl_matrix* D) {
@@ -17,12 +23,12 @@ double bct::charpath_lambda(const gsl_matrix* D) {
 	return ret;
 }
 
-/**
- * Computes capped characteristic path length.
+/*
+ * Given a connection matrix (of distances, not weights),
+ * computes capped characteristic path length.
  */
-double bct::capped_charpath_lambda(const gsl_matrix* G) {
-	int N = G->size1;
-	gsl_matrix* L = invert_elements(G);
+double bct::capped_charpath_lambda(const gsl_matrix* L) {
+	int N = L->size1;
 	int nonzeros = 0;
 	double lmean = 0.0;
 	for (int i = 0; i < N; i++) {
@@ -39,7 +45,6 @@ double bct::capped_charpath_lambda(const gsl_matrix* G) {
 	}
 	lmean /= nonzeros;
 	gsl_matrix* D = distance_wei(L);
-	gsl_matrix_free(L);
 	double dmax = (double)N * lmean;
 	double dmean = 0.0;
 	for (int i = 0; i < N; i++) {
@@ -48,7 +53,7 @@ double bct::capped_charpath_lambda(const gsl_matrix* G) {
 				continue;
 			}
 			double d = gsl_matrix_get(D, i, j);
-			dmean += (d > dmax) ? d : dmax;
+			dmean += (d < dmax) ? d : dmax;
 		}
 	}
 	dmean /= N * (N - 1);
