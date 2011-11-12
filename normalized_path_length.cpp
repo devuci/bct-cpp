@@ -3,6 +3,12 @@
 #include <gsl/gsl_matrix.h>
 
 /*
+ * IMPORTANT WARNING:  normalized_path_length() takes a distance matrix,
+ * but normalized_path_length_m() takes a connection matrix.  Both should
+ * be lengths, not weights (called distances in CalcMetric).
+ */
+
+/*
  * Given a distance matrix, computes the normalized shortest path length.
  */
 double bct::normalized_path_length(const gsl_matrix* D, double wmax) {
@@ -22,13 +28,12 @@ double bct::normalized_path_length(const gsl_matrix* D, double wmax) {
 	return std::abs(((sum / (double)(N * (N - 1))) - dmin) / (dmax - dmin));
 }
 
-/**
+/*
  * Computes the normalized shortest path length using dmax = N * lmean, where
  * lmean is the average distance between all directly connected nodes.
  */
-double bct::normalized_path_length_m(const gsl_matrix* G, double wmax) {
-	int N = G->size1;
-	gsl_matrix* L = invert_elements(G);
+double bct::normalized_path_length_m(const gsl_matrix* L, double wmax) {
+	int N = L->size1;
 	int nonzeros = 0;
 	double lmean = 0.0;
 	for (int i = 0; i < N; i++) {
@@ -45,7 +50,6 @@ double bct::normalized_path_length_m(const gsl_matrix* G, double wmax) {
 	}
 	lmean /= nonzeros;
 	gsl_matrix* D = distance_wei(L);
-	gsl_matrix_free(L);
 	double dmin = 1.0 / wmax;
 	double dmax = (double)N * lmean;
 	double sum = 0.0;
