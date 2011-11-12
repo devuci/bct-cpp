@@ -10,6 +10,9 @@ double bct::connectivity_length(const gsl_matrix* D) {
 	double sum = 0.0;
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {
+			if (i == j) {
+				continue;
+			}
 			double value = gsl_matrix_get(D, i, j);
 			if (gsl_finite(value) == 1 && fp_nonzero(value)) {
 				sum += 1.0 / value;
