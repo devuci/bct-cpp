@@ -6,28 +6,47 @@
 gsl_matrix* distance_inv(const gsl_matrix*);
 gsl_matrix_float* distance_inv(const gsl_matrix_float*);
 
-
 /*
- * Computes global efficiency for a binary undirected graph.
+ * Computes global efficiency.
  */
-gsl_matrix* bct::efficiency_global(const gsl_matrix* G) {
+double bct::efficiency_global(const gsl_matrix* G) {
 	if (safe_mode) check_status(G, SQUARE, "efficiency_global");
 	
-	// E=distance_inv(G);
-	return distance_inv(G);
+	// N=length(G);
+	int N = length(G);
+	
+	// e=distance_inv(G);
+	gsl_matrix* e = distance_inv(G);
+	
+	// E=sum(e(:))./(N^2-N);
+	gsl_vector* e_v = to_vector(e);
+	gsl_matrix_free(e);
+	double sum_e = sum(e_v);
+	gsl_vector_free(e_v);
+	return sum_e / (double)(N * (N - 1));
 }
 
 /*float version*/
-gsl_matrix_float* bct::efficiency_global(const gsl_matrix_float* G) {
+float bct::efficiency_global(const gsl_matrix_float* G) {
 	if (safe_mode) check_status(G, SQUARE, "efficiency_global");
 	
-	// E=distance_inv(G);
-	return distance_inv(G);
+	// N=length(G);
+	int N = length(G);
+	
+	// e=distance_inv(G);
+	gsl_matrix_float* e = distance_inv(G);
+	
+	// E=sum(e(:))./(N^2-N);
+	gsl_vector_float* e_v = to_vector(e);
+	gsl_matrix_float_free(e);
+	float sum_e = sum(e_v);
+	gsl_vector_float_free(e_v);
+	return sum_e / (float)(N * (N - 1));
 }
 
 
 /*
- * Computes local efficiency for a binary undirected graph.
+ * Computes local efficiency.
  */
 gsl_vector* bct::efficiency_local(const gsl_matrix* G) {
 	if (safe_mode) check_status(G, SQUARE, "efficiency_local");
@@ -63,7 +82,6 @@ gsl_vector* bct::efficiency_local(const gsl_matrix* G) {
 				// E(u)=sum(e(:))./(k.^2-k);
 				gsl_vector* e_v = to_vector(e);
 				gsl_matrix_free(e);
-
 				double sum_e = sum(e_v);
 				gsl_vector_free(e_v);
 				gsl_vector_set(E, u, sum_e / (double)(k * (k - 1)));
@@ -112,7 +130,6 @@ gsl_vector_float* bct::efficiency_local(const gsl_matrix_float* G) {
 				// E(u)=sum(e(:))./(k.^2-k);
 				gsl_vector_float* e_v = to_vector(e);
 				gsl_matrix_float_free(e);
-
 				double sum_e = sum(e_v);
 				gsl_vector_float_free(e_v);
 				gsl_vector_float_set(E, u, sum_e / (double)(k * (k - 1)));
@@ -124,7 +141,6 @@ gsl_vector_float* bct::efficiency_local(const gsl_matrix_float* G) {
 	
 	return E;
 }
-
 
 gsl_matrix* distance_inv(const gsl_matrix* g) {
 	using namespace bct;

@@ -58,8 +58,8 @@ namespace bct {
 	gsl_vector* cycprob_pcyc(const std::vector<gsl_matrix*>& Pq);
 	gsl_matrix* distance_bin(const gsl_matrix* G);
 	gsl_matrix* distance_wei(const gsl_matrix* G); 
-	gsl_matrix* efficiency_global(const gsl_matrix* G);
-	gsl_matrix_float* efficiency_global(const gsl_matrix_float* G);
+	double efficiency_global(const gsl_matrix* G);
+	float efficiency_global(const gsl_matrix_float* G);
 	std::vector<gsl_matrix*> findpaths(const gsl_matrix* CIJ, const gsl_vector* sources, int qmax, gsl_vector** plq = NULL, int* qstop = NULL, gsl_matrix** allpths = NULL, gsl_matrix** util = NULL);
 	std::vector<gsl_matrix*> findwalks(const gsl_matrix* CIJ, gsl_vector** wlq = NULL);
 	double normalized_path_length(const gsl_matrix* D, double wmax = 1.0);
