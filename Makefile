@@ -1,7 +1,4 @@
 CXXFLAGS                 = -Wall
-#To enable parallel algorithms, use following (assuming gcc)
-#CXXFLAGS                 = -Wall -fopenmp
-
 # OUTPUT_OPTION            = -o .obj/$@
 swig_flags               = -Wall -c++ -python -outputtuple
 objects                  = assortativity.o \
@@ -26,7 +23,7 @@ objects                  = assortativity.o \
                            distance_bin.o \
                            distance_wei.o \
                            efficiency.o \
-			   eigenvector_centrality.o \
+                           eigenvector_centrality.o \
                            erange.o \
                            find_motif34.o \
                            findpaths.o \
@@ -50,10 +47,12 @@ objects                  = assortativity.o \
                            makeringlatticeCIJ.o \
                            maketoeplitzCIJ.o \
                            matching_ind.o \
-                           matlab/matlab.o \
-                           matlab/matlab_double.o \
-                           matlab/matlab_float.o \
-                           matlab/matlab_long_double.o \
+                           matlab/compare.o \
+                           matlab/convert.o \
+                           matlab/functions.o \
+                           matlab/index.o \
+                           matlab/operators.o \
+                           matlab/utility.o \
                            modularity_louvain.o \
                            modularity_newman.o \
                            module_degree_zscore.o \
@@ -82,9 +81,8 @@ objects                  = assortativity.o \
 include Makefile.vars
 
 # To make a multi-architecture library:
-# Compile once for each architecture
-# Add -arch to CXXFLAGS and LDFLAGS during compilation
-# lipo -create <architecture-specific libraries> -output <universal library>
+# Compile once for each architecture by adding -arch to CXXFLAGS and LDFLAGS during compilation
+# Then execute "lipo -create <architecture-specific libraries> -output <universal library>"
 
 .PHONY: all clean install swig uninstall
 
@@ -108,13 +106,17 @@ install: libbct.a
 		mkdir $(install_dir)/include/bct; \
 		mkdir $(install_dir)/include/bct/matlab; \
 	fi
-	cp matlab/macros.h $(install_dir)/include/bct/matlab
+	if [[ "$(CXXFLAGS)" == *GSL_FLOAT* ]]; then \
+		cat bct_float.h bct.h > _bct.h; \
+	elif [[ "$(CXXFLAGS)" == *GSL_DOUBLE* ]]; then \
+		cat bct_double.h bct.h > _bct.h; \
+	elif [[ "$(CXXFLAGS)" == *GSL_LONG_DOUBLE* ]]; then \
+		cat bct_long_double.h bct.h > _bct.h; \
+	fi
+	mv _bct.h $(install_dir)/include/bct/bct.h
 	cp matlab/matlab.h $(install_dir)/include/bct/matlab
-	cp matlab/matlab_double.h $(install_dir)/include/bct/matlab
-	cp matlab/matlab_float.h $(install_dir)/include/bct/matlab
-	cp matlab/matlab_long_double.h $(install_dir)/include/bct/matlab
 	cp matlab/sort.h $(install_dir)/include/bct/matlab
-	cp bct.h $(install_dir)/include/bct
+	cp precision.h $(install_dir)/include/bct
 	cp libbct.a $(install_dir)/lib
 
 uninstall:

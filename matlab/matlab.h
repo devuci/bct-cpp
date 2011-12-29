@@ -1,211 +1,198 @@
-#include <gsl/gsl_math.h>
+#ifndef MATLAB_H
+#define MATLAB_H
+
+#include "../precision.h"
+
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_permutation.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_vector.h>
 #include <limits>
-#include "sort.h"
 #include <string>
 
 namespace matlab {
 	
-	// ---------------------------------
-	// Precision-independent definitions
-	// ---------------------------------
-	
-#ifndef MATLAB_H
-#define MATLAB_H
-	
 	// Functions
+	VECTOR_T* abs(const VECTOR_T* v);
+	MATRIX_T* abs(const MATRIX_T* m);
+	int all(const VECTOR_T* v);
+	VECTOR_T* all(const MATRIX_T* m, int dim = 1);
+	int any(const VECTOR_T* v);
+	VECTOR_T* any(const MATRIX_T* m, int dim = 1);
 	std::string dec2bin(int n);
 	std::string dec2bin(int n, int len);
-	gsl_matrix* inv(const gsl_matrix* m);
+	MATRIX_T* diag(const VECTOR_T* v, int k = 0);
+	VECTOR_T* diag(const MATRIX_T* m, int k = 0);
+	MATRIX_T* eye(int size);
+	MATRIX_T* eye(int size1, int size2);
+	VECTOR_T* find(const VECTOR_T* v, int n = std::numeric_limits<int>::max(), const std::string& direction = "first");
+	VECTOR_T* find(const MATRIX_T* m, int n = std::numeric_limits<int>::max(), const std::string& direction = "first");
+	MATRIX_T* find_ij(const MATRIX_T* m, int n = std::numeric_limits<int>::max(), const std::string& direction = "first");
+	VECTOR_T* hist(const VECTOR_T* v, int n = 10);
+	VECTOR_T* hist(const VECTOR_T* v, const VECTOR_T* centers);
+	MATRIX_T* inv(const MATRIX_T* m);
+	int length(const VECTOR_T* v);
+	int length(const MATRIX_T* m);
+	FP_T max(FP_T x, FP_T y);
+	FP_T max(const VECTOR_T* v);
+	VECTOR_T* max(const MATRIX_T* m, int dim = 1);
+	FP_T mean(const VECTOR_T* v, const std::string& opt = "a");
+	VECTOR_T* mean(const MATRIX_T* m, int dim = 1, const std::string& opt = "a");
+	FP_T min(FP_T x, FP_T y);
+	FP_T min(const VECTOR_T* v);
+	VECTOR_T* min(const MATRIX_T* m, int dim = 1);
+	int nnz(const VECTOR_T* v);
+	int nnz(const MATRIX_T* m);
+	VECTOR_T* nonzeros(const MATRIX_T* m);
+	FP_T norm(const VECTOR_T* v, int p);
+	VECTOR_T* normpdf(const VECTOR_T* v, FP_T mean, FP_T stdev);
+	MATRIX_T* ones(int size);
+	MATRIX_T* ones(int size1, int size2);
+	VECTOR_T* ones_vector(int size);
+	FP_T prod(const VECTOR_T* v);
+	VECTOR_T* prod(const MATRIX_T* m, int dim = 1);
+	MATRIX_T* rand(int size);
+	MATRIX_T* rand(int size1, int size2);
+	VECTOR_T* rand_vector(int size);
 	gsl_permutation* randperm(int size);
+	VECTOR_T* reverse(const VECTOR_T* v);
+	VECTOR_T* setxor(const VECTOR_T* v1, const VECTOR_T* v2);
+	VECTOR_T* sort(const VECTOR_T* v, const std::string& mode = "ascend", VECTOR_T** ind = NULL);
+	MATRIX_T* sort(const MATRIX_T* m, int dim = 1, const std::string& mode = "ascend", MATRIX_T** ind = NULL);
+	VECTOR_T* sortrows(const VECTOR_T* v, VECTOR_T** ind = NULL);
+	MATRIX_T* sortrows(const MATRIX_T* m, VECTOR_T** ind = NULL);
+	FP_T std(const VECTOR_T* v, int opt = 0);
+	VECTOR_T* std(const MATRIX_T* m, int opt = 0, int dim = 1);
+	FP_T sum(const VECTOR_T* v);
+	VECTOR_T* sum(const MATRIX_T* m, int dim = 1);
+	MATRIX_T* toeplitz(const VECTOR_T* column, const VECTOR_T* row = NULL);
+	MATRIX_T* tril(const MATRIX_T* m, int k = 0);
+	MATRIX_T* triu(const MATRIX_T* m, int k = 0);
+	VECTOR_T* unique(const VECTOR_T* v, const std::string& first_or_last = "last", VECTOR_T** i = NULL, VECTOR_T** j = NULL);
+	VECTOR_T* unique(const MATRIX_T* m, const std::string& first_or_last = "last", VECTOR_T** i = NULL, VECTOR_T** j = NULL);
+	MATRIX_T* unique_rows(const MATRIX_T* m, const std::string& first_or_last = "last", VECTOR_T** i = NULL, VECTOR_T** j = NULL);
+	MATRIX_T* zeros(int size);
+	MATRIX_T* zeros(int size1, int size2);
+	VECTOR_T* zeros_vector(int size);
 	
 	// Operators
-	gsl_matrix* div_left(const gsl_matrix* m1, const gsl_matrix* m2);
-	gsl_matrix* div_right(const gsl_matrix* m1, const gsl_matrix* m2);
-	
-	// Utility
-	gsl_rng* get_gsl_rng();
-	void seed_rng(const gsl_rng* rng, unsigned long seed);
-#endif
-	
-	// -------------------------------
-	// Precision-dependent definitions
-	// -------------------------------
-	
-	// Functions
-	VECTOR_TYPE* abs(const VECTOR_TYPE* v);
-	MATRIX_TYPE* abs(const MATRIX_TYPE* m);
-	int all(const VECTOR_TYPE* v);
-	VECTOR_TYPE* all(const MATRIX_TYPE* m, int dim = 1);
-	int any(const VECTOR_TYPE* v);
-	VECTOR_TYPE* any(const MATRIX_TYPE* m, int dim = 1);
-	MATRIX_TYPE* diag(const VECTOR_TYPE* v, int k = 0);
-	VECTOR_TYPE* diag(const MATRIX_TYPE* m, int k = 0);
-	MATRIX_TYPE* FP_ID(eye)(int size);
-	MATRIX_TYPE* FP_ID(eye)(int size1, int size2);
-	VECTOR_TYPE* find(const VECTOR_TYPE* v, int n = std::numeric_limits<int>::max(), const std::string& direction = "first");
-	VECTOR_TYPE* find(const MATRIX_TYPE* m, int n = std::numeric_limits<int>::max(), const std::string& direction = "first");
-	MATRIX_TYPE* find_ij(const MATRIX_TYPE* m, int n = std::numeric_limits<int>::max(), const std::string& direction = "first");
-	VECTOR_TYPE* hist(const VECTOR_TYPE* v, int n = 10);
-	VECTOR_TYPE* hist(const VECTOR_TYPE* v, const VECTOR_TYPE* centers);
-	int length(const VECTOR_TYPE* v);
-	int length(const MATRIX_TYPE* m);
-	FP_TYPE max(FP_TYPE x, FP_TYPE y);
-	FP_TYPE max(const VECTOR_TYPE* v);
-	VECTOR_TYPE* max(const MATRIX_TYPE* m, int dim = 1);
-	FP_TYPE mean(const VECTOR_TYPE* v, const std::string& opt = "a");
-	VECTOR_TYPE* mean(const MATRIX_TYPE* m, int dim = 1, const std::string& opt = "a");
-	FP_TYPE min(FP_TYPE x, FP_TYPE y);
-	FP_TYPE min(const VECTOR_TYPE* v);
-	VECTOR_TYPE* min(const MATRIX_TYPE* m, int dim = 1);
-	int nnz(const VECTOR_TYPE* v);
-	int nnz(const MATRIX_TYPE* m);
-	VECTOR_TYPE* nonzeros(const MATRIX_TYPE* m);
-	VECTOR_TYPE* normpdf(const VECTOR_TYPE* v, FP_TYPE mean, FP_TYPE stdev);
-	MATRIX_TYPE* FP_ID(ones)(int size);
-	MATRIX_TYPE* FP_ID(ones)(int size1, int size2);
-	VECTOR_TYPE* FP_ID(ones_vector)(int size);
-	FP_TYPE prod(const VECTOR_TYPE* v);
-	VECTOR_TYPE* prod(const MATRIX_TYPE* m, int dim = 1);
-	MATRIX_TYPE* FP_ID(rand)(int size);
-	MATRIX_TYPE* FP_ID(rand)(int size1, int size2);
-	VECTOR_TYPE* FP_ID(rand_vector)(int size);
-	VECTOR_TYPE* reverse(const VECTOR_TYPE* v);
-	VECTOR_TYPE* setxor(const VECTOR_TYPE* v1, const VECTOR_TYPE* v2);
-	VECTOR_TYPE* sort(const VECTOR_TYPE* v, const std::string& mode = "ascend", VECTOR_TYPE** ind = NULL);
-	MATRIX_TYPE* sort(const MATRIX_TYPE* m, int dim = 1, const std::string& mode = "ascend", MATRIX_TYPE** ind = NULL);
-	VECTOR_TYPE* sortrows(const VECTOR_TYPE* v, VECTOR_TYPE** ind = NULL);
-	MATRIX_TYPE* sortrows(const MATRIX_TYPE* m, VECTOR_TYPE** ind = NULL);
-	FP_TYPE std(const VECTOR_TYPE* v, int opt = 0);
-	VECTOR_TYPE* std(const MATRIX_TYPE* m, int opt = 0, int dim = 1);
-	FP_TYPE sum(const VECTOR_TYPE* v);
-	VECTOR_TYPE* sum(const MATRIX_TYPE* m, int dim = 1);
-	MATRIX_TYPE* toeplitz(const VECTOR_TYPE* column, const VECTOR_TYPE* row = NULL);
-	MATRIX_TYPE* tril(const MATRIX_TYPE* m, int k = 0);
-	MATRIX_TYPE* triu(const MATRIX_TYPE* m, int k = 0);
-	VECTOR_TYPE* unique(const VECTOR_TYPE* v, const std::string& first_or_last = "last", VECTOR_TYPE** i = NULL, VECTOR_TYPE** j = NULL);
-	VECTOR_TYPE* unique(const MATRIX_TYPE* m, const std::string& first_or_last = "last", VECTOR_TYPE** i = NULL, VECTOR_TYPE** j = NULL);
-	MATRIX_TYPE* unique_rows(const MATRIX_TYPE* m, const std::string& first_or_last = "last", VECTOR_TYPE** i = NULL, VECTOR_TYPE** j = NULL);
-	MATRIX_TYPE* FP_ID(zeros)(int size);
-	MATRIX_TYPE* FP_ID(zeros)(int size1, int size2);
-	VECTOR_TYPE* FP_ID(zeros_vector)(int size);
-	
-	// Operators
-	VECTOR_TYPE* concatenate(const VECTOR_TYPE* v, FP_TYPE x);
-	VECTOR_TYPE* concatenate(FP_TYPE x, const VECTOR_TYPE* v);
-	VECTOR_TYPE* concatenate(const VECTOR_TYPE* v1, const VECTOR_TYPE* v2);
-	MATRIX_TYPE* concatenate_columns(const VECTOR_TYPE* v1, const VECTOR_TYPE* v2);
-	MATRIX_TYPE* concatenate_columns(const MATRIX_TYPE* m, const VECTOR_TYPE* v);
-	MATRIX_TYPE* concatenate_columns(const VECTOR_TYPE* v, const MATRIX_TYPE* m);
-	MATRIX_TYPE* concatenate_columns(const MATRIX_TYPE* m1, const MATRIX_TYPE* m2);
-	MATRIX_TYPE* concatenate_rows(const VECTOR_TYPE* v1, const VECTOR_TYPE* v2);
-	MATRIX_TYPE* concatenate_rows(const MATRIX_TYPE* m, const VECTOR_TYPE* v);
-	MATRIX_TYPE* concatenate_rows(const VECTOR_TYPE* v, const MATRIX_TYPE* m);
-	MATRIX_TYPE* concatenate_rows(const MATRIX_TYPE* m1, const MATRIX_TYPE* m2);
-	VECTOR_TYPE* copy(const VECTOR_TYPE* v);
-	MATRIX_TYPE* copy(const MATRIX_TYPE* m);
-	VECTOR_TYPE* logical_and(const VECTOR_TYPE* v1, const VECTOR_TYPE* v2);
-	MATRIX_TYPE* logical_and(const MATRIX_TYPE* m1, const MATRIX_TYPE* m2);
-	VECTOR_TYPE* logical_not(const VECTOR_TYPE* v);
-	MATRIX_TYPE* logical_not(const MATRIX_TYPE* m);
-	VECTOR_TYPE* logical_or(const VECTOR_TYPE* v1, const VECTOR_TYPE* v2);
-	MATRIX_TYPE* logical_or(const MATRIX_TYPE* m1, const MATRIX_TYPE* m2);
-	MATRIX_TYPE* mul(const MATRIX_TYPE* m1, const MATRIX_TYPE* m2);
-	MATRIX_TYPE* pow(const MATRIX_TYPE* m, int power);
-	VECTOR_TYPE* pow_elements(const VECTOR_TYPE* v, FP_TYPE power);
-	VECTOR_TYPE* pow_elements(const VECTOR_TYPE* v, const VECTOR_TYPE* powers);
-	MATRIX_TYPE* pow_elements(const MATRIX_TYPE* m, FP_TYPE power);
-	MATRIX_TYPE* pow_elements(const MATRIX_TYPE* m, const MATRIX_TYPE* powers);
-	VECTOR_TYPE* FP_ID(sequence)(int start, int end);
-	VECTOR_TYPE* FP_ID(sequence)(int start, int step, int end);
+	VECTOR_T* concatenate(const VECTOR_T* v, FP_T x);
+	VECTOR_T* concatenate(FP_T x, const VECTOR_T* v);
+	VECTOR_T* concatenate(const VECTOR_T* v1, const VECTOR_T* v2);
+	MATRIX_T* concatenate_columns(const VECTOR_T* v1, const VECTOR_T* v2);
+	MATRIX_T* concatenate_columns(const MATRIX_T* m, const VECTOR_T* v);
+	MATRIX_T* concatenate_columns(const VECTOR_T* v, const MATRIX_T* m);
+	MATRIX_T* concatenate_columns(const MATRIX_T* m1, const MATRIX_T* m2);
+	MATRIX_T* concatenate_rows(const VECTOR_T* v1, const VECTOR_T* v2);
+	MATRIX_T* concatenate_rows(const MATRIX_T* m, const VECTOR_T* v);
+	MATRIX_T* concatenate_rows(const VECTOR_T* v, const MATRIX_T* m);
+	MATRIX_T* concatenate_rows(const MATRIX_T* m1, const MATRIX_T* m2);
+	VECTOR_T* copy(const VECTOR_T* v);
+	MATRIX_T* copy(const MATRIX_T* m);
+	MATRIX_T* div_left(const MATRIX_T* m1, const MATRIX_T* m2);
+	MATRIX_T* div_right(const MATRIX_T* m1, const MATRIX_T* m2);
+	VECTOR_T* logical_and(const VECTOR_T* v1, const VECTOR_T* v2);
+	MATRIX_T* logical_and(const MATRIX_T* m1, const MATRIX_T* m2);
+	VECTOR_T* logical_not(const VECTOR_T* v);
+	MATRIX_T* logical_not(const MATRIX_T* m);
+	VECTOR_T* logical_or(const VECTOR_T* v1, const VECTOR_T* v2);
+	MATRIX_T* logical_or(const MATRIX_T* m1, const MATRIX_T* m2);
+	MATRIX_T* mul(const MATRIX_T* m1, const MATRIX_T* m2);
+	MATRIX_T* pow(const MATRIX_T* m, int power);
+	VECTOR_T* pow_elements(const VECTOR_T* v, FP_T power);
+	VECTOR_T* pow_elements(const VECTOR_T* v, const VECTOR_T* powers);
+	MATRIX_T* pow_elements(const MATRIX_T* m, FP_T power);
+	MATRIX_T* pow_elements(const MATRIX_T* m, const MATRIX_T* powers);
+	VECTOR_T* sequence(int start, int end);
+	VECTOR_T* sequence(int start, int step, int end);
 	
 	// Floating-point comparison
-	extern FP_TYPE FP_ID(epsilon);
-	int fp_compare(FP_TYPE x, FP_TYPE y);
-	typedef bool (*FP_ID(fp_cmp_fn))(FP_TYPE, FP_TYPE);
-	bool fp_zero(FP_TYPE x);
-	bool fp_nonzero(FP_TYPE x);
-	bool fp_equal(FP_TYPE x, FP_TYPE y);
-	bool fp_not_equal(FP_TYPE x, FP_TYPE y);
-	bool fp_less(FP_TYPE x, FP_TYPE y);
-	bool fp_less_or_equal(FP_TYPE x, FP_TYPE y);
-	bool fp_greater(FP_TYPE x, FP_TYPE y);
-	bool fp_greater_or_equal(FP_TYPE x, FP_TYPE y);
+	extern FP_T epsilon;
+	int fp_compare(FP_T x, FP_T y);
+	bool fp_zero(FP_T x);
+	bool fp_nonzero(FP_T x);
+	bool fp_equal(FP_T x, FP_T y);
+	bool fp_not_equal(FP_T x, FP_T y);
+	bool fp_less(FP_T x, FP_T y);
+	bool fp_less_or_equal(FP_T x, FP_T y);
+	bool fp_greater(FP_T x, FP_T y);
+	bool fp_greater_or_equal(FP_T x, FP_T y);
 	
 	// Vector/matrix comparison
-	int compare_vectors(const VECTOR_TYPE* v1, const VECTOR_TYPE* v2);
-	bool vector_less(VECTOR_TYPE* v1, VECTOR_TYPE* v2);
-	int compare_matrices(const MATRIX_TYPE* m1, const MATRIX_TYPE* m2);
-	bool matrix_less(MATRIX_TYPE* m1, MATRIX_TYPE* m2);
-	VECTOR_TYPE* compare_elements(const VECTOR_TYPE* v, FP_ID(fp_cmp_fn) compare, FP_TYPE x);
-	VECTOR_TYPE* compare_elements(const VECTOR_TYPE* v1, FP_ID(fp_cmp_fn) compare, const VECTOR_TYPE* v2);
-	MATRIX_TYPE* compare_elements(const MATRIX_TYPE* m, FP_ID(fp_cmp_fn) compare, FP_TYPE x);
-	MATRIX_TYPE* compare_elements(const MATRIX_TYPE* m1, FP_ID(fp_cmp_fn) compare, const MATRIX_TYPE* m2);
+	typedef bool (*comparator)(FP_T, FP_T);
+	int compare_vectors(const VECTOR_T* v1, const VECTOR_T* v2);
+	bool vector_less(VECTOR_T* v1, VECTOR_T* v2);
+	int compare_matrices(const MATRIX_T* m1, const MATRIX_T* m2);
+	bool matrix_less(MATRIX_T* m1, MATRIX_T* m2);
+	VECTOR_T* compare_elements(const VECTOR_T* v, comparator compare, FP_T x);
+	VECTOR_T* compare_elements(const VECTOR_T* v1, comparator compare, const VECTOR_T* v2);
+	MATRIX_T* compare_elements(const MATRIX_T* m, comparator compare, FP_T x);
+	MATRIX_T* compare_elements(const MATRIX_T* m1, comparator compare, const MATRIX_T* m2);
 	
 	// Vector-by-vector indexing
-	VECTOR_TYPE* ordinal_index(const VECTOR_TYPE* v, const VECTOR_TYPE* indices);
-	void ordinal_index_assign(VECTOR_TYPE* v, const VECTOR_TYPE* indices, FP_TYPE value);
-	void ordinal_index_assign(VECTOR_TYPE* v, const VECTOR_TYPE* indices, const VECTOR_TYPE* values);
-	VECTOR_TYPE* logical_index(const VECTOR_TYPE* v, const VECTOR_TYPE* logical_v);
-	void logical_index_assign(VECTOR_TYPE* v, const VECTOR_TYPE* logical_v, FP_TYPE values);
-	void logical_index_assign(VECTOR_TYPE* v, const VECTOR_TYPE* logical_v, const VECTOR_TYPE* values);
+	VECTOR_T* ordinal_index(const VECTOR_T* v, const VECTOR_T* indices);
+	void ordinal_index_assign(VECTOR_T* v, const VECTOR_T* indices, FP_T value);
+	void ordinal_index_assign(VECTOR_T* v, const VECTOR_T* indices, const VECTOR_T* values);
+	VECTOR_T* logical_index(const VECTOR_T* v, const VECTOR_T* logical_v);
+	void logical_index_assign(VECTOR_T* v, const VECTOR_T* logical_v, FP_T values);
+	void logical_index_assign(VECTOR_T* v, const VECTOR_T* logical_v, const VECTOR_T* values);
 	
 	// Matrix-by-integer indexing
-	FP_TYPE ordinal_index(const MATRIX_TYPE* m, int index);
-	void ordinal_index_assign(MATRIX_TYPE* m, int index, FP_TYPE value);
+	FP_T ordinal_index(const MATRIX_T* m, int index);
+	void ordinal_index_assign(MATRIX_T* m, int index, FP_T value);
 	
 	// Matrix-by-vector indexing
-	VECTOR_TYPE* ordinal_index(const MATRIX_TYPE* m, const VECTOR_TYPE* indices);
-	void ordinal_index_assign(MATRIX_TYPE* m, const VECTOR_TYPE* indices, FP_TYPE value);
-	void ordinal_index_assign(MATRIX_TYPE* m, const VECTOR_TYPE* indices, const VECTOR_TYPE* values);
-	VECTOR_TYPE* logical_index(const MATRIX_TYPE* m, const VECTOR_TYPE* logical_v);
-	void logical_index_assign(MATRIX_TYPE* m, const VECTOR_TYPE* logical_v, FP_TYPE value);
-	void logical_index_assign(MATRIX_TYPE* m, const VECTOR_TYPE* logical_v, const VECTOR_TYPE* values);
+	VECTOR_T* ordinal_index(const MATRIX_T* m, const VECTOR_T* indices);
+	void ordinal_index_assign(MATRIX_T* m, const VECTOR_T* indices, FP_T value);
+	void ordinal_index_assign(MATRIX_T* m, const VECTOR_T* indices, const VECTOR_T* values);
+	VECTOR_T* logical_index(const MATRIX_T* m, const VECTOR_T* logical_v);
+	void logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_v, FP_T value);
+	void logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_v, const VECTOR_T* values);
 	
 	// Matrix-by-two-vectors indexing (non-mixed)
-	MATRIX_TYPE* ordinal_index(const MATRIX_TYPE* m, const VECTOR_TYPE* rows, const VECTOR_TYPE* columns);
-	void ordinal_index_assign(MATRIX_TYPE* m, const VECTOR_TYPE* rows, const VECTOR_TYPE* columns, FP_TYPE value);
-	void ordinal_index_assign(MATRIX_TYPE* m, const VECTOR_TYPE* rows, const VECTOR_TYPE* columns, const MATRIX_TYPE* values);
-	MATRIX_TYPE* logical_index(const MATRIX_TYPE* m, const VECTOR_TYPE* logical_rows, const VECTOR_TYPE* logical_columns);
-	void logical_index_assign(MATRIX_TYPE* m, const VECTOR_TYPE* logical_rows, const VECTOR_TYPE* logical_columns, FP_TYPE value);
-	void logical_index_assign(MATRIX_TYPE* m, const VECTOR_TYPE* logical_rows, const VECTOR_TYPE* logical_columns, const MATRIX_TYPE* values);
+	MATRIX_T* ordinal_index(const MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* columns);
+	void ordinal_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* columns, FP_T value);
+	void ordinal_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* columns, const MATRIX_T* values);
+	MATRIX_T* logical_index(const MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* logical_columns);
+	void logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* logical_columns, FP_T value);
+	void logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* logical_columns, const MATRIX_T* values);
 	
 	// Matrix-by-two-vectors indexing (mixed)
-	MATRIX_TYPE* ord_log_index(const MATRIX_TYPE* m, const VECTOR_TYPE* rows, const VECTOR_TYPE* logical_columns);
-	void ord_log_index_assign(MATRIX_TYPE* m, const VECTOR_TYPE* rows, const VECTOR_TYPE* logical_columns, FP_TYPE value);
-	void ord_log_index_assign(MATRIX_TYPE* m, const VECTOR_TYPE* rows, const VECTOR_TYPE* logical_columns, const MATRIX_TYPE* values);
-	MATRIX_TYPE* log_ord_index(const MATRIX_TYPE* m, const VECTOR_TYPE* logical_rows, const VECTOR_TYPE* columns);
-	void log_ord_index_assign(MATRIX_TYPE* m, const VECTOR_TYPE* logical_rows, const VECTOR_TYPE* columns, FP_TYPE value);
-	void log_ord_index_assign(MATRIX_TYPE* m, const VECTOR_TYPE* logical_rows, const VECTOR_TYPE* columns, const MATRIX_TYPE* values);
+	MATRIX_T* ord_log_index(const MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* logical_columns);
+	void ord_log_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* logical_columns, FP_T value);
+	void ord_log_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* logical_columns, const MATRIX_T* values);
+	MATRIX_T* log_ord_index(const MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* columns);
+	void log_ord_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* columns, FP_T value);
+	void log_ord_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* columns, const MATRIX_T* values);
 	
 	// Matrix-by-matrix indexing
-	MATRIX_TYPE* ordinal_index(const MATRIX_TYPE* m, const MATRIX_TYPE* indices);
-	void ordinal_index_assign(MATRIX_TYPE* m, const MATRIX_TYPE* indices, FP_TYPE value);
-	void ordinal_index_assign(MATRIX_TYPE* m, const MATRIX_TYPE* indices, const MATRIX_TYPE* values);
-	VECTOR_TYPE* logical_index(const MATRIX_TYPE* m, const MATRIX_TYPE* logical_m);
-	void logical_index_assign(MATRIX_TYPE* m, const MATRIX_TYPE* logical_m, FP_TYPE value);
-	void logical_index_assign(MATRIX_TYPE* m, const MATRIX_TYPE* logical_m, const VECTOR_TYPE* values);
+	MATRIX_T* ordinal_index(const MATRIX_T* m, const MATRIX_T* indices);
+	void ordinal_index_assign(MATRIX_T* m, const MATRIX_T* indices, FP_T value);
+	void ordinal_index_assign(MATRIX_T* m, const MATRIX_T* indices, const MATRIX_T* values);
+	VECTOR_T* logical_index(const MATRIX_T* m, const MATRIX_T* logical_m);
+	void logical_index_assign(MATRIX_T* m, const MATRIX_T* logical_m, FP_T value);
+	void logical_index_assign(MATRIX_T* m, const MATRIX_T* logical_m, const VECTOR_T* values);
 	
 	// Vector/matrix conversion
-	void to_array(const VECTOR_TYPE* v, FP_TYPE* array);
-	bool to_bool(const VECTOR_TYPE* v);
-	bool to_bool(const MATRIX_TYPE* m);
-	gsl_vector_float* to_vector_float(const VECTOR_TYPE* v);
-	gsl_vector* to_vector_double(const VECTOR_TYPE* v);
-	gsl_vector_long_double* to_vector_long_double(const VECTOR_TYPE* v);
-	VECTOR_TYPE* to_vector(const MATRIX_TYPE* m);
-	gsl_matrix_float* to_matrix_float(const MATRIX_TYPE* m);
-	gsl_matrix* to_matrix_double(const MATRIX_TYPE* m);
-	gsl_matrix_long_double* to_matrix_long_double(const MATRIX_TYPE* m);
-	MATRIX_TYPE* to_column_matrix(const VECTOR_TYPE* v);
-	MATRIX_TYPE* to_row_matrix(const VECTOR_TYPE* v);
-	VECTOR_TYPE* FP_ID(to_vector)(const gsl_permutation* p);
-	gsl_permutation* to_permutation(const VECTOR_TYPE* v);
+	void to_array(const VECTOR_T* v, FP_T* array);
+	bool to_bool(const VECTOR_T* v);
+	bool to_bool(const MATRIX_T* m);
+	VECTOR_T* to_vector(const gsl_vector* v_d);
+	gsl_vector* to_vector_double(const VECTOR_T* v);
+	VECTOR_T* to_vector(const MATRIX_T* m);
+	MATRIX_T* to_column_matrix(const VECTOR_T* v);
+	MATRIX_T* to_row_matrix(const VECTOR_T* v);
+	MATRIX_T* to_matrix(const gsl_matrix* m_d);
+	gsl_matrix* to_matrix_double(const MATRIX_T* m);
+	VECTOR_T* to_vector(const gsl_permutation* p);
+	gsl_permutation* to_permutation(const VECTOR_T* v);
 	
 	// Utility
-	MATRIX_TYPE* permute_columns(const gsl_permutation* p, const MATRIX_TYPE* m);
-	MATRIX_TYPE* permute_rows(const gsl_permutation* p, const MATRIX_TYPE* m);
+	gsl_rng* get_rng();
+	void seed_rng(const gsl_rng* rng, unsigned long seed);
+	VECTOR_T* permute(const gsl_permutation* p, const VECTOR_T* v);
+	MATRIX_T* permute_columns(const gsl_permutation* p, const MATRIX_T* m);
+	MATRIX_T* permute_rows(const gsl_permutation* p, const MATRIX_T* m);
 }
+
+#endif

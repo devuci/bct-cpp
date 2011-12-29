@@ -1,7 +1,6 @@
 #include "bct.h"
-#include <gsl/gsl_matrix.h>
 
-const double fve30[30 * 30] = {
+const FP_T fve30[30 * 30] = {
 	0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
 	1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0,
 	1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0,
@@ -34,7 +33,7 @@ const double fve30[30 * 30] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0
 };
 
-const double fve32[32 * 32] = {
+const FP_T fve32[32 * 32] = {
 	0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
 	1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0,
 	1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0,
@@ -69,16 +68,16 @@ const double fve32[32 * 32] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0
 };
 
-gsl_matrix* bct::get_fve30() {
-	gsl_matrix_const_view mv = gsl_matrix_const_view_array(fve30, 30, 30);
-	gsl_matrix* m = gsl_matrix_alloc(30, 30);
-	gsl_matrix_memcpy(m, &mv.matrix);
+MATRIX_T* bct::get_fve30() {
+	MATRIX_ID(const_view) mv = MATRIX_ID(const_view_array)(fve30, 30, 30);
+	MATRIX_T* m = MATRIX_ID(alloc)(30, 30);
+	MATRIX_ID(memcpy)(m, &mv.matrix);
 	return m;
 }
 
-gsl_matrix* bct::get_fve32() {
-	gsl_matrix_const_view mv = gsl_matrix_const_view_array(fve32, 32, 32);
-	gsl_matrix* m = gsl_matrix_alloc(32, 32);
-	gsl_matrix_memcpy(m, &mv.matrix);
+MATRIX_T* bct::get_fve32() {
+	MATRIX_ID(const_view) mv = MATRIX_ID(const_view_array)(fve32, 32, 32);
+	MATRIX_T* m = MATRIX_ID(alloc)(32, 32);
+	MATRIX_ID(memcpy)(m, &mv.matrix);
 	return m;
 }

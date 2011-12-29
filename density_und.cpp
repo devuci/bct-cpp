@@ -1,35 +1,19 @@
 #include "bct.h"
-#include <gsl/gsl_matrix.h>
 
 /*
  * Computes density for an undirected graph.  Connection weights are ignored.
  */
-double bct::density_und(const gsl_matrix* CIJ) {
+FP_T bct::density_und(const MATRIX_T* CIJ) {
 	if (safe_mode) check_status(CIJ, SQUARE | UNDIRECTED, "density_und");
 	
 	// N = size(CIJ,1);
 	int N = CIJ->size1;
 	
 	// K = nnz(triu(CIJ));
-	gsl_matrix* triu_CIJ = triu(CIJ);
+	MATRIX_T* triu_CIJ = triu(CIJ);
 	int K = nnz(triu_CIJ);
-	gsl_matrix_free(triu_CIJ);
+	MATRIX_ID(free)(triu_CIJ);
 	
 	// kden = K/((N^2-N)/2);
-	return (double)K / ((double)(N * (N - 1)) / 2.0);
-}
-
-float bct::density_und(const gsl_matrix_float* CIJ) {
-	if (safe_mode) check_status(CIJ, SQUARE | UNDIRECTED, "density_und");
-	
-	// N = size(CIJ,1);
-	int N = CIJ->size1;
-	
-	// K = nnz(triu(CIJ));
-	gsl_matrix_float* triu_CIJ = triu(CIJ);
-	int K = nnz(triu_CIJ);
-	gsl_matrix_float_free(triu_CIJ);
-	
-	// kden = K/((N^2-N)/2);
-	return (float)K / ((float)(N * (N - 1)) / 2.0);
+	return (FP_T)K / ((FP_T)(N * (N - 1)) / 2.0);
 }

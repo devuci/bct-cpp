@@ -47,7 +47,7 @@ filenames                = assortativity_dir_cpp \
                            matching_ind_out_cpp \
                            modularity_dir_cpp \
                            modularity_und_cpp \
-                           modularity_und_louvain_cpp \
+                           modularity_louvain_und_cpp \
                            module_degree_zscore_cpp \
                            motif3funct_bin_cpp \
                            motif3funct_wei_cpp \

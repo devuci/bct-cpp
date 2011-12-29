@@ -1,9 +1,6 @@
 #include "bct.h"
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include <vector>
 
-bool modularity_und_louvain(const gsl_matrix*, double*, gsl_vector**, int);
+bool modularity_louvain_und(const MATRIX_T*, FP_T*, VECTOR_T**, int);
 
 /*
  * Detects communities in an undirected graph via Louvain modularity.  While the
@@ -12,62 +9,62 @@ bool modularity_und_louvain(const gsl_matrix*, double*, gsl_vector**, int);
  * makes use of an additional argument N that specifies the maximum number of
  * node permutations to attempt when maximizing modularity.
  */
-double bct::modularity_und_louvain(const gsl_matrix* W, gsl_vector** Ci, int N) {
-	if (safe_mode) check_status(W, SQUARE | UNDIRECTED, "modularity_und_louvain");
+FP_T bct::modularity_louvain_und(const MATRIX_T* W, VECTOR_T** Ci, int N) {
+	if (safe_mode) check_status(W, SQUARE | UNDIRECTED, "modularity_louvain_und");
 	
-	double Q;
+	FP_T Q;
 	while (true) {
-		if (modularity_und_louvain(W, &Q, Ci, N)) {
+		if (modularity_louvain_und(W, &Q, Ci, N)) {
 			break;
 		}
 	}
 	return Q;
 }
 
-bool modularity_und_louvain(const gsl_matrix* W, double* Q, gsl_vector** Ci, int N) {
+bool modularity_louvain_und(const MATRIX_T* W, FP_T* Q, VECTOR_T** Ci, int N) {
 	using namespace bct;
 	
 	// n=length(W);
 	int n = length(W);
 	
 	// s=sum(W(:));
-	gsl_vector* sum_W = sum(W);
-	double s = sum(sum_W);
-	gsl_vector_free(sum_W);
+	VECTOR_T* sum_W = sum(W);
+	FP_T s = sum(sum_W);
+	VECTOR_ID(free)(sum_W);
 	
 	// h=1;
 	int h = 0;
 	
 	// Ci{h}=1:n;
-	std::vector<gsl_vector*> _Ci;
-	_Ci.push_back(sequence_double(1, n));
+	std::vector<VECTOR_T*> _Ci;
+	_Ci.push_back(sequence(1, n));
 	
 	// Q{h}=-1;
-	std::vector<double> _Q;
+	std::vector<FP_T> _Q;
 	_Q.push_back(-1.0);
 	
 	// n0=n;
 	int n0 = n;
 	
-	gsl_matrix* _W = copy(W);
+	MATRIX_T* _W = copy(W);
 	
 	// while true
 	while (true) {
 		
 		// K=sum(W);
-		gsl_vector* K = sum(_W);
+		VECTOR_T* K = sum(_W);
 		
 		// Km=K;
-		gsl_vector* Km = copy(K);
+		VECTOR_T* Km = copy(K);
 		
 		// Knm=W;
-		gsl_matrix* Knm = copy(_W);
+		MATRIX_T* Knm = copy(_W);
 		
 		// M=1:n;
-		gsl_vector* M = sequence_double(0, n - 1);
+		VECTOR_T* M = sequence(0, n - 1);
 		
 		// Nm=ones(1,n);
-		gsl_vector* Nm = ones_vector_double(n);
+		VECTOR_T* Nm = ones_vector(n);
 		
 		// flag=true;
 		bool flag = true;
@@ -90,102 +87,102 @@ bool modularity_und_louvain(const gsl_matrix* W, double* Q, gsl_vector** Ci, int
 				int i = gsl_permutation_get(randperm_n, i_randperm_n);
 				
 				// dQ=(Knm(i,:)-Knm(i,M(i))+W(i,i)) - K(i).*(Km-Km(M(i))+K(i))/s;
-				gsl_vector* dQ1 = gsl_vector_alloc(Knm->size2);
-				gsl_matrix_get_row(dQ1, Knm, i);
-				int M_i = (int)gsl_vector_get(M, i);
-				gsl_vector_add_constant(dQ1, -gsl_matrix_get(Knm, i, M_i));
-				gsl_vector_add_constant(dQ1, gsl_matrix_get(_W, i, i));
-				gsl_vector* dQ2 = copy(Km);
-				gsl_vector_add_constant(dQ2, -gsl_vector_get(Km, M_i));
-				gsl_vector_add_constant(dQ2, gsl_vector_get(K, i));
-				gsl_vector_scale(dQ2, gsl_vector_get(K, i) / s);
-				gsl_vector* dQ = dQ1;
-				gsl_vector_sub(dQ, dQ2);
-				gsl_vector_free(dQ2);
+				VECTOR_T* dQ1 = VECTOR_ID(alloc)(Knm->size2);
+				MATRIX_ID(get_row)(dQ1, Knm, i);
+				int M_i = (int)VECTOR_ID(get)(M, i);
+				VECTOR_ID(add_constant)(dQ1, -MATRIX_ID(get)(Knm, i, M_i));
+				VECTOR_ID(add_constant)(dQ1, MATRIX_ID(get)(_W, i, i));
+				VECTOR_T* dQ2 = copy(Km);
+				VECTOR_ID(add_constant)(dQ2, -VECTOR_ID(get)(Km, M_i));
+				VECTOR_ID(add_constant)(dQ2, VECTOR_ID(get)(K, i));
+				VECTOR_ID(scale)(dQ2, VECTOR_ID(get)(K, i) / s);
+				VECTOR_T* dQ = dQ1;
+				VECTOR_ID(sub)(dQ, dQ2);
+				VECTOR_ID(free)(dQ2);
 				
 				// dQ(M(i))=0;
-				gsl_vector_set(dQ, M_i, 0.0);
+				VECTOR_ID(set)(dQ, M_i, 0.0);
 				
 				// max_dQ=max(dQ);
-				double max_dQ = max(dQ);
+				FP_T max_dQ = max(dQ);
 				
 				// if max_dQ>0;
 				if (max_dQ > 0.0) {
 					
 					// j=find(dQ==max_dQ,1);
-					gsl_vector* dQ_eq_max_dQ = compare_elements(dQ, fp_equal, max_dQ);
-					gsl_vector* j_v = find(dQ_eq_max_dQ, 1);
-					gsl_vector_free(dQ_eq_max_dQ);
-					int j = (int)gsl_vector_get(j_v, 0);
-					gsl_vector_free(j_v);
+					VECTOR_T* dQ_eq_max_dQ = compare_elements(dQ, fp_equal, max_dQ);
+					VECTOR_T* j_v = find(dQ_eq_max_dQ, 1);
+					VECTOR_ID(free)(dQ_eq_max_dQ);
+					int j = (int)VECTOR_ID(get)(j_v, 0);
+					VECTOR_ID(free)(j_v);
 					
 					// Knm(:,j)=Knm(:,j)+W(:,i);
-					gsl_vector_view Knm_col_j = gsl_matrix_column(Knm, j);
-					gsl_vector_view _W_col_i = gsl_matrix_column(_W, i);
-					gsl_vector_add(&Knm_col_j.vector, &_W_col_i.vector);
+					VECTOR_ID(view) Knm_col_j = MATRIX_ID(column)(Knm, j);
+					VECTOR_ID(view) _W_col_i = MATRIX_ID(column)(_W, i);
+					VECTOR_ID(add)(&Knm_col_j.vector, &_W_col_i.vector);
 					
 					// Knm(:,M(i))=Knm(:,M(i))-W(:,i);
-					gsl_vector_view Knm_col_M_i = gsl_matrix_column(Knm, M_i);
-					gsl_vector_sub(&Knm_col_M_i.vector, &_W_col_i.vector);
+					VECTOR_ID(view) Knm_col_M_i = MATRIX_ID(column)(Knm, M_i);
+					VECTOR_ID(sub)(&Knm_col_M_i.vector, &_W_col_i.vector);
 					
 					// Km(j)=Km(j)+K(i);
-					gsl_vector_set(Km, j, gsl_vector_get(Km, j) + gsl_vector_get(K, i));
+					VECTOR_ID(set)(Km, j, VECTOR_ID(get)(Km, j) + VECTOR_ID(get)(K, i));
 					
 					// Km(M(i))=Km(M(i))-K(i);
-					gsl_vector_set(Km, M_i, gsl_vector_get(Km, M_i) - gsl_vector_get(K, i));
+					VECTOR_ID(set)(Km, M_i, VECTOR_ID(get)(Km, M_i) - VECTOR_ID(get)(K, i));
 					
 					// Nm(j)=Nm(j)+1;
-					gsl_vector_set(Nm, j, gsl_vector_get(Nm, j) + 1.0);
+					VECTOR_ID(set)(Nm, j, VECTOR_ID(get)(Nm, j) + 1.0);
 					
 					// Nm(M(i))=Nm(M(i))-1;
-					gsl_vector_set(Nm, M_i, gsl_vector_get(Nm, M_i) - 1.0);
+					VECTOR_ID(set)(Nm, M_i, VECTOR_ID(get)(Nm, M_i) - 1.0);
 					
 					// M(i)=j;
-					gsl_vector_set(M, i, (double)j);
+					VECTOR_ID(set)(M, i, (FP_T)j);
 					
 					// flag=true;
 					flag = true;
 				}
 				
-				gsl_vector_free(dQ);
+				VECTOR_ID(free)(dQ);
 			}
 			
 			gsl_permutation_free(randperm_n);
 		}
 		
-		gsl_vector_free(K);
-		gsl_vector_free(Km);
-		gsl_matrix_free(Knm);
-		gsl_vector_free(Nm);
+		VECTOR_ID(free)(K);
+		VECTOR_ID(free)(Km);
+		MATRIX_ID(free)(Knm);
+		VECTOR_ID(free)(Nm);
 		
 		// [x x M1]=unique(M);
-		gsl_vector* x1;
-		gsl_vector* M1;
-		gsl_vector* x2 = unique(M, "last", &x1, &M1);
-		gsl_vector_free(M);
-		gsl_vector_free(x1);
-		gsl_vector_free(x2);
+		VECTOR_T* x1;
+		VECTOR_T* M1;
+		VECTOR_T* x2 = unique(M, "last", &x1, &M1);
+		VECTOR_ID(free)(M);
+		VECTOR_ID(free)(x1);
+		VECTOR_ID(free)(x2);
 		
 		// h=h+1;
 		h++;
 		
 		// Ci{h}=zeros(1,n0);
-		_Ci.push_back(zeros_vector_double(n0));
+		_Ci.push_back(zeros_vector(n0));
 		
 		// for i=1:n
 		for (int i = 0; i < n; i++) {
 			
 			// Ci{h}(Ci{h-1}==i)=M1(i);
-			gsl_vector* _Ci_h_sub_1_eq_i_add_1 = compare_elements(_Ci[h - 1], fp_equal, (double)(i + 1));
-			logical_index_assign(_Ci[h], _Ci_h_sub_1_eq_i_add_1, gsl_vector_get(M1, i) + 1.0);
-			gsl_vector_free(_Ci_h_sub_1_eq_i_add_1);
+			VECTOR_T* _Ci_h_sub_1_eq_i_add_1 = compare_elements(_Ci[h - 1], fp_equal, (FP_T)(i + 1));
+			logical_index_assign(_Ci[h], _Ci_h_sub_1_eq_i_add_1, VECTOR_ID(get)(M1, i) + 1.0);
+			VECTOR_ID(free)(_Ci_h_sub_1_eq_i_add_1);
 		}
 		
 		// n=max(M1);
 		n = (int)max(M1) + 1;
 		
 		// W1=zeros(n);
-		gsl_matrix* _W1 = gsl_matrix_alloc(n, n);
+		MATRIX_T* _W1 = MATRIX_ID(alloc)(n, n);
 		
 		// for i=1:n
 		for (int i = 0; i < n; i++) {
@@ -194,62 +191,62 @@ bool modularity_und_louvain(const gsl_matrix* W, double* Q, gsl_vector** Ci, int
 			for (int j = 0; j < n; j++) {
 				
 				// w=sum(sum(W(M1==i,M1==j)));
-				gsl_vector* M1_eq_i = compare_elements(M1, fp_equal, (double)i);
-				gsl_vector* M1_eq_j = compare_elements(M1, fp_equal, (double)j);
-				gsl_matrix* _W_idx = logical_index(_W, M1_eq_i, M1_eq_j);
-				gsl_vector_free(M1_eq_i);
-				gsl_vector_free(M1_eq_j);
-				gsl_vector* sum__W_idx = sum(_W_idx);
-				gsl_matrix_free(_W_idx);
-				double w = sum(sum__W_idx);
-				gsl_vector_free(sum__W_idx);
+				VECTOR_T* M1_eq_i = compare_elements(M1, fp_equal, (FP_T)i);
+				VECTOR_T* M1_eq_j = compare_elements(M1, fp_equal, (FP_T)j);
+				MATRIX_T* _W_idx = logical_index(_W, M1_eq_i, M1_eq_j);
+				VECTOR_ID(free)(M1_eq_i);
+				VECTOR_ID(free)(M1_eq_j);
+				VECTOR_T* sum__W_idx = sum(_W_idx);
+				MATRIX_ID(free)(_W_idx);
+				FP_T w = sum(sum__W_idx);
+				VECTOR_ID(free)(sum__W_idx);
 				
 				// W1(i,j)=w;
-				gsl_matrix_set(_W1, i, j, w);
+				MATRIX_ID(set)(_W1, i, j, w);
 				
 				// W1(j,i)=w;
-				gsl_matrix_set(_W1, j, i, w);
+				MATRIX_ID(set)(_W1, j, i, w);
 			}
 		}
 		
-		gsl_vector_free(M1);
+		VECTOR_ID(free)(M1);
 		
 		// W=W1;
-		gsl_matrix_free(_W);
+		MATRIX_ID(free)(_W);
 		_W = _W1;
 		
 		// Q{h}=sum(diag(W))/s-sum(sum((W/s)^2));
-		gsl_vector* diag__W = diag(_W);
-		double sum_diag__W = sum(diag__W);
-		gsl_vector_free(diag__W);
-		gsl_matrix* _W_div_s = copy(_W);
-		gsl_matrix_scale(_W_div_s, 1.0 / s);
-		gsl_matrix* _W_div_s_pow_2 = pow(_W_div_s, 2);
-		gsl_matrix_free(_W_div_s);
-		gsl_vector* sum__W_div_s_pow_2 = sum(_W_div_s_pow_2);
-		gsl_matrix_free(_W_div_s_pow_2);
-		double sum_sum__W_div_s_pow_2 = sum(sum__W_div_s_pow_2);
-		gsl_vector_free(sum__W_div_s_pow_2);
+		VECTOR_T* diag__W = diag(_W);
+		FP_T sum_diag__W = sum(diag__W);
+		VECTOR_ID(free)(diag__W);
+		MATRIX_T* _W_div_s = copy(_W);
+		MATRIX_ID(scale)(_W_div_s, 1.0 / s);
+		MATRIX_T* _W_div_s_pow_2 = pow(_W_div_s, 2);
+		MATRIX_ID(free)(_W_div_s);
+		VECTOR_T* sum__W_div_s_pow_2 = sum(_W_div_s_pow_2);
+		MATRIX_ID(free)(_W_div_s_pow_2);
+		FP_T sum_sum__W_div_s_pow_2 = sum(sum__W_div_s_pow_2);
+		VECTOR_ID(free)(sum__W_div_s_pow_2);
 		_Q.push_back(sum_diag__W / s - sum_sum__W_div_s_pow_2);
 		
 		// if Q{h}-Q{h-1}<=eps
-		if (fp_less_or_equal(_Q[h] - _Q[h - 1], epsilon_double)) {
+		if (fp_less_or_equal(_Q[h] - _Q[h - 1], epsilon)) {
 			
 			// break
 			break;
 		}
 	}
 				
-	gsl_matrix_free(_W);
+	MATRIX_ID(free)(_W);
 	
 	// Ci([1 end])=[];
 	for (int i = 0; i < (int)_Ci.size(); i++) {
 		if (i != (int)_Ci.size() - 2) {
-			gsl_vector_free(_Ci[i]);
+			VECTOR_ID(free)(_Ci[i]);
 		}
 	}
 	if (Ci == NULL) {
-		gsl_vector_free(_Ci[_Ci.size() - 2]);
+		VECTOR_ID(free)(_Ci[_Ci.size() - 2]);
 	} else {
 		*Ci = _Ci[_Ci.size() - 2];
 	} 

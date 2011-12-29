@@ -1,6 +1,7 @@
 #ifndef BCT_TEST_H
 #define BCT_TEST_H
 
+#include <bct/bct.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
 #include <octave/oct.h>

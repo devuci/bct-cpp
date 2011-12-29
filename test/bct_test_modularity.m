@@ -34,20 +34,20 @@ for i = 1:size(m)(2)
 	bct_test(sprintf("modularity_und %s Q", mname{i}), abs(Q - Q_cpp) < 1e-6)
 end
 
-% modularity_und_louvain
+% modularity_louvain_und
 for i = 1:size(m)(2)
 	ms = m{i} | m{i}';
-	[Ci Q] = modularity_und_louvain(ms);
+	[Ci Q] = modularity_louvain_und(ms);
 	result = 0;
 	tries = 0;
 	while (~result && tries < 100)
-		[Ci_cpp Q_cpp] = modularity_und_louvain_cpp(ms);
-		if (mapmatch(Ci{end}, Ci_cpp) && abs(Q{end} - Q_cpp) < 1e-6)
+		[Ci_cpp Q_cpp] = modularity_louvain_und_cpp(ms);
+		if (mapmatch(Ci, Ci_cpp) && abs(Q - Q_cpp) < 1e-6)
 			result = 1;
 		end
 		tries = tries + 1;
 	end
-	bct_test(sprintf("modularity_und_louvain %s", mname{i}), result)
+	bct_test(sprintf("modularity_louvain_und %s", mname{i}), result)
 end
 
 % module_degree_zscore

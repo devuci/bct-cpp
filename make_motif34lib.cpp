@@ -1,9 +1,4 @@
 #include "bct.h"
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_permutation.h>
-#include <gsl/gsl_permute_vector.h>
-#include <gsl/gsl_vector.h>
-#include <string>
 
 /*
  * Our implementation of the BCT motif library does not include Mn ("M as a
@@ -19,26 +14,26 @@ void bct::set_motif_mode(motif_mode_enum motif_mode) { bct::motif_mode = motif_m
 /*
  * Constructs the three-node motif library.
  */
-gsl_matrix* bct::motif3generate(gsl_vector** ID, gsl_vector** N) {
-	static gsl_matrix* M = NULL;
-	static gsl_vector* _ID = NULL;
-	static gsl_vector* _N = NULL;
+MATRIX_T* bct::motif3generate(VECTOR_T** ID, VECTOR_T** N) {
+	static MATRIX_T* M = NULL;
+	static VECTOR_T* _ID = NULL;
+	static VECTOR_T* _N = NULL;
 	if (M == NULL) {
 		
 		// n=0;
 		int n = -1;
 		
 		// M=false(54,6);
-		M = gsl_matrix_calloc(54, 6);
+		M = MATRIX_ID(calloc)(54, 6);
 		
 		// CL=zeros(54,6,'uint8');
-		gsl_matrix* CL = zeros_double(54, 6);
+		MATRIX_T* CL = zeros(54, 6);
 		
 		// cl=zeros(1,6,'uint8');
-		gsl_vector* cl = zeros_vector_double(6);
+		VECTOR_T* cl = zeros_vector(6);
 		
-		double i_nondiag[] = { 1, 2, 3, 5, 6, 7 };
-		gsl_vector_view i_nondiag_vv = gsl_vector_view_array(i_nondiag, 6);
+		FP_T i_nondiag[] = { 1, 2, 3, 5, 6, 7 };
+		VECTOR_ID(view) i_nondiag_vv = VECTOR_ID(view_array)(i_nondiag, 6);
 		
 		// for i=0:2^6-1
 		for (int i = 0; i < 64; i++) {
@@ -51,7 +46,7 @@ gsl_matrix* bct::motif3generate(gsl_vector** ID, gsl_vector** N) {
 			// '0'   ' '  m(3)  ' '  m(5) ;
 			// m(1)  ' '  '0'   ' '  m(6) ;
 			// m(2)  ' '  m(4)  ' '  '0'   ]);
-			gsl_matrix* G = gsl_matrix_calloc(3, 3);
+			MATRIX_T* G = MATRIX_ID(calloc)(3, 3);
 			for (int i = 0; i < 6; i++) {
 				int index = (int)i_nondiag[i];
 				if (m[i] == '1') {
@@ -60,53 +55,53 @@ gsl_matrix* bct::motif3generate(gsl_vector** ID, gsl_vector** N) {
 			}
 			
 			// Ko=sum(G,2);
-			gsl_vector* Ko = sum(G, 2);
+			VECTOR_T* Ko = sum(G, 2);
 			
 			// Ki=sum(G,1).';
-			gsl_vector* Ki = sum(G, 1);
+			VECTOR_T* Ki = sum(G, 1);
 			
 			// if Ko+Ki,
-			gsl_vector* Ko_add_Ki = copy(Ko);
-			gsl_vector_add(Ko_add_Ki, Ki);
+			VECTOR_T* Ko_add_Ki = copy(Ko);
+			VECTOR_ID(add)(Ko_add_Ki, Ki);
 			bool Ko_add_Ki_bool = to_bool(Ko_add_Ki);
-			gsl_vector_free(Ko_add_Ki);
+			VECTOR_ID(free)(Ko_add_Ki);
 			if (Ko_add_Ki_bool) {
 				
 				// n=n+1;
 				n++;
 				
 				// cl(:)=sortrows([Ko Ki]).';
-				gsl_matrix* Ko_Ki = concatenate_rows(Ko, Ki);
-				gsl_matrix* Ko_Ki_sorted = sortrows(Ko_Ki);
-				gsl_matrix_free(Ko_Ki);
-				gsl_matrix* Ko_Ki_transpose = gsl_matrix_alloc(2, G->size1);
-				gsl_matrix_transpose_memcpy(Ko_Ki_transpose, Ko_Ki_sorted);
-				gsl_matrix_free(Ko_Ki_sorted);
-				gsl_vector_free(cl);
+				MATRIX_T* Ko_Ki = concatenate_rows(Ko, Ki);
+				MATRIX_T* Ko_Ki_sorted = sortrows(Ko_Ki);
+				MATRIX_ID(free)(Ko_Ki);
+				MATRIX_T* Ko_Ki_transpose = MATRIX_ID(alloc)(2, G->size1);
+				MATRIX_ID(transpose_memcpy)(Ko_Ki_transpose, Ko_Ki_sorted);
+				MATRIX_ID(free)(Ko_Ki_sorted);
+				VECTOR_ID(free)(cl);
 				cl = to_vector(Ko_Ki_transpose);
-				gsl_matrix_free(Ko_Ki_transpose);
+				MATRIX_ID(free)(Ko_Ki_transpose);
 				
 				// CL(n,:)=cl;
-				gsl_matrix_set_row(CL, n, cl);
+				MATRIX_ID(set_row)(CL, n, cl);
 				
 				// M(n,:)=G([2:4 6:8]);
-				gsl_vector* G_nondiag = ordinal_index(G, &i_nondiag_vv.vector);
-				gsl_matrix_set_row(M, n, G_nondiag);
-				gsl_vector_free(G_nondiag);
+				VECTOR_T* G_nondiag = ordinal_index(G, &i_nondiag_vv.vector);
+				MATRIX_ID(set_row)(M, n, G_nondiag);
+				VECTOR_ID(free)(G_nondiag);
 			}
 			
-			gsl_matrix_free(G);
-			gsl_vector_free(Ko);
-			gsl_vector_free(Ki);
+			MATRIX_ID(free)(G);
+			VECTOR_ID(free)(Ko);
+			VECTOR_ID(free)(Ki);
 		}
 		
-		gsl_vector_free(cl);
+		VECTOR_ID(free)(cl);
 		
 		// [u1 u2 ID]=unique(CL,'rows');
-		gsl_matrix* u1 = unique_rows(CL, "last", NULL, &_ID);
-		gsl_matrix_free(CL);
-		gsl_matrix_free(u1);
-		gsl_vector_add_constant(_ID, 1.0);
+		MATRIX_T* u1 = unique_rows(CL, "last", NULL, &_ID);
+		MATRIX_ID(free)(CL);
+		MATRIX_ID(free)(u1);
+		VECTOR_ID(add_constant)(_ID, 1.0);
 
 		// id_mika=  [1  3  4  6  7  8  11];
 		int id_mika[] = { 1, 3, 4, 6, 7, 8, 11 };
@@ -118,8 +113,8 @@ gsl_matrix* bct::motif3generate(gsl_vector** ID, gsl_vector** N) {
 		if (motif_mode == SPORNS) {
 			for (int i = 0; i < (int)_ID->size; i++) {
 				for (int j = 0; j < 7; j++) {
-					if ((int)gsl_vector_get(_ID, i) == id_mika[j]) {
-						gsl_vector_set(_ID, i, id_olaf[j]);
+					if ((int)VECTOR_ID(get)(_ID, i) == id_mika[j]) {
+						VECTOR_ID(set)(_ID, i, id_olaf[j]);
 						break;
 					}
 				}
@@ -127,18 +122,20 @@ gsl_matrix* bct::motif3generate(gsl_vector** ID, gsl_vector** N) {
 		}
 		
 		// [X ind]=sortrows(ID);
-		gsl_vector* ind_v;
-		gsl_vector* X = sortrows(_ID, &ind_v);
-		gsl_vector_free(X);
+		VECTOR_T* ind_v;
+		VECTOR_T* X = sortrows(_ID, &ind_v);
+		VECTOR_ID(free)(X);
 		gsl_permutation* ind = to_permutation(ind_v);
-		gsl_vector_free(ind_v);
+		VECTOR_ID(free)(ind_v);
 		
 		// ID=ID(ind,:);
-		gsl_permute_vector(ind, _ID);
+		VECTOR_T* _ID_permuted = permute(ind, _ID);
+		VECTOR_ID(free)(_ID);
+		_ID = _ID_permuted;
 		
 		// M=M(ind,:);
-		gsl_matrix* M_permuted = permute_rows(ind, M);
-		gsl_matrix_free(M);
+		MATRIX_T* M_permuted = permute_rows(ind, M);
+		MATRIX_ID(free)(M);
 		M = M_permuted;
 		gsl_permutation_free(ind);
 		
@@ -158,26 +155,26 @@ gsl_matrix* bct::motif3generate(gsl_vector** ID, gsl_vector** N) {
 /*
  * Constructs the four-node motif library.
  */
-gsl_matrix* bct::motif4generate(gsl_vector** ID, gsl_vector** N) {
-	static gsl_matrix* M = NULL;
-	static gsl_vector* _ID = NULL;
-	static gsl_vector* _N = NULL;
+MATRIX_T* bct::motif4generate(VECTOR_T** ID, VECTOR_T** N) {
+	static MATRIX_T* M = NULL;
+	static VECTOR_T* _ID = NULL;
+	static VECTOR_T* _N = NULL;
 	if (M == NULL) {
 		
 		// n=0;
 		int n = -1;
 		
 		// M=false(3834,12);
-		M = gsl_matrix_calloc(3834, 12);
+		M = MATRIX_ID(calloc)(3834, 12);
 		
 		// CL=zeros(3834,16,'uint8');
-		gsl_matrix* CL = zeros_double(3834, 16);
+		MATRIX_T* CL = zeros(3834, 16);
 		
 		// cl=zeros(1,16,'uint8');
-		gsl_vector* cl = zeros_vector_double(16);
+		VECTOR_T* cl = zeros_vector(16);
 		
-		double i_nondiag[] = { 1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14 };
-		gsl_vector_view i_nondiag_vv = gsl_vector_view_array(i_nondiag, 12);
+		FP_T i_nondiag[] = { 1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14 };
+		VECTOR_ID(view) i_nondiag_vv = VECTOR_ID(view_array)(i_nondiag, 12);
 		
 		// for i=0:2^12-1
 		for (int i = 0; i < 4096; i++) {
@@ -191,7 +188,7 @@ gsl_matrix* bct::motif4generate(gsl_vector** ID, gsl_vector** N) {
 			// m(1)  ' '  '0'   ' '  m(8)  ' '  m(11) ;
 			// m(2)  ' '  m(5)  ' '  '0'   ' '  m(12) ;
 			// m(3)  ' '  m(6)  ' '  m(9)  ' '  '0'    ]);
-			gsl_matrix* G = gsl_matrix_calloc(4, 4);
+			MATRIX_T* G = MATRIX_ID(calloc)(4, 4);
 			for (int i = 0; i < 12; i++) {
 				int index = (int)i_nondiag[i];
 				if (m[i] == '1') {
@@ -200,110 +197,112 @@ gsl_matrix* bct::motif4generate(gsl_vector** ID, gsl_vector** N) {
 			}
 			
 			// Gs=G+G.';
-			gsl_matrix* Gs = gsl_matrix_alloc(4, 4);
-			gsl_matrix_transpose_memcpy(Gs, G);
-			gsl_matrix_add(Gs, G);
+			MATRIX_T* Gs = MATRIX_ID(alloc)(4, 4);
+			MATRIX_ID(transpose_memcpy)(Gs, G);
+			MATRIX_ID(add)(Gs, G);
 			
 			// v=Gs(1,:);
-			gsl_vector* v = gsl_vector_alloc(4);
-			gsl_matrix_get_row(v, Gs, 0);
+			VECTOR_T* v = VECTOR_ID(alloc)(4);
+			MATRIX_ID(get_row)(v, Gs, 0);
 			
 			// for j=1:2,
 			for (int j = 1; j <= 2; j++) {
 				
 				// v=any(Gs(v~=0,:),1)+v;
-				gsl_vector* v_neq_0 = compare_elements(v, fp_not_equal, 0.0);
-				gsl_vector* Gs_cols = sequence_double(0, Gs->size2 - 1);
-				gsl_matrix* Gs_idx = log_ord_index(Gs, v_neq_0, Gs_cols);
-				gsl_vector_free(v_neq_0);
-				gsl_vector_free(Gs_cols);
+				VECTOR_T* v_neq_0 = compare_elements(v, fp_not_equal, 0.0);
+				VECTOR_T* Gs_cols = sequence(0, Gs->size2 - 1);
+				MATRIX_T* Gs_idx = log_ord_index(Gs, v_neq_0, Gs_cols);
+				VECTOR_ID(free)(v_neq_0);
+				VECTOR_ID(free)(Gs_cols);
 				if (Gs_idx != NULL) {
-					gsl_vector* any_Gs_idx = any(Gs_idx, 1);
-					gsl_vector_add(v, any_Gs_idx);
-					gsl_matrix_free(Gs_idx);
-					gsl_vector_free(any_Gs_idx);
+					VECTOR_T* any_Gs_idx = any(Gs_idx, 1);
+					VECTOR_ID(add)(v, any_Gs_idx);
+					MATRIX_ID(free)(Gs_idx);
+					VECTOR_ID(free)(any_Gs_idx);
 				}
 			}
 			
-			gsl_matrix_free(Gs);
+			MATRIX_ID(free)(Gs);
 			
 			// if v
 			bool v_bool = to_bool(v);
-			gsl_vector_free(v);
+			VECTOR_ID(free)(v);
 			if (v_bool) {
 				
 				// n=n+1;
 				n++;
 				
 				// G2=(G*G)~=0;
-				gsl_matrix* G_mul_G = mul(G, G);
-				gsl_matrix* G2 = compare_elements(G_mul_G, fp_not_equal, 0.0);
-				gsl_matrix_free(G_mul_G);
+				MATRIX_T* G_mul_G = mul(G, G);
+				MATRIX_T* G2 = compare_elements(G_mul_G, fp_not_equal, 0.0);
+				MATRIX_ID(free)(G_mul_G);
 				
 				// Ko=sum(G,2);
-				gsl_vector* Ko = sum(G, 2);
+				VECTOR_T* Ko = sum(G, 2);
 				
 				// Ki=sum(G,1).';
-				gsl_vector* Ki = sum(G, 1);
+				VECTOR_T* Ki = sum(G, 1);
 				
 				// Ko2=sum(G2,2);
-				gsl_vector* Ko2 = sum(G2, 2);
+				VECTOR_T* Ko2 = sum(G2, 2);
 				
 				// Ki2=sum(G2,1).';
-				gsl_vector* Ki2 = sum(G2, 1);
+				VECTOR_T* Ki2 = sum(G2, 1);
 				
 				// cl(:)=sortrows([Ki Ko Ki2 Ko2]).';
-				gsl_matrix* Ki_Ko = concatenate_rows(Ki, Ko);
-				gsl_vector_free(Ki);
-				gsl_vector_free(Ko);
-				gsl_matrix* Ki_Ko_Ki2 = concatenate_rows(Ki_Ko, Ki2);
-				gsl_vector_free(Ki2);
-				gsl_matrix_free(Ki_Ko);
-				gsl_matrix* Ki_Ko_Ki2_Ko2 = concatenate_rows(Ki_Ko_Ki2, Ko2);
-				gsl_vector_free(Ko2);
-				gsl_matrix_free(Ki_Ko_Ki2);
-				gsl_matrix* Ks_sorted = sortrows(Ki_Ko_Ki2_Ko2);
-				gsl_matrix_free(Ki_Ko_Ki2_Ko2);
-				gsl_matrix* Ks_transpose = gsl_matrix_alloc(4, G->size1);
-				gsl_matrix_transpose_memcpy(Ks_transpose, Ks_sorted);
-				gsl_matrix_free(Ks_sorted);
-				gsl_vector_free(cl);
+				MATRIX_T* Ki_Ko = concatenate_rows(Ki, Ko);
+				VECTOR_ID(free)(Ki);
+				VECTOR_ID(free)(Ko);
+				MATRIX_T* Ki_Ko_Ki2 = concatenate_rows(Ki_Ko, Ki2);
+				VECTOR_ID(free)(Ki2);
+				MATRIX_ID(free)(Ki_Ko);
+				MATRIX_T* Ki_Ko_Ki2_Ko2 = concatenate_rows(Ki_Ko_Ki2, Ko2);
+				VECTOR_ID(free)(Ko2);
+				MATRIX_ID(free)(Ki_Ko_Ki2);
+				MATRIX_T* Ks_sorted = sortrows(Ki_Ko_Ki2_Ko2);
+				MATRIX_ID(free)(Ki_Ko_Ki2_Ko2);
+				MATRIX_T* Ks_transpose = MATRIX_ID(alloc)(4, G->size1);
+				MATRIX_ID(transpose_memcpy)(Ks_transpose, Ks_sorted);
+				MATRIX_ID(free)(Ks_sorted);
+				VECTOR_ID(free)(cl);
 				cl = to_vector(Ks_transpose);
-				gsl_matrix_free(Ks_transpose);
+				MATRIX_ID(free)(Ks_transpose);
 				
 				// CL(n,:)=cl;
-				gsl_matrix_set_row(CL, n, cl);
+				MATRIX_ID(set_row)(CL, n, cl);
 				
 				// M(n,:)=G([2:5 7:10 12:15]);
-				gsl_vector* G_nondiag = ordinal_index(G, &i_nondiag_vv.vector);
-				gsl_matrix_set_row(M, n, G_nondiag);
-				gsl_vector_free(G_nondiag);
+				VECTOR_T* G_nondiag = ordinal_index(G, &i_nondiag_vv.vector);
+				MATRIX_ID(set_row)(M, n, G_nondiag);
+				VECTOR_ID(free)(G_nondiag);
 			}
 			
-			gsl_matrix_free(G);
+			MATRIX_ID(free)(G);
 		}
 		
-		gsl_vector_free(cl);
+		VECTOR_ID(free)(cl);
 		
 		// [u1 u2 ID]=unique(CL,'rows');
-		gsl_matrix* u1 = unique_rows(CL, "last", NULL, &_ID);
-		gsl_matrix_free(CL);
-		gsl_matrix_free(u1);
-		gsl_vector_add_constant(_ID, 1.0);
+		MATRIX_T* u1 = unique_rows(CL, "last", NULL, &_ID);
+		MATRIX_ID(free)(CL);
+		MATRIX_ID(free)(u1);
+		VECTOR_ID(add_constant)(_ID, 1.0);
 		
 		// [X ind]=sortrows(ID);
-		gsl_vector* ind_v;
-		gsl_vector* X = sortrows(_ID, &ind_v);
-		gsl_vector_free(X);
+		VECTOR_T* ind_v;
+		VECTOR_T* X = sortrows(_ID, &ind_v);
+		VECTOR_ID(free)(X);
 		gsl_permutation* ind = to_permutation(ind_v);
-		gsl_vector_free(ind_v);
+		VECTOR_ID(free)(ind_v);
 		
 		// ID=ID(ind,:);
-		gsl_permute_vector(ind, _ID);
+		VECTOR_T* _ID_permuted = permute(ind, _ID);
+		VECTOR_ID(free)(_ID);
+		_ID = _ID_permuted;
 		
 		// M=M(ind,:);
-		gsl_matrix* M_permuted = permute_rows(ind, M);
-		gsl_matrix_free(M);
+		MATRIX_T* M_permuted = permute_rows(ind, M);
+		MATRIX_ID(free)(M);
 		M = M_permuted;
 		gsl_permutation_free(ind);
 		

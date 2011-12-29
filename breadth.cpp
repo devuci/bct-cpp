@@ -1,7 +1,6 @@
-#include "bct.h"
 #include <gsl/gsl_math.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
+
+#include "bct.h"
 
 /*
  * Performs a breadth-first search starting at the source node.  Because C++
@@ -9,7 +8,7 @@
  * 0 precedes node i or that node i is unreachable.  Check distance(i) for
  * GSL_POSINF to differentiate between these two cases.
  */
-gsl_vector* bct::breadth(const gsl_matrix* CIJ, int source, gsl_vector** branch) {
+VECTOR_T* bct::breadth(const MATRIX_T* CIJ, int source, VECTOR_T** branch) {
 	if (safe_mode) check_status(CIJ, SQUARE, "breadth");
 	
 	// N = size(CIJ,1);
@@ -21,94 +20,94 @@ gsl_vector* bct::breadth(const gsl_matrix* CIJ, int source, gsl_vector** branch)
 	int black = 2;
 	
 	// color = zeros(1,N);
-	gsl_vector* color = zeros_vector_double(N);
+	VECTOR_T* color = zeros_vector(N);
 	
 	// distance = inf*ones(1,N);
-	gsl_vector* distance = gsl_vector_alloc(N);
-	gsl_vector_set_all(distance, GSL_POSINF);
+	VECTOR_T* distance = VECTOR_ID(alloc)(N);
+	VECTOR_ID(set_all)(distance, GSL_POSINF);
 	
 	// branch = zeros(1,N);
 	if (branch != NULL) {
-		*branch = zeros_vector_double(N);
+		*branch = zeros_vector(N);
 	}
 	
 	// color(source) = gray;
-	gsl_vector_set(color, source, (double)gray);
+	VECTOR_ID(set)(color, source, (FP_T)gray);
 	
 	// distance(source) = 0;
-	gsl_vector_set(distance, source, 0.0);
+	VECTOR_ID(set)(distance, source, 0.0);
 	
 	// branch(source) = -1;
 	if (branch != NULL) {
-		gsl_vector_set(*branch, source, -1.0);
+		VECTOR_ID(set)(*branch, source, -1.0);
 	}
 	
 	// Q = source;
-	gsl_vector* Q = gsl_vector_alloc(1);
-	gsl_vector_set(Q, 0, (double)source);
+	VECTOR_T* Q = VECTOR_ID(alloc)(1);
+	VECTOR_ID(set)(Q, 0, (FP_T)source);
 	
 	// while ~isempty(Q)
 	while (Q != NULL) {
 		
 		// u = Q(1);
-		int u = (int)gsl_vector_get(Q, 0);
+		int u = (int)VECTOR_ID(get)(Q, 0);
 		
 		// ns = find(CIJ(u,:));
-		gsl_vector_const_view CIJ_row_u = gsl_matrix_const_row(CIJ, u);
-		gsl_vector* ns = find(&CIJ_row_u.vector);
+		VECTOR_ID(const_view) CIJ_row_u = MATRIX_ID(const_row)(CIJ, u);
+		VECTOR_T* ns = find(&CIJ_row_u.vector);
 		
 		// for v=ns
 		if (ns != NULL) {
 			for (int i_ns = 0; i_ns < (int)ns->size; i_ns++) {
-				int v = (int)gsl_vector_get(ns, i_ns);
+				int v = (int)VECTOR_ID(get)(ns, i_ns);
 				
 				// if (distance(v)==0)
-				if ((int)gsl_vector_get(distance, v) == 0) {
+				if ((int)VECTOR_ID(get)(distance, v) == 0) {
 					
 					// distance(v) = distance(u)+1;
-					gsl_vector_set(distance, v, gsl_vector_get(distance, u) + 1.0);
+					VECTOR_ID(set)(distance, v, VECTOR_ID(get)(distance, u) + 1.0);
 				}
 				
 				// if (color(v)==white)
-				if ((int)gsl_vector_get(color, v) == white) {
+				if ((int)VECTOR_ID(get)(color, v) == white) {
 					
 					// color(v) = gray;
-					gsl_vector_set(color, v, (double)gray);
+					VECTOR_ID(set)(color, v, (FP_T)gray);
 					
 					// distance(v) = distance(u)+1;
-					gsl_vector_set(distance, v, gsl_vector_get(distance, u) + 1.0);
+					VECTOR_ID(set)(distance, v, VECTOR_ID(get)(distance, u) + 1.0);
 					
 					// branch(v) = u;
 					if (branch != NULL) {
-						gsl_vector_set(*branch, v, (double)u);
+						VECTOR_ID(set)(*branch, v, (FP_T)u);
 					}
 					
 					// Q = [Q v];
-					gsl_vector* temp = concatenate(Q, (double)v);
-					gsl_vector_free(Q);
+					VECTOR_T* temp = concatenate(Q, (FP_T)v);
+					VECTOR_ID(free)(Q);
 					Q = temp;
 				}
 			}
 			
-			gsl_vector_free(ns);
+			VECTOR_ID(free)(ns);
 		}
 		
 		// Q = Q(2:length(Q));
-		gsl_vector* Q_cols = sequence_double(1, length(Q) - 1);
+		VECTOR_T* Q_cols = sequence(1, length(Q) - 1);
 		if (Q_cols != NULL) {
-			gsl_vector* temp = ordinal_index(Q, Q_cols);
-			gsl_vector_free(Q);
-			gsl_vector_free(Q_cols);
+			VECTOR_T* temp = ordinal_index(Q, Q_cols);
+			VECTOR_ID(free)(Q);
+			VECTOR_ID(free)(Q_cols);
 			Q = temp;
 		} else {
-			gsl_vector_free(Q);
+			VECTOR_ID(free)(Q);
 			Q = NULL;
 		}
 		
 		// color(u) = black;
-		gsl_vector_set(color, u, (double)black);
+		VECTOR_ID(set)(color, u, (FP_T)black);
 	}
 	
-	gsl_vector_free(color);
+	VECTOR_ID(free)(color);
 	return distance;
 }

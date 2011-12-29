@@ -1,28 +1,27 @@
 #include <cmath>
 #include <cstddef>
-#include <ctime>
+#include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
-#include <gsl/gsl_matrix.h>
 #include <gsl/gsl_randist.h>
-#include <gsl/gsl_rng.h>
-#include <gsl/gsl_vector.h>
-#include <string>
+
+#include "matlab.h"
+#include "sort.h"
 
 /*
  * See MATLAB documentation for descriptions of these functions.  We will
  * document instances where our version differs from the MATLAB version.
  */
 
-VECTOR_TYPE* matlab::abs(const VECTOR_TYPE* v) {
-	VECTOR_TYPE* abs_v = VECTOR_ID(alloc)(v->size);
+VECTOR_T* matlab::abs(const VECTOR_T* v) {
+	VECTOR_T* abs_v = VECTOR_ID(alloc)(v->size);
 	for (int i = 0; i < (int)v->size; i++) {
 		VECTOR_ID(set)(abs_v, i, std::abs(VECTOR_ID(get)(v, i)));
 	}
 	return abs_v;
 }
 
-MATRIX_TYPE* matlab::abs(const MATRIX_TYPE* m) {
-	MATRIX_TYPE* abs_m = MATRIX_ID(alloc)(m->size1, m->size2);
+MATRIX_T* matlab::abs(const MATRIX_T* m) {
+	MATRIX_T* abs_m = MATRIX_ID(alloc)(m->size1, m->size2);
 	for (int i = 0; i < (int)m->size1; i++) {
 		for (int j = 0; j < (int)m->size2; j++) {
 			MATRIX_ID(set)(abs_m, i, j, std::abs(MATRIX_ID(get)(m, i, j)));
@@ -31,7 +30,7 @@ MATRIX_TYPE* matlab::abs(const MATRIX_TYPE* m) {
 	return abs_m;
 }
 
-int matlab::all(const VECTOR_TYPE* v) {
+int matlab::all(const VECTOR_T* v) {
 	for (int i = 0; i < (int)v->size; i++) {
 		if (fp_zero(VECTOR_ID(get)(v, i))) {
 			return 0;
@@ -40,16 +39,16 @@ int matlab::all(const VECTOR_TYPE* v) {
 	return 1;
 }
 
-VECTOR_TYPE* matlab::all(const MATRIX_TYPE* m, int dim) {
+VECTOR_T* matlab::all(const MATRIX_T* m, int dim) {
 	if (dim == 1) {
-		VECTOR_TYPE* all_v = VECTOR_ID(alloc)(m->size2);
+		VECTOR_T* all_v = VECTOR_ID(alloc)(m->size2);
 		for (int i = 0; i < (int)m->size2; i++) {
 			VECTOR_ID(const_view) m_col_i = MATRIX_ID(const_column)(m, i);
 			VECTOR_ID(set)(all_v, i, all(&m_col_i.vector));
 		}
 		return all_v;
 	} else if (dim == 2) {
-		VECTOR_TYPE* all_v = VECTOR_ID(alloc)(m->size1);
+		VECTOR_T* all_v = VECTOR_ID(alloc)(m->size1);
 		for (int i = 0; i < (int)m->size1; i++) {
 			VECTOR_ID(const_view) m_row_i = MATRIX_ID(const_row)(m, i);
 			VECTOR_ID(set)(all_v, i, all(&m_row_i.vector));
@@ -60,7 +59,7 @@ VECTOR_TYPE* matlab::all(const MATRIX_TYPE* m, int dim) {
 	}
 }
 
-int matlab::any(const VECTOR_TYPE* v) {
+int matlab::any(const VECTOR_T* v) {
 	for (int i = 0; i < (int)v->size; i++) {
 		if (fp_nonzero(VECTOR_ID(get)(v, i))) {
 			return 1;
@@ -69,16 +68,16 @@ int matlab::any(const VECTOR_TYPE* v) {
 	return 0;
 }
 
-VECTOR_TYPE* matlab::any(const MATRIX_TYPE* m, int dim) {
+VECTOR_T* matlab::any(const MATRIX_T* m, int dim) {
 	if (dim == 1) {
-		VECTOR_TYPE* any_v = VECTOR_ID(alloc)(m->size2);
+		VECTOR_T* any_v = VECTOR_ID(alloc)(m->size2);
 		for (int i = 0; i < (int)m->size2; i++) {
 			VECTOR_ID(const_view) m_col_i = MATRIX_ID(const_column)(m, i);
 			VECTOR_ID(set)(any_v, i, any(&m_col_i.vector));
 		}
 		return any_v;
 	} else if (dim == 2) {
-		VECTOR_TYPE* any_v = VECTOR_ID(alloc)(m->size1);
+		VECTOR_T* any_v = VECTOR_ID(alloc)(m->size1);
 		for (int i = 0; i < (int)m->size1; i++) {
 			VECTOR_ID(const_view) m_row_i = MATRIX_ID(const_row)(m, i);
 			VECTOR_ID(set)(any_v, i, any(&m_row_i.vector));
@@ -89,20 +88,40 @@ VECTOR_TYPE* matlab::any(const MATRIX_TYPE* m, int dim) {
 	}
 }
 
-MATRIX_TYPE* matlab::diag(const VECTOR_TYPE* v, int k) {
+std::string matlab::dec2bin(int n) {
+	return dec2bin(n, 0);
+}
+
+std::string matlab::dec2bin(int n, int len) {
+	if (n < 0) {
+		return "";
+	}
+	int binlen = (int)(std::floor(1.0 + std::log(n) / std::log(2)));
+	std::string bin((len > binlen) ? len : binlen, '0');
+	for (int i = bin.size() - 1; i >= 0; i--) {
+		int remainder = n % 2;
+		if (remainder) {
+			bin[i] = '1';
+		}
+		n >>= 1;
+	}
+	return bin;
+}
+
+MATRIX_T* matlab::diag(const VECTOR_T* v, int k) {
 	int i0;
 	int j0;
 	if (k >= 0) { i0 = 0; j0 = k; }
 	else { i0 = -k; j0 = 0; }
 	int n = (int)v->size + (int)std::abs(k);
-	MATRIX_TYPE* diag_m = MATRIX_ID(calloc)(n, n);
+	MATRIX_T* diag_m = MATRIX_ID(calloc)(n, n);
 	for (int i = 0; i < (int)v->size; i++) {
 		MATRIX_ID(set)(diag_m, i0 + i, j0 + i, VECTOR_ID(get)(v, i));
 	}
 	return diag_m;
 }
 
-VECTOR_TYPE* matlab::diag(const MATRIX_TYPE* m, int k) {
+VECTOR_T* matlab::diag(const MATRIX_T* m, int k) {
 	if (k <= -(int)m->size1 || k >= (int)m->size2) {
 		return NULL;
 	}
@@ -113,30 +132,30 @@ VECTOR_TYPE* matlab::diag(const MATRIX_TYPE* m, int k) {
 	int n_rows = m->size1 - i0;
 	int n_cols = m->size2 - j0;
 	int n = (n_rows < n_cols) ? n_rows : n_cols;
-	VECTOR_TYPE* diag_v = VECTOR_ID(alloc)(n);
+	VECTOR_T* diag_v = VECTOR_ID(alloc)(n);
 	for (int i = 0; i < n; i++) {
 		VECTOR_ID(set)(diag_v, i, MATRIX_ID(get)(m, i0 + i, j0 + i));
 	}
 	return diag_v;
 }
 
-MATRIX_TYPE* matlab::FP_ID(eye)(int size) {
-	return FP_ID(eye)(size, size);
+MATRIX_T* matlab::eye(int size) {
+	return eye(size, size);
 }
 
-MATRIX_TYPE* matlab::FP_ID(eye)(int size1, int size2) {
-	MATRIX_TYPE* eye_m = MATRIX_ID(calloc)(size1, size2);
+MATRIX_T* matlab::eye(int size1, int size2) {
+	MATRIX_T* eye_m = MATRIX_ID(calloc)(size1, size2);
 	VECTOR_ID(view) diag_eye_m = MATRIX_ID(diagonal)(eye_m);
 	VECTOR_ID(set_all)(&diag_eye_m.vector, 1.0);
 	return eye_m;
 }
 
-VECTOR_TYPE* matlab::find(const VECTOR_TYPE* v, int n, const std::string& direction) {
+VECTOR_T* matlab::find(const VECTOR_T* v, int n, const std::string& direction) {
 	int n_find = nnz(v);
 	if (n_find == 0 || n < 1) {
 		return NULL;
 	}
-	VECTOR_TYPE* find_v = VECTOR_ID(alloc)((n < n_find) ? n : n_find);
+	VECTOR_T* find_v = VECTOR_ID(alloc)((n < n_find) ? n : n_find);
 	if (direction == "first") {
 		int position = 0;
 		for (int i = 0; i < (int)v->size && position < (int)find_v->size; i++) {
@@ -161,9 +180,9 @@ VECTOR_TYPE* matlab::find(const VECTOR_TYPE* v, int n, const std::string& direct
 	}
 }
 
-VECTOR_TYPE* matlab::find(const MATRIX_TYPE* m, int n, const std::string& direction) {
-	VECTOR_TYPE* v = to_vector(m);
-	VECTOR_TYPE* find_v = find(v, n, direction);
+VECTOR_T* matlab::find(const MATRIX_T* m, int n, const std::string& direction) {
+	VECTOR_T* v = to_vector(m);
+	VECTOR_T* find_v = find(v, n, direction);
 	VECTOR_ID(free)(v);
 	return find_v;
 }
@@ -171,51 +190,51 @@ VECTOR_TYPE* matlab::find(const MATRIX_TYPE* m, int n, const std::string& direct
 /*
  * Emulates the two-return version of "find".
  */
-MATRIX_TYPE* matlab::find_ij(const MATRIX_TYPE* m, int n, const std::string& direction) {
-	VECTOR_TYPE* find_v = find(m, n, direction);
+MATRIX_T* matlab::find_ij(const MATRIX_T* m, int n, const std::string& direction) {
+	VECTOR_T* find_v = find(m, n, direction);
 	if (find_v == NULL) {
 		return NULL;
 	} else {
-		MATRIX_TYPE* find_m = MATRIX_ID(alloc)(find_v->size, 2);
+		MATRIX_T* find_m = MATRIX_ID(alloc)(find_v->size, 2);
 		for (int i = 0; i < (int)find_v->size; i++) {
 			int index = (int)VECTOR_ID(get)(find_v, i);
 			int row = index % (int)m->size1;
 			int column = index / (int)m->size1;
-			MATRIX_ID(set)(find_m, i, 0, (FP_TYPE)row);
-			MATRIX_ID(set)(find_m, i, 1, (FP_TYPE)column);
+			MATRIX_ID(set)(find_m, i, 0, (FP_T)row);
+			MATRIX_ID(set)(find_m, i, 1, (FP_T)column);
 		}
 		VECTOR_ID(free)(find_v);
 		return find_m;
 	}
 }
 
-VECTOR_TYPE* matlab::hist(const VECTOR_TYPE* v, int n) {
-	VECTOR_TYPE* centers = VECTOR_ID(alloc)(n);
-	FP_TYPE min_value = min(v);
-	FP_TYPE max_value = max(v);
-	FP_TYPE width = (max_value - min_value) / (FP_TYPE)n;
+VECTOR_T* matlab::hist(const VECTOR_T* v, int n) {
+	VECTOR_T* centers = VECTOR_ID(alloc)(n);
+	FP_T min_value = min(v);
+	FP_T max_value = max(v);
+	FP_T width = (max_value - min_value) / (FP_T)n;
 	for (int i = 0; i < n; i++) {
 		VECTOR_ID(set)(centers, i, min_value + (i + 0.5) * width);
 	}
-	VECTOR_TYPE* hist_v = hist(v, centers);
+	VECTOR_T* hist_v = hist(v, centers);
 	VECTOR_ID(free)(centers);
 	return hist_v;
 }
 
-VECTOR_TYPE* matlab::hist(const VECTOR_TYPE* v, const VECTOR_TYPE* centers) {
+VECTOR_T* matlab::hist(const VECTOR_T* v, const VECTOR_T* centers) {
 	int n = centers->size;
-	VECTOR_TYPE* hist_v = VECTOR_ID(calloc)(n);
+	VECTOR_T* hist_v = VECTOR_ID(calloc)(n);
 	for (int i = 0; i < (int)v->size; i++) {
-		FP_TYPE value = VECTOR_ID(get)(v, i);
+		FP_T value = VECTOR_ID(get)(v, i);
 		int index = n - 1;
 		for (int j = 0; j < n - 1; j++) {
-			FP_TYPE left = VECTOR_ID(get)(centers, j);
-			FP_TYPE right = VECTOR_ID(get)(centers, j + 1);
+			FP_T left = VECTOR_ID(get)(centers, j);
+			FP_T right = VECTOR_ID(get)(centers, j + 1);
 			if (value < left) {
 				index = j;
 				break;
 			} else if (value < right) {
-				FP_TYPE middle = (left + right) / 2.0;
+				FP_T middle = (left + right) / 2.0;
 				if (fp_less_or_equal(value, middle)) {
 					index = j;
 				} else {
@@ -229,15 +248,39 @@ VECTOR_TYPE* matlab::hist(const VECTOR_TYPE* v, const VECTOR_TYPE* centers) {
 	return hist_v;
 }
 
-int matlab::length(const VECTOR_TYPE* v) {
+MATRIX_T* matlab::inv(const MATRIX_T* m) {
+	if (m->size1 != m->size2) {
+		return NULL;
+	}
+	gsl_matrix* lu = to_matrix_double(m);
+	gsl_permutation* p = gsl_permutation_alloc(m->size1);
+	int signum;
+	gsl_linalg_LU_decomp(lu, p, &signum);
+	gsl_matrix* inv_m = NULL;
+	if (fp_nonzero(gsl_linalg_LU_det(lu, signum))) {
+		inv_m = gsl_matrix_alloc(m->size1, m->size2);
+		gsl_linalg_LU_invert(lu, p, inv_m);
+	}
+	gsl_matrix_free(lu);
+	gsl_permutation_free(p);
+	if (inv_m == NULL) {
+		return NULL;
+	} else {
+		MATRIX_T* ret = to_matrix(inv_m);
+		gsl_matrix_free(inv_m);
+		return ret;
+	}
+}
+
+int matlab::length(const VECTOR_T* v) {
 	return v->size;
 }
 
-int matlab::length(const MATRIX_TYPE* m) {
+int matlab::length(const MATRIX_T* m) {
 	return (m->size1 > m->size2) ? m->size1 : m->size2;
 }
 
-FP_TYPE matlab::max(FP_TYPE x, FP_TYPE y) {
+FP_T matlab::max(FP_T x, FP_T y) {
 	if (gsl_isnan((double)x) == 1) {
 		return y;
 	} else if (gsl_isnan((double)y) == 1) {
@@ -247,18 +290,18 @@ FP_TYPE matlab::max(FP_TYPE x, FP_TYPE y) {
 	}
 }
 
-FP_TYPE matlab::max(const VECTOR_TYPE* v) {
-	FP_TYPE max = (FP_TYPE)GSL_NAN;
+FP_T matlab::max(const VECTOR_T* v) {
+	FP_T max = (FP_T)GSL_NAN;
 	int i = 0;
 	for ( ; i < (int)v->size; i++) {
-		FP_TYPE value = VECTOR_ID(get)(v, i);
+		FP_T value = VECTOR_ID(get)(v, i);
 		if (gsl_isnan((double)value) == 0) {
 			max = value;
 			break;
 		}
 	}
 	for ( ; i < (int)v->size; i++) {
-		FP_TYPE value = VECTOR_ID(get)(v, i);
+		FP_T value = VECTOR_ID(get)(v, i);
 		if (gsl_isnan((double)value) == 0 && value > max) {
 			max = value;
 		}
@@ -269,20 +312,20 @@ FP_TYPE matlab::max(const VECTOR_TYPE* v) {
 /*
  * Emulates (max(m)) or (max(m')).
  */
-VECTOR_TYPE* matlab::max(const MATRIX_TYPE* m, int dim) {
+VECTOR_T* matlab::max(const MATRIX_T* m, int dim) {
 	if (dim == 1) {
-		VECTOR_TYPE* max_v = VECTOR_ID(alloc)(m->size2);
+		VECTOR_T* max_v = VECTOR_ID(alloc)(m->size2);
 		for (int i = 0; i < (int)m->size2; i++) {
 			VECTOR_ID(const_view) m_col_i = MATRIX_ID(const_column)(m, i);
-			FP_TYPE value = max(&m_col_i.vector);
+			FP_T value = max(&m_col_i.vector);
 			VECTOR_ID(set)(max_v, i, value);
 		}
 		return max_v;
 	} else if (dim == 2) {
-		VECTOR_TYPE* max_v = VECTOR_ID(alloc)(m->size1);
+		VECTOR_T* max_v = VECTOR_ID(alloc)(m->size1);
 		for (int i = 0; i < (int)m->size1; i++) {
 			VECTOR_ID(const_view) m_row_i = MATRIX_ID(const_row)(m, i);
-			FP_TYPE value = max(&m_row_i.vector);
+			FP_T value = max(&m_row_i.vector);
 			VECTOR_ID(set)(max_v, i, value);
 		}
 		return max_v;
@@ -291,44 +334,44 @@ VECTOR_TYPE* matlab::max(const MATRIX_TYPE* m, int dim) {
 	}
 }
 
-FP_TYPE matlab::mean(const VECTOR_TYPE* v, const std::string& opt) {
+FP_T matlab::mean(const VECTOR_T* v, const std::string& opt) {
 	if (opt == "a") {
-		FP_TYPE sum = 0.0;
+		FP_T sum = 0.0;
 		for (int i = 0; i < (int)v->size; i++) {
 			sum += VECTOR_ID(get)(v, i);
 		}
-		return sum / (FP_TYPE)v->size;
+		return sum / (FP_T)v->size;
 	} else if (opt == "g") {
-		FP_TYPE product = 1.0;
+		FP_T product = 1.0;
 		for (int i = 0; i < (int)v->size; i++) {
 			product *= VECTOR_ID(get)(v, i);
 		}
-		return std::pow(product, (FP_TYPE)1.0 / (FP_TYPE)v->size);
+		return std::pow(product, (FP_T)1.0 / (FP_T)v->size);
 	} else if (opt == "h") {
-		FP_TYPE sum = 0.0;
+		FP_T sum = 0.0;
 		for (int i = 0; i < (int)v->size; i++) {
 			sum += 1.0 / VECTOR_ID(get)(v, i);
 		}
-		return (FP_TYPE)v->size / sum;
+		return (FP_T)v->size / sum;
 	} else {
 		return GSL_NAN;
 	}
 }
 
-VECTOR_TYPE* matlab::mean(const MATRIX_TYPE* m, int dim, const std::string& opt) {
+VECTOR_T* matlab::mean(const MATRIX_T* m, int dim, const std::string& opt) {
 	if (dim == 1) {
-		VECTOR_TYPE* mean_v = VECTOR_ID(alloc)(m->size2);
+		VECTOR_T* mean_v = VECTOR_ID(alloc)(m->size2);
 		for (int i = 0; i < (int)m->size2; i++) {
 			VECTOR_ID(const_view) m_col_i = MATRIX_ID(const_column)(m, i);
-			FP_TYPE value = mean(&m_col_i.vector, opt);
+			FP_T value = mean(&m_col_i.vector, opt);
 			VECTOR_ID(set)(mean_v, i, value);
 		}
 		return mean_v;
 	} else if (dim == 2) {
-		VECTOR_TYPE* mean_v = VECTOR_ID(alloc)(m->size1);
+		VECTOR_T* mean_v = VECTOR_ID(alloc)(m->size1);
 		for (int i = 0; i < (int)m->size1; i++) {
 			VECTOR_ID(const_view) m_row_i = MATRIX_ID(const_row)(m, i);
-			FP_TYPE value = mean(&m_row_i.vector, opt);
+			FP_T value = mean(&m_row_i.vector, opt);
 			VECTOR_ID(set)(mean_v, i, value);
 		}
 		return mean_v;
@@ -337,7 +380,7 @@ VECTOR_TYPE* matlab::mean(const MATRIX_TYPE* m, int dim, const std::string& opt)
 	}
 }
 
-FP_TYPE matlab::min(FP_TYPE x, FP_TYPE y) {
+FP_T matlab::min(FP_T x, FP_T y) {
 	if (gsl_isnan((double)x) == 1) {
 		return y;
 	} else if (gsl_isnan((double)y) == 1) {
@@ -347,18 +390,18 @@ FP_TYPE matlab::min(FP_TYPE x, FP_TYPE y) {
 	}
 }
 
-FP_TYPE matlab::min(const VECTOR_TYPE* v) {
-	FP_TYPE min = (FP_TYPE)GSL_NAN;
+FP_T matlab::min(const VECTOR_T* v) {
+	FP_T min = (FP_T)GSL_NAN;
 	int i = 0;
 	for ( ; i < (int)v->size; i++) {
-		FP_TYPE value = VECTOR_ID(get)(v, i);
+		FP_T value = VECTOR_ID(get)(v, i);
 		if (gsl_isnan((double)value) == 0) {
 			min = value;
 			break;
 		}
 	}
 	for ( ; i < (int)v->size; i++) {
-		FP_TYPE value = VECTOR_ID(get)(v, i);
+		FP_T value = VECTOR_ID(get)(v, i);
 		if (gsl_isnan((double)value) == 0 && value < min) {
 			min = value;
 		}
@@ -369,20 +412,20 @@ FP_TYPE matlab::min(const VECTOR_TYPE* v) {
 /*
  * Emulates (min(m)) or (min(m')).
  */
-VECTOR_TYPE* matlab::min(const MATRIX_TYPE* m, int dim) {
+VECTOR_T* matlab::min(const MATRIX_T* m, int dim) {
 	if (dim == 1) {
-		VECTOR_TYPE* min_v = VECTOR_ID(alloc)(m->size2);
+		VECTOR_T* min_v = VECTOR_ID(alloc)(m->size2);
 		for (int i = 0; i < (int)m->size2; i++) {
 			VECTOR_ID(const_view) m_col_i = MATRIX_ID(const_column)(m, i);
-			FP_TYPE value = min(&m_col_i.vector);
+			FP_T value = min(&m_col_i.vector);
 			VECTOR_ID(set)(min_v, i, value);
 		}
 		return min_v;
 	} else if (dim == 2) {
-		VECTOR_TYPE* min_v = VECTOR_ID(alloc)(m->size1);
+		VECTOR_T* min_v = VECTOR_ID(alloc)(m->size1);
 		for (int i = 0; i < (int)m->size1; i++) {
 			VECTOR_ID(const_view) m_row_i = MATRIX_ID(const_row)(m, i);
-			FP_TYPE value = min(&m_row_i.vector);
+			FP_T value = min(&m_row_i.vector);
 			VECTOR_ID(set)(min_v, i, value);
 		}
 		return min_v;
@@ -391,7 +434,7 @@ VECTOR_TYPE* matlab::min(const MATRIX_TYPE* m, int dim) {
 	}
 }
 
-int matlab::nnz(const VECTOR_TYPE* v) {
+int matlab::nnz(const VECTOR_T* v) {
 	int nnz = 0;
 	for (int i = 0; i < (int)v->size; i++) {
 		if (fp_nonzero(VECTOR_ID(get)(v, i))) {
@@ -401,41 +444,56 @@ int matlab::nnz(const VECTOR_TYPE* v) {
 	return nnz;
 }
 
-int matlab::nnz(const MATRIX_TYPE* m) {
-	VECTOR_TYPE* v = to_vector(m);
+int matlab::nnz(const MATRIX_T* m) {
+	VECTOR_T* v = to_vector(m);
 	int nnz_v = nnz(v);
 	VECTOR_ID(free)(v);
 	return nnz_v;
 }
 
-VECTOR_TYPE* matlab::nonzeros(const MATRIX_TYPE* m) {
-	VECTOR_TYPE* nz_v = find(m);
+VECTOR_T* matlab::nonzeros(const MATRIX_T* m) {
+	VECTOR_T* nz_v = find(m);
 	if (nz_v != NULL) {
 		for (int i = 0; i < (int)nz_v->size; i++) {
 			int i_m = (int)VECTOR_ID(get)(nz_v, i);
-			FP_TYPE value = ordinal_index(m, i_m);
+			FP_T value = ordinal_index(m, i_m);
 			VECTOR_ID(set)(nz_v, i, value);
 		}
 	}
 	return nz_v;
 }
 
-VECTOR_TYPE* matlab::normpdf(const VECTOR_TYPE* v, FP_TYPE mean, FP_TYPE stdev) {
-	VECTOR_TYPE* pdf_v = VECTOR_ID(alloc)(v->size);
+/*
+ * Currently only supports p > 1.
+ */
+FP_T matlab::norm(const VECTOR_T* v, int p) {
+	if (p > 1) {
+		FP_T sum = 0.0;
+		for (int i = 0; i < (int)v->size; i++) {
+			sum += std::pow(std::abs(VECTOR_ID(get)(v, i)), p);
+		}
+		return std::pow(sum, (FP_T)1.0 / p);
+	} else {
+		return 0.0;
+	}
+}
+
+VECTOR_T* matlab::normpdf(const VECTOR_T* v, FP_T mean, FP_T stdev) {
+	VECTOR_T* pdf_v = VECTOR_ID(alloc)(v->size);
 	for (int i = 0; i < (int)v->size; i++) {
 		double x = (double)VECTOR_ID(get)(v, i);
 		double p = gsl_ran_gaussian_pdf(x - mean, stdev);
-		VECTOR_ID(set)(pdf_v, i, (FP_TYPE)p);
+		VECTOR_ID(set)(pdf_v, i, (FP_T)p);
 	}
 	return pdf_v;
 }
 
-MATRIX_TYPE* matlab::FP_ID(ones)(int size) {
-	return FP_ID(ones)(size, size);
+MATRIX_T* matlab::ones(int size) {
+	return ones(size, size);
 }
 
-MATRIX_TYPE* matlab::FP_ID(ones)(int size1, int size2) {
-	MATRIX_TYPE* ones_m = MATRIX_ID(alloc)(size1, size2);
+MATRIX_T* matlab::ones(int size1, int size2) {
+	MATRIX_T* ones_m = MATRIX_ID(alloc)(size1, size2);
 	MATRIX_ID(set_all)(ones_m, 1.0);
 	return ones_m;
 }
@@ -443,23 +501,23 @@ MATRIX_TYPE* matlab::FP_ID(ones)(int size1, int size2) {
 /*
  * Emulates (ones(size, 1)) or (ones(1, size)).
  */
-VECTOR_TYPE* matlab::FP_ID(ones_vector)(int size) {
-	VECTOR_TYPE* ones_v = VECTOR_ID(alloc)(size);
+VECTOR_T* matlab::ones_vector(int size) {
+	VECTOR_T* ones_v = VECTOR_ID(alloc)(size);
 	VECTOR_ID(set_all)(ones_v, 1.0);
 	return ones_v;
 }
 
-FP_TYPE matlab::prod(const VECTOR_TYPE* v) {
-	FP_TYPE prod = 1.0;
+FP_T matlab::prod(const VECTOR_T* v) {
+	FP_T prod = 1.0;
 	for (int i = 0; i < (int)v->size; i++) {
 		prod *= VECTOR_ID(get)(v, i);
 	}
 	return prod;
 }
 
-VECTOR_TYPE* matlab::prod(const MATRIX_TYPE* m, int dim) {
+VECTOR_T* matlab::prod(const MATRIX_T* m, int dim) {
 	if (dim == 1) {
-		VECTOR_TYPE* prod_v = VECTOR_ID(alloc)(m->size2);
+		VECTOR_T* prod_v = VECTOR_ID(alloc)(m->size2);
 		VECTOR_ID(set_all)(prod_v, 1.0);
 		for (int i = 0; i < (int)m->size1; i++) {
 			VECTOR_ID(const_view) m_row_i = MATRIX_ID(const_row)(m, i);
@@ -467,7 +525,7 @@ VECTOR_TYPE* matlab::prod(const MATRIX_TYPE* m, int dim) {
 		}
 		return prod_v;
 	} else if (dim == 2) {
-		VECTOR_TYPE* prod_v = VECTOR_ID(alloc)(m->size1);
+		VECTOR_T* prod_v = VECTOR_ID(alloc)(m->size1);
 		VECTOR_ID(set_all)(prod_v, 1.0);
 		for (int i = 0; i < (int)m->size2; i++) {
 			VECTOR_ID(const_view) m_col_i = MATRIX_ID(const_column)(m, i);
@@ -479,39 +537,55 @@ VECTOR_TYPE* matlab::prod(const MATRIX_TYPE* m, int dim) {
 	}
 }
 
-MATRIX_TYPE* matlab::FP_ID(rand)(int size) {
-	return FP_ID(rand)(size, size);
+MATRIX_T* matlab::rand(int size) {
+	return rand(size, size);
 }
 
-MATRIX_TYPE* matlab::FP_ID(rand)(int size1, int size2) {
-	gsl_rng* rng = get_gsl_rng();
-	MATRIX_TYPE* rand_m = MATRIX_ID(alloc)(size1, size2);
+MATRIX_T* matlab::rand(int size1, int size2) {
+	gsl_rng* rng = get_rng();
+	MATRIX_T* rand_m = MATRIX_ID(alloc)(size1, size2);
 	for (int i = 0; i < size1; i++) {
 		for (int j = 0; j < size2; j++) {
-			MATRIX_ID(set)(rand_m, i, j, (FP_TYPE)gsl_rng_uniform(rng));
+			MATRIX_ID(set)(rand_m, i, j, (FP_T)gsl_rng_uniform(rng));
 		}
 	}
 	return rand_m;
 }
 
-VECTOR_TYPE* matlab::FP_ID(rand_vector)(int size) {
-	gsl_rng* rng = get_gsl_rng();
-	VECTOR_TYPE* rand_v = VECTOR_ID(alloc)(size);
+VECTOR_T* matlab::rand_vector(int size) {
+	gsl_rng* rng = get_rng();
+	VECTOR_T* rand_v = VECTOR_ID(alloc)(size);
 	for (int i = 0; i < size; i++) {
-		VECTOR_ID(set)(rand_v, i, (FP_TYPE)gsl_rng_uniform(rng));
+		VECTOR_ID(set)(rand_v, i, (FP_T)gsl_rng_uniform(rng));
 	}
 	return rand_v;
 }
 
-VECTOR_TYPE* matlab::reverse(const VECTOR_TYPE* v) {
-	VECTOR_TYPE* rev_v = VECTOR_ID(alloc)(v->size);
+/*
+ * Generates a permutation of the integers 0 to (size - 1), whereas the MATLAB
+ * version uses the integers 1 to size.
+ */
+gsl_permutation* matlab::randperm(int size) {
+	gsl_rng* rng = get_rng();
+	FP_T values[size];
+	for (int i = 0; i < size; i++) {
+		values[i] = (FP_T)i;
+	}
+	gsl_ran_shuffle(rng, values, size, sizeof(FP_T));
+	VECTOR_ID(view) values_vv = VECTOR_ID(view_array)(values, size);
+	gsl_permutation* values_p = to_permutation(&values_vv.vector);
+	return values_p;
+}
+
+VECTOR_T* matlab::reverse(const VECTOR_T* v) {
+	VECTOR_T* rev_v = VECTOR_ID(alloc)(v->size);
 	for (int i = 0; i < (int)v->size; i++) {
 		VECTOR_ID(set)(rev_v, i, VECTOR_ID(get)(v, v->size - 1 - i));
 	}
 	return rev_v;
 }
 
-VECTOR_TYPE* matlab::setxor(const VECTOR_TYPE* v1, const VECTOR_TYPE* v2) {
+VECTOR_T* matlab::setxor(const VECTOR_T* v1, const VECTOR_T* v2) {
 	if (v1 == NULL && v2 == NULL) {
 		return NULL;
 	}
@@ -521,15 +595,15 @@ VECTOR_TYPE* matlab::setxor(const VECTOR_TYPE* v1, const VECTOR_TYPE* v2) {
 	if (v2 == NULL) {
 		return unique(v1);
 	}
-	VECTOR_TYPE* unique_v1 = unique(v1);
-	VECTOR_TYPE* unique_v2 = unique(v2);
-	VECTOR_TYPE* unsized_v = VECTOR_ID(alloc)(v1->size + v2->size);
+	VECTOR_T* unique_v1 = unique(v1);
+	VECTOR_T* unique_v2 = unique(v2);
+	VECTOR_T* unsized_v = VECTOR_ID(alloc)(v1->size + v2->size);
 	int n = 0;
 	for (int i = 0; i < (int)unique_v1->size; i++) {
 		bool found = false;
-		FP_TYPE v1_value = VECTOR_ID(get)(unique_v1, i);
+		FP_T v1_value = VECTOR_ID(get)(unique_v1, i);
 		for (int j = 0; j < (int)unique_v2->size; j++) {
-			FP_TYPE v2_value = VECTOR_ID(get)(unique_v2, j);
+			FP_T v2_value = VECTOR_ID(get)(unique_v2, j);
 			if (fp_equal(v1_value, v2_value)) {
 				found = true;
 				break;
@@ -541,9 +615,9 @@ VECTOR_TYPE* matlab::setxor(const VECTOR_TYPE* v1, const VECTOR_TYPE* v2) {
 	}
 	for (int i = 0; i < (int)unique_v2->size; i++) {
 		bool found = false;
-		FP_TYPE v2_value = VECTOR_ID(get)(unique_v2, i);
+		FP_T v2_value = VECTOR_ID(get)(unique_v2, i);
 		for (int j = 0; j < (int)unique_v1->size; j++) {
-			FP_TYPE v1_value = VECTOR_ID(get)(unique_v1, j);
+			FP_T v1_value = VECTOR_ID(get)(unique_v1, j);
 			if (fp_equal(v2_value, v1_value)) {
 				found = true;
 				break;
@@ -556,11 +630,11 @@ VECTOR_TYPE* matlab::setxor(const VECTOR_TYPE* v1, const VECTOR_TYPE* v2) {
 	VECTOR_ID(free)(unique_v1);
 	VECTOR_ID(free)(unique_v2);
 	if (n > 0) {
-		VECTOR_TYPE* unsorted_v = VECTOR_ID(alloc)(n);
+		VECTOR_T* unsorted_v = VECTOR_ID(alloc)(n);
 		VECTOR_ID(view) unsized_subv = VECTOR_ID(subvector)(unsized_v, 0, n);
 		VECTOR_ID(memcpy)(unsorted_v, &unsized_subv.vector);
 		VECTOR_ID(free)(unsized_v);
-		VECTOR_TYPE* setxor_v = sort(unsorted_v);
+		VECTOR_T* setxor_v = sort(unsorted_v);
 		VECTOR_ID(free)(unsorted_v);
 		return setxor_v;
 	} else {
@@ -569,11 +643,11 @@ VECTOR_TYPE* matlab::setxor(const VECTOR_TYPE* v1, const VECTOR_TYPE* v2) {
 	}
 }
 
-VECTOR_TYPE* matlab::sort(const VECTOR_TYPE* v, const std::string& mode, VECTOR_TYPE** ind) {
+VECTOR_T* matlab::sort(const VECTOR_T* v, const std::string& mode, VECTOR_T** ind) {
 	if (mode != "ascend" && mode != "descend") {
 		return NULL;
 	}
-	FP_TYPE elements[v->size];
+	FP_T elements[v->size];
 	to_array(v, elements);
 	std::size_t indices[v->size];
 	if (mode == "ascend") {
@@ -581,7 +655,7 @@ VECTOR_TYPE* matlab::sort(const VECTOR_TYPE* v, const std::string& mode, VECTOR_
 	} else {
 		stable_sort_index(indices, elements, v->size, fp_greater);
 	}
-	VECTOR_TYPE* sort_v = VECTOR_ID(alloc)(v->size);
+	VECTOR_T* sort_v = VECTOR_ID(alloc)(v->size);
 	if (ind != NULL) {
 		*ind = VECTOR_ID(alloc)(v->size);
 	}
@@ -589,28 +663,28 @@ VECTOR_TYPE* matlab::sort(const VECTOR_TYPE* v, const std::string& mode, VECTOR_
 		int index = indices[i];
 		VECTOR_ID(set)(sort_v, i, elements[index]);
 		if (ind != NULL) {
-			VECTOR_ID(set)(*ind, i, (FP_TYPE)index);
+			VECTOR_ID(set)(*ind, i, (FP_T)index);
 		}
 	}
 	return sort_v;
 }
 
-MATRIX_TYPE* matlab::sort(const MATRIX_TYPE* m, int dim, const std::string& mode, MATRIX_TYPE** ind) {
+MATRIX_T* matlab::sort(const MATRIX_T* m, int dim, const std::string& mode, MATRIX_T** ind) {
 	if (mode != "ascend" && mode != "descend") {
 		return NULL;
 	}
 	if (dim == 1) {
-		MATRIX_TYPE* sort_m = MATRIX_ID(alloc)(m->size1, m->size2);
+		MATRIX_T* sort_m = MATRIX_ID(alloc)(m->size1, m->size2);
 		if (ind != NULL) {
 			*ind = MATRIX_ID(alloc)(m->size1, m->size2);
 		}
 		for (int i = 0; i < (int)m->size2; i++) {
 			VECTOR_ID(const_view) m_col_i = MATRIX_ID(const_column)(m, i);
-			VECTOR_TYPE* sort_m_col_i;
+			VECTOR_T* sort_m_col_i;
 			if (ind == NULL) {
 				sort_m_col_i = sort(&m_col_i.vector, mode);
 			} else {
-				VECTOR_TYPE* ind_col_i;
+				VECTOR_T* ind_col_i;
 				sort_m_col_i = sort(&m_col_i.vector, mode, &ind_col_i);
 				MATRIX_ID(set_col)(*ind, i, ind_col_i);
 				VECTOR_ID(free)(ind_col_i);
@@ -620,17 +694,17 @@ MATRIX_TYPE* matlab::sort(const MATRIX_TYPE* m, int dim, const std::string& mode
 		}
 		return sort_m;
 	} else if (dim == 2) {
-		MATRIX_TYPE* sort_m = MATRIX_ID(alloc)(m->size1, m->size2);
+		MATRIX_T* sort_m = MATRIX_ID(alloc)(m->size1, m->size2);
 		if (ind != NULL) {
 			*ind = MATRIX_ID(alloc)(m->size1, m->size2);
 		}
 		for (int i = 0; i < (int)m->size1; i++) {
 			VECTOR_ID(const_view) m_row_i = MATRIX_ID(const_row)(m, i);
-			VECTOR_TYPE* sort_m_row_i;
+			VECTOR_T* sort_m_row_i;
 			if (ind == NULL) {
 				sort_m_row_i = sort(&m_row_i.vector, mode);
 			} else {
-				VECTOR_TYPE* ind_row_i;
+				VECTOR_T* ind_row_i;
 				sort_m_row_i = sort(&m_row_i.vector, mode, &ind_row_i);
 				MATRIX_ID(set_row)(*ind, i, ind_row_i);
 				VECTOR_ID(free)(ind_row_i);
@@ -647,12 +721,12 @@ MATRIX_TYPE* matlab::sort(const MATRIX_TYPE* m, int dim, const std::string& mode
 /*
  * Emulates (sortrows(v)) for a column vector.
  */
-VECTOR_TYPE* matlab::sortrows(const VECTOR_TYPE* v, VECTOR_TYPE** ind) {
+VECTOR_T* matlab::sortrows(const VECTOR_T* v, VECTOR_T** ind) {
 	return sort(v, "ascend", ind);
 }
 
-MATRIX_TYPE* matlab::sortrows(const MATRIX_TYPE* m, VECTOR_TYPE** ind) {
-	VECTOR_TYPE* rows[m->size1];
+MATRIX_T* matlab::sortrows(const MATRIX_T* m, VECTOR_T** ind) {
+	VECTOR_T* rows[m->size1];
 	for (int i = 0; i < (int)m->size1; i++) {
 		rows[i] = VECTOR_ID(alloc)(m->size2);
 		MATRIX_ID(get_row)(rows[i], m, i);
@@ -662,7 +736,7 @@ MATRIX_TYPE* matlab::sortrows(const MATRIX_TYPE* m, VECTOR_TYPE** ind) {
 	for (int i = 0; i < (int)m->size1; i++) {
 		VECTOR_ID(free)(rows[i]);
 	}
-	MATRIX_TYPE* sort_m = MATRIX_ID(alloc)(m->size1, m->size2);
+	MATRIX_T* sort_m = MATRIX_ID(alloc)(m->size1, m->size2);
 	if (ind != NULL) {
 		*ind = VECTOR_ID(alloc)(m->size1);
 	}
@@ -671,41 +745,41 @@ MATRIX_TYPE* matlab::sortrows(const MATRIX_TYPE* m, VECTOR_TYPE** ind) {
 		VECTOR_ID(const_view) m_row_index = MATRIX_ID(const_row)(m, index);
 		MATRIX_ID(set_row)(sort_m, i, &m_row_index.vector);
 		if (ind != NULL) {
-			VECTOR_ID(set)(*ind, i, (FP_TYPE)index);
+			VECTOR_ID(set)(*ind, i, (FP_T)index);
 		}
 	}
 	return sort_m;
 }
 
-FP_TYPE matlab::std(const VECTOR_TYPE* v, int opt) {
-	FP_TYPE mu = mean(v);
-	FP_TYPE err = 0.0;
+FP_T matlab::std(const VECTOR_T* v, int opt) {
+	FP_T mu = mean(v);
+	FP_T err = 0.0;
 	for (int i = 0; i < (int)v->size; i++) {
 		err += std::pow(VECTOR_ID(get)(v, i) - mu, 2);
 	}
 	if (opt == 0) {
-		return std::sqrt(err / (FP_TYPE)(v->size - 1));
+		return std::sqrt(err / (FP_T)(v->size - 1));
 	} else if (opt == 1) {
-		return std::sqrt(err / (FP_TYPE)v->size);
+		return std::sqrt(err / (FP_T)v->size);
 	} else {
 		return GSL_NAN;
 	}
 }
 
-VECTOR_TYPE* matlab::std(const MATRIX_TYPE* m, int opt, int dim) {
+VECTOR_T* matlab::std(const MATRIX_T* m, int opt, int dim) {
 	if (dim == 1) {
-		VECTOR_TYPE* std_v = VECTOR_ID(alloc)(m->size2);
+		VECTOR_T* std_v = VECTOR_ID(alloc)(m->size2);
 		for (int i = 0; i < (int)m->size2; i++) {
 			VECTOR_ID(const_view) m_col_i = MATRIX_ID(const_column)(m, i);
-			FP_TYPE value = matlab::std(&m_col_i.vector, opt);
+			FP_T value = matlab::std(&m_col_i.vector, opt);
 			VECTOR_ID(set)(std_v, i, value);
 		}
 		return std_v;
 	} else if (dim == 2) {
-		VECTOR_TYPE* std_v = VECTOR_ID(alloc)(m->size1);
+		VECTOR_T* std_v = VECTOR_ID(alloc)(m->size1);
 		for (int i = 0; i < (int)m->size1; i++) {
 			VECTOR_ID(const_view) m_row_i = MATRIX_ID(const_row)(m, i);
-			FP_TYPE value = matlab::std(&m_row_i.vector, opt);
+			FP_T value = matlab::std(&m_row_i.vector, opt);
 			VECTOR_ID(set)(std_v, i, value);
 		}
 		return std_v;
@@ -714,24 +788,24 @@ VECTOR_TYPE* matlab::std(const MATRIX_TYPE* m, int opt, int dim) {
 	}
 }
 
-FP_TYPE matlab::sum(const VECTOR_TYPE* v) {
-	FP_TYPE sum = 0.0;
+FP_T matlab::sum(const VECTOR_T* v) {
+	FP_T sum = 0.0;
 	for (int i = 0; i < (int)v->size; i++) {
 		sum += VECTOR_ID(get)(v, i);
 	}
 	return sum;
 }
 
-VECTOR_TYPE* matlab::sum(const MATRIX_TYPE* m, int dim) {
+VECTOR_T* matlab::sum(const MATRIX_T* m, int dim) {
 	if (dim == 1) {
-		VECTOR_TYPE* sum_v = VECTOR_ID(calloc)(m->size2);
+		VECTOR_T* sum_v = VECTOR_ID(calloc)(m->size2);
 		for (int i = 0; i < (int)m->size1; i++) {
 			VECTOR_ID(const_view) m_row_i = MATRIX_ID(const_row)(m, i);
 			VECTOR_ID(add)(sum_v, &m_row_i.vector);
 		}
 		return sum_v;
 	} else if (dim == 2) {
-		VECTOR_TYPE* sum_v = VECTOR_ID(calloc)(m->size1);
+		VECTOR_T* sum_v = VECTOR_ID(calloc)(m->size1);
 		for (int i = 0; i < (int)m->size2; i++) {
 			VECTOR_ID(const_view) m_col_i = MATRIX_ID(const_column)(m, i);
 			VECTOR_ID(add)(sum_v, &m_col_i.vector);
@@ -742,17 +816,17 @@ VECTOR_TYPE* matlab::sum(const MATRIX_TYPE* m, int dim) {
 	}
 }
 
-MATRIX_TYPE* matlab::toeplitz(const VECTOR_TYPE* column, const VECTOR_TYPE* row) {
-	const VECTOR_TYPE* _row;
+MATRIX_T* matlab::toeplitz(const VECTOR_T* column, const VECTOR_T* row) {
+	const VECTOR_T* _row;
 	if (row == NULL) {
 		_row = column;
 	} else {
 		_row = row;
 	}
-	MATRIX_TYPE* toe_m = MATRIX_ID(alloc)(column->size, _row->size);
+	MATRIX_T* toe_m = MATRIX_ID(alloc)(column->size, _row->size);
 	for (int i = 0; i < (int)column->size; i++) {
 		for (int j = 0; j < (int)_row->size; j++) {
-			FP_TYPE value;
+			FP_T value;
 			if (i - j >= 0) {
 				value = VECTOR_ID(get)(column, i - j);
 			} else {
@@ -764,11 +838,11 @@ MATRIX_TYPE* matlab::toeplitz(const VECTOR_TYPE* column, const VECTOR_TYPE* row)
 	return toe_m;
 }
 
-MATRIX_TYPE* matlab::tril(const MATRIX_TYPE* m, int k) {
+MATRIX_T* matlab::tril(const MATRIX_T* m, int k) {
 	if (k < -(int)m->size1 || k > (int)m->size2) {
 		return NULL;
 	}
-	MATRIX_TYPE* tril_m = copy(m);
+	MATRIX_T* tril_m = copy(m);
 	for (int i = 0; i < (int)m->size1; i++) {
 		for (int j = i + k + 1; j < (int)m->size2; j++) {
 			if (j >= 0) {
@@ -779,11 +853,11 @@ MATRIX_TYPE* matlab::tril(const MATRIX_TYPE* m, int k) {
 	return tril_m;
 }
 
-MATRIX_TYPE* matlab::triu(const MATRIX_TYPE* m, int k) {
+MATRIX_T* matlab::triu(const MATRIX_T* m, int k) {
 	if (k < -(int)m->size1 || k > (int)m->size2) {
 		return NULL;
 	}
-	MATRIX_TYPE* triu_m = copy(m);
+	MATRIX_T* triu_m = copy(m);
 	for (int i = 0; i < (int)m->size1; i++) {
 		for (int j = i + k - 1; j >= 0; j--) {
 			if (j < (int)m->size2) {
@@ -794,23 +868,23 @@ MATRIX_TYPE* matlab::triu(const MATRIX_TYPE* m, int k) {
 	return triu_m;
 }
 
-VECTOR_TYPE* matlab::unique(const VECTOR_TYPE* v, const std::string& first_or_last, VECTOR_TYPE** i, VECTOR_TYPE** j) {
+VECTOR_T* matlab::unique(const VECTOR_T* v, const std::string& first_or_last, VECTOR_T** i, VECTOR_T** j) {
 	if (first_or_last != "first" && first_or_last != "last") {
 		return NULL;
 	}
-	VECTOR_TYPE* sort_v = sort(v);
-	VECTOR_TYPE* unsized_v = VECTOR_ID(alloc)(v->size);
+	VECTOR_T* sort_v = sort(v);
+	VECTOR_T* unsized_v = VECTOR_ID(alloc)(v->size);
 	VECTOR_ID(set)(unsized_v, 0, VECTOR_ID(get)(sort_v, 0));
 	int n = 1;
 	for (int x = 1; x < (int)v->size; x++) {
-		FP_TYPE prev_value = VECTOR_ID(get)(sort_v, x - 1);
-		FP_TYPE value = VECTOR_ID(get)(sort_v, x);
+		FP_T prev_value = VECTOR_ID(get)(sort_v, x - 1);
+		FP_T value = VECTOR_ID(get)(sort_v, x);
 		if (fp_not_equal(prev_value, value)) {
 			VECTOR_ID(set)(unsized_v, n++, value);
 		}
 	}
 	VECTOR_ID(free)(sort_v);
-	VECTOR_TYPE* unique_v = VECTOR_ID(alloc)(n);
+	VECTOR_T* unique_v = VECTOR_ID(alloc)(n);
 	VECTOR_ID(view) unsized_subv = VECTOR_ID(subvector)(unsized_v, 0, n);
 	VECTOR_ID(memcpy)(unique_v, &unsized_subv.vector);
 	VECTOR_ID(free)(unsized_v);
@@ -841,9 +915,9 @@ VECTOR_TYPE* matlab::unique(const VECTOR_TYPE* v, const std::string& first_or_la
 	return unique_v;
 }
 
-VECTOR_TYPE* matlab::unique(const MATRIX_TYPE* m, const std::string& first_or_last, VECTOR_TYPE** i, VECTOR_TYPE** j) {
-	VECTOR_TYPE* v = to_vector(m);
-	VECTOR_TYPE* unique_v = unique(v, first_or_last, i, j);
+VECTOR_T* matlab::unique(const MATRIX_T* m, const std::string& first_or_last, VECTOR_T** i, VECTOR_T** j) {
+	VECTOR_T* v = to_vector(m);
+	VECTOR_T* unique_v = unique(v, first_or_last, i, j);
 	VECTOR_ID(free)(v);
 	return unique_v;
 }
@@ -851,12 +925,12 @@ VECTOR_TYPE* matlab::unique(const MATRIX_TYPE* m, const std::string& first_or_la
 /*
  * Emulates (unique(m, "rows", first_or_last)).
  */
-MATRIX_TYPE* matlab::unique_rows(const MATRIX_TYPE* m, const std::string& first_or_last, VECTOR_TYPE** i, VECTOR_TYPE** j) {
+MATRIX_T* matlab::unique_rows(const MATRIX_T* m, const std::string& first_or_last, VECTOR_T** i, VECTOR_T** j) {
 	if (first_or_last != "first" && first_or_last != "last") {
 		return NULL;
 	}
-	MATRIX_TYPE* sort_m = sortrows(m);
-	MATRIX_TYPE* unsized_m = MATRIX_ID(alloc)(m->size1, m->size2);
+	MATRIX_T* sort_m = sortrows(m);
+	MATRIX_T* unsized_m = MATRIX_ID(alloc)(m->size1, m->size2);
 	VECTOR_ID(view) first_row = MATRIX_ID(row)(sort_m, 0);
 	MATRIX_ID(set_row)(unsized_m, 0, &first_row.vector);
 	int n_unique = 1;
@@ -868,7 +942,7 @@ MATRIX_TYPE* matlab::unique_rows(const MATRIX_TYPE* m, const std::string& first_
 		}
 	}
 	MATRIX_ID(free)(sort_m);
-	MATRIX_TYPE* unique_m = MATRIX_ID(alloc)(n_unique, m->size2);
+	MATRIX_T* unique_m = MATRIX_ID(alloc)(n_unique, m->size2);
 	MATRIX_ID(view) unsized_subm = MATRIX_ID(submatrix)(unsized_m, 0, 0, n_unique, m->size2);
 	MATRIX_ID(memcpy)(unique_m, &unsized_subm.matrix);
 	MATRIX_ID(free)(unsized_m);
@@ -903,17 +977,17 @@ MATRIX_TYPE* matlab::unique_rows(const MATRIX_TYPE* m, const std::string& first_
 	return unique_m;
 }
 
-MATRIX_TYPE* matlab::FP_ID(zeros)(int size) {
+MATRIX_T* matlab::zeros(int size) {
 	return MATRIX_ID(calloc)(size, size);
 }
 
-MATRIX_TYPE* matlab::FP_ID(zeros)(int size1, int size2) {
+MATRIX_T* matlab::zeros(int size1, int size2) {
 	return MATRIX_ID(calloc)(size1, size2);
 }
 
 /*
  * Emulates (zeros(size, 1)) or (zeros(1, size)).
  */
-VECTOR_TYPE* matlab::FP_ID(zeros_vector)(int size) {
+VECTOR_T* matlab::zeros_vector(int size) {
 	return VECTOR_ID(calloc)(size);
 }

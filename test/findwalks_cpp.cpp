@@ -1,9 +1,4 @@
-#include <bct/bct.h>
 #include "bct_test.h"
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include <octave/oct.h>
-#include <vector>
 
 DEFUN_DLD(findwalks_cpp, args, , "Wrapper for C++ function.") {
 	if (args.length() != 1) {

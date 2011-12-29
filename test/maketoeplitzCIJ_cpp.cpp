@@ -1,7 +1,4 @@
-#include <bct/bct.h>
 #include "bct_test.h"
-#include <gsl/gsl_matrix.h>
-#include <octave/oct.h>
 
 DEFUN_DLD(maketoeplitzCIJ_cpp, args, , "Wrapper for C++ function.") {
 	if (args.length() != 3) {

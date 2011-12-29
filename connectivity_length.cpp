@@ -1,19 +1,23 @@
-#include "bct.h"
 #include <gsl/gsl_math.h>
-#include <gsl/gsl_matrix.h>
+
+#include "bct.h"
 
 /*
- * Given a distance matrix, computes Marchiori and Latora's connectivity length.
+ * Given a distance matrix, computes connectivity length.
+ *
+ * Marchiori and Latora (2000). Harmony in the small-world. Physica A 285:
+ * 539-546.
  */
-double bct::connectivity_length(const gsl_matrix* D) {
+FP_T bct::connectivity_length(const MATRIX_T* D) {
+	if (safe_mode) check_status(D, SQUARE, "connectivity_length");
 	int N = D->size1;
-	double sum = 0.0;
+	FP_T sum = 0.0;
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {
 			if (i == j) {
 				continue;
 			}
-			double value = gsl_matrix_get(D, i, j);
+			FP_T value = MATRIX_ID(get)(D, i, j);
 			if (gsl_finite(value) == 1 && fp_nonzero(value)) {
 				sum += 1.0 / value;
 			}
@@ -22,6 +26,6 @@ double bct::connectivity_length(const gsl_matrix* D) {
 	if (fp_zero(sum)) {
 		return GSL_POSINF;
 	} else {
-		return (double)(N * (N - 1)) / sum;
+		return (FP_T)(N * (N - 1)) / sum;
 	}
 }

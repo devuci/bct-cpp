@@ -1,8 +1,4 @@
-#include <bct/bct.h>
 #include "bct_test.h"
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include <octave/oct.h>
 
 DEFUN_DLD(motif4generate_cpp, args, , "Wrapper for C++ function.") {
 	gsl_vector* ID;

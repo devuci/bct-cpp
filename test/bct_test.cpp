@@ -1,12 +1,6 @@
 #ifndef BCT_TEST_CPP
 #define BCT_TEST_CPP
 
-#include "bct_test.h"
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include <octave/oct.h>
-#include <vector>
-
 /*
  * Converts a GSL vector to an Octave matrix.
  */

@@ -5,6 +5,10 @@
 %feature("autodoc", "1");
 
 %{
+	#undef GSL_FLOAT
+	#undef GSL_DOUBLE
+	#undef GSL_LONG_DOUBLE
+	#define GSL_DOUBLE
 	#include "bct.h"
 %}
 
@@ -87,6 +91,7 @@ namespace bct {
 	gsl_matrix* edge_betweenness_bin(const gsl_matrix* G, gsl_vector** BC);
 	gsl_matrix* edge_betweenness_wei(const gsl_matrix* G, gsl_vector** BC);
 	gsl_matrix* erange(const gsl_matrix* CIJ, double* eta, gsl_matrix** Eshort, double* fs);
+	gsl_vector* eigenvector_centrality(const gsl_matrix* G);
 
 	// Motifs
 	enum motif_mode_enum { MILO, SPORNS };
@@ -113,7 +118,7 @@ namespace bct {
 	// Modularity and community structure
 	double modularity_dir(const gsl_matrix* A, gsl_vector** Ci);
 	double modularity_und(const gsl_matrix* A, gsl_vector** Ci);
-	double modularity_und_louvain(const gsl_matrix* W, gsl_vector** Ci, int N = 100);
+	double modularity_louvain_und(const gsl_matrix* W, gsl_vector** Ci, int N = 100);
 	gsl_vector* module_degree_zscore(const gsl_matrix* A, const gsl_vector* Ci);
 	gsl_vector* participation_coef(const gsl_matrix* A, const gsl_vector* Ci);
 	
@@ -199,28 +204,6 @@ namespace bct {
 
 namespace matlab {
 	
-	// ---------------------------------
-	// Precision-independent definitions
-	// ---------------------------------
-	
-	// Functions
-	std::string dec2bin(int n);
-	std::string dec2bin(int n, int len);
-	gsl_matrix* inv(const gsl_matrix* m);
-	gsl_permutation* randperm(int size);
-	
-	// Operators
-	gsl_matrix* div_left(const gsl_matrix* m1, const gsl_matrix* m2);
-	gsl_matrix* div_right(const gsl_matrix* m1, const gsl_matrix* m2);
-	
-	// Utility
-	gsl_rng* get_gsl_rng();
-	void seed_rng(const gsl_rng* rng, unsigned long seed);
-	
-	// -------------------------------
-	// Precision-dependent definitions
-	// -------------------------------
-	
 	// Functions
 	gsl_vector* abs(const gsl_vector* v);
 	gsl_matrix* abs(const gsl_matrix* m);
@@ -228,15 +211,18 @@ namespace matlab {
 	gsl_vector* all(const gsl_matrix* m, int dim = 1);
 	int any(const gsl_vector* v);
 	gsl_vector* any(const gsl_matrix* m, int dim = 1);
+	std::string dec2bin(int n);
+	std::string dec2bin(int n, int len);
 	gsl_matrix* diag(const gsl_vector* v, int k = 0);
 	gsl_vector* diag(const gsl_matrix* m, int k = 0);
-	gsl_matrix* eye_double(int size);
-	gsl_matrix* eye_double(int size1, int size2);
+	gsl_matrix* eye(int size);
+	gsl_matrix* eye(int size1, int size2);
 	gsl_vector* find(const gsl_vector* v, int n = std::numeric_limits<int>::max(), const std::string& direction = "first");
 	gsl_vector* find(const gsl_matrix* m, int n = std::numeric_limits<int>::max(), const std::string& direction = "first");
 	gsl_matrix* find_ij(const gsl_matrix* m, int n = std::numeric_limits<int>::max(), const std::string& direction = "first");
 	gsl_vector* hist(const gsl_vector* v, int n = 10);
 	gsl_vector* hist(const gsl_vector* v, const gsl_vector* centers);
+	gsl_matrix* inv(const gsl_matrix* m);
 	int length(const gsl_vector* v);
 	int length(const gsl_matrix* m);
 	double max(double x, double y);
@@ -251,14 +237,15 @@ namespace matlab {
 	int nnz(const gsl_matrix* m);
 	gsl_vector* nonzeros(const gsl_matrix* m);
 	gsl_vector* normpdf(const gsl_vector* v, double mean, double stdev);
-	gsl_matrix* ones_double(int size);
-	gsl_matrix* ones_double(int size1, int size2);
-	gsl_vector* ones_vector_double(int size);
+	gsl_matrix* ones(int size);
+	gsl_matrix* ones(int size1, int size2);
+	gsl_vector* ones_vector(int size);
 	double prod(const gsl_vector* v);
 	gsl_vector* prod(const gsl_matrix* m, int dim = 1);
-	gsl_matrix* rand_double(int size);
-	gsl_matrix* rand_double(int size1, int size2);
-	gsl_vector* rand_vector_double(int size);
+	gsl_matrix* rand(int size);
+	gsl_matrix* rand(int size1, int size2);
+	gsl_vector* rand_vector(int size);
+	gsl_permutation* randperm(int size);
 	gsl_vector* reverse(const gsl_vector* v);
 	gsl_vector* setxor(const gsl_vector* v1, const gsl_vector* v2);
 	gsl_vector* sort(const gsl_vector* v, const std::string& mode, gsl_vector** ind);
@@ -275,9 +262,9 @@ namespace matlab {
 	gsl_vector* unique(const gsl_vector* v, const std::string& first_or_last, gsl_vector** i, gsl_vector** j);
 	gsl_vector* unique(const gsl_matrix* m, const std::string& first_or_last, gsl_vector** i, gsl_vector** j);
 	gsl_matrix* unique_rows(const gsl_matrix* m, const std::string& first_or_last, gsl_vector** i, gsl_vector** j);
-	gsl_matrix* zeros_double(int size);
-	gsl_matrix* zeros_double(int size1, int size2);
-	gsl_vector* zeros_vector_double(int size);
+	gsl_matrix* zeros(int size);
+	gsl_matrix* zeros(int size1, int size2);
+	gsl_vector* zeros_vector(int size);
 	
 	// Operators
 	gsl_vector* concatenate(const gsl_vector* v, double x);
@@ -293,6 +280,8 @@ namespace matlab {
 	gsl_matrix* concatenate_rows(const gsl_matrix* m1, const gsl_matrix* m2);
 	gsl_vector* copy(const gsl_vector* v);
 	gsl_matrix* copy(const gsl_matrix* m);
+	gsl_matrix* div_left(const gsl_matrix* m1, const gsl_matrix* m2);
+	gsl_matrix* div_right(const gsl_matrix* m1, const gsl_matrix* m2);
 	gsl_vector* logical_and(const gsl_vector* v1, const gsl_vector* v2);
 	gsl_matrix* logical_and(const gsl_matrix* m1, const gsl_matrix* m2);
 	gsl_vector* logical_not(const gsl_vector* v);
@@ -305,13 +294,12 @@ namespace matlab {
 	gsl_vector* pow_elements(const gsl_vector* v, const gsl_vector* powers);
 	gsl_matrix* pow_elements(const gsl_matrix* m, double power);
 	gsl_matrix* pow_elements(const gsl_matrix* m, const gsl_matrix* powers);
-	gsl_vector* sequence_double(int start, int end);
-	gsl_vector* sequence_double(int start, int step, int end);
+	gsl_vector* sequence(int start, int end);
+	gsl_vector* sequence(int start, int step, int end);
 	
 	// Floating-point comparison
-	extern double epsilon_double;
+	extern double epsilon;
 	int fp_compare(double x, double y);
-	typedef bool (*fp_cmp_fn_double)(double, double);
 	bool fp_zero(double x);
 	bool fp_nonzero(double x);
 	bool fp_equal(double x, double y);
@@ -322,14 +310,15 @@ namespace matlab {
 	bool fp_greater_or_equal(double x, double y);
 	
 	// Vector/matrix comparison
+	typedef bool (*comparator)(double, double);
 	int compare_vectors(const gsl_vector* v1, const gsl_vector* v2);
 	bool vector_less(gsl_vector* v1, gsl_vector* v2);
 	int compare_matrices(const gsl_matrix* m1, const gsl_matrix* m2);
 	bool matrix_less(gsl_matrix* m1, gsl_matrix* m2);
-	gsl_vector* compare_elements(const gsl_vector* v, fp_cmp_fn_double compare, double x);
-	gsl_vector* compare_elements(const gsl_vector* v1, fp_cmp_fn_double compare, const gsl_vector* v2);
-	gsl_matrix* compare_elements(const gsl_matrix* m, fp_cmp_fn_double compare, double x);
-	gsl_matrix* compare_elements(const gsl_matrix* m1, fp_cmp_fn_double compare, const gsl_matrix* m2);
+	gsl_vector* compare_elements(const gsl_vector* v, comparator compare, double x);
+	gsl_vector* compare_elements(const gsl_vector* v1, comparator compare, const gsl_vector* v2);
+	gsl_matrix* compare_elements(const gsl_matrix* m, comparator compare, double x);
+	gsl_matrix* compare_elements(const gsl_matrix* m1, comparator compare, const gsl_matrix* m2);
 	
 	// Vector-by-vector indexing
 	gsl_vector* ordinal_index(const gsl_vector* v, const gsl_vector* indices);
@@ -379,19 +368,15 @@ namespace matlab {
 	void to_array(const gsl_vector* v, double* array);
 	bool to_bool(const gsl_vector* v);
 	bool to_bool(const gsl_matrix* m);
-	gsl_vector_float* to_vector_float(const gsl_vector* v);
-	gsl_vector* to_vector_double(const gsl_vector* v);
-	gsl_vector_long_double* to_vector_long_double(const gsl_vector* v);
 	gsl_vector* to_vector(const gsl_matrix* m);
-	gsl_matrix_float* to_matrix_float(const gsl_matrix* m);
-	gsl_matrix* to_matrix_double(const gsl_matrix* m);
-	gsl_matrix_long_double* to_matrix_long_double(const gsl_matrix* m);
 	gsl_matrix* to_column_matrix(const gsl_vector* v);
 	gsl_matrix* to_row_matrix(const gsl_vector* v);
-	gsl_vector* to_vector_double(const gsl_permutation* p);
+	gsl_vector* to_vector(const gsl_permutation* p);
 	gsl_permutation* to_permutation(const gsl_vector* v);
 	
 	// Utility
+	gsl_rng* get_rng();
+	void seed_rng(const gsl_rng* rng, unsigned long seed);
 	gsl_matrix* permute_columns(const gsl_permutation* p, const gsl_matrix* m);
 	gsl_matrix* permute_rows(const gsl_permutation* p, const gsl_matrix* m);
 }

@@ -1,8 +1,4 @@
-#include <bct/bct.h>
 #include "bct_test.h"
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include <octave/oct.h>
 
 DEFUN_DLD(motif4funct_bin_cpp, args, , "Wrapper for C++ function.") {
 	bct::set_motif_mode(bct::SPORNS);

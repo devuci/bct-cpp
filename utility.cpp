@@ -1,11 +1,7 @@
-#include "bct.h"
 #include <gsl/gsl_errno.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_permutation.h>
-#include <gsl/gsl_vector.h>
 #include <sstream>
-#include <string>
-#include <vector>
+
+#include "bct.h"
 
 /*
  * Catches GSL errors and throws BCT exceptions.
@@ -19,12 +15,12 @@ void bct::gsl_error_handler(const char* reason, const char* file, int line, int 
 /*
  * Overloaded convenience function for freeing GSL vectors and matrices.
  */
-void bct::gsl_free(gsl_vector* v) { gsl_vector_free(v); }
-void bct::gsl_free(gsl_matrix* m) { gsl_matrix_free(m); }
-void bct::gsl_free(std::vector<gsl_matrix*>& m) {
+void bct::gsl_free(VECTOR_T* v) { VECTOR_ID(free)(v); }
+void bct::gsl_free(MATRIX_T* m) { MATRIX_ID(free)(m); }
+void bct::gsl_free(std::vector<MATRIX_T*>& m) {
 	for (int i = 0; i < (int)m.size(); i++) {
 		if (m[i] != NULL) {
-			gsl_matrix_free(m[i]);
+			MATRIX_ID(free)(m[i]);
 			m[i] = NULL;
 		}
 	}
@@ -41,23 +37,23 @@ void bct::init() {
 /*
  * Returns the number of edges in a directed graph.
  */
-int bct::number_of_edges_dir(const gsl_matrix* m) {
+int bct::number_of_edges_dir(const MATRIX_T* m) {
 	return nnz(m);
 }
 
 /*
  * Returns the number of edges in an undirected graph.
  */
-int bct::number_of_edges_und(const gsl_matrix* m) {
-	gsl_matrix* triu_m = triu(m);
+int bct::number_of_edges_und(const MATRIX_T* m) {
+	MATRIX_T* triu_m = triu(m);
 	int ret = nnz(triu_m);
-	gsl_matrix_free(triu_m);
+	MATRIX_ID(free)(triu_m);
 	return ret;
 }
 
 /*
  * Returns the number of nodes in a graph.
  */
-int bct::number_of_nodes(const gsl_matrix* m) {
+int bct::number_of_nodes(const MATRIX_T* m) {
 	return (int)m->size1;
 }
