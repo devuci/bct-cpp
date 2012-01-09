@@ -50,8 +50,8 @@ namespace bct {
 	VECTOR_T* cycprob_fcyc(const std::vector<MATRIX_T*>& Pq);
 	VECTOR_T* cycprob_pcyc(const std::vector<MATRIX_T*>& Pq);
 	MATRIX_T* distance_bin(const MATRIX_T* G);
-	MATRIX_T* distance_wei(const MATRIX_T* G); 
-	FP_T efficiency_global(const MATRIX_T* G);
+	MATRIX_T* distance_wei(const MATRIX_T* G);
+	FP_T efficiency_global(const MATRIX_T* G, const MATRIX_T* D = NULL);
 	std::vector<MATRIX_T*> findpaths(const MATRIX_T* CIJ, const VECTOR_T* sources, int qmax, VECTOR_T** plq = NULL, int* qstop = NULL, MATRIX_T** allpths = NULL, MATRIX_T** util = NULL);
 	std::vector<MATRIX_T*> findwalks(const MATRIX_T* CIJ, VECTOR_T** wlq = NULL);
 	FP_T normalized_path_length(const MATRIX_T* D, FP_T wmax = 1.0);

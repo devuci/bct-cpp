@@ -2,19 +2,20 @@
 
 #include "bct.h"
 
-MATRIX_T* distance_inv(const MATRIX_T*);
+MATRIX_T* distance_inv(const MATRIX_T*, const MATRIX_T*);
 
 /*
- * Computes global efficiency.
+ * Computes global efficiency.  Takes an optional distance matrix that is
+ * computed if not given.
  */
-FP_T bct::efficiency_global(const MATRIX_T* G) {
+FP_T bct::efficiency_global(const MATRIX_T* G, const MATRIX_T* D) {
 	if (safe_mode) check_status(G, SQUARE, "efficiency_global");
 	
 	// N=length(G);
 	int N = length(G);
 	
 	// e=distance_inv(G);
-	MATRIX_T* e = distance_inv(G);
+	MATRIX_T* e = distance_inv(G, D);
 	
 	// E=sum(e(:))./(N^2-N);
 	VECTOR_T* e_v = to_vector(e);
@@ -55,7 +56,7 @@ VECTOR_T* bct::efficiency_local(const MATRIX_T* G) {
 				
 				// e=distance_inv(G(V,V));
 				MATRIX_T* G_idx = ordinal_index(G, V, V);
-				MATRIX_T* e = distance_inv(G_idx);
+				MATRIX_T* e = distance_inv(G_idx, NULL);
 				MATRIX_ID(free)(G_idx);
 				
 				// E(u)=sum(e(:))./(k.^2-k);
@@ -73,65 +74,16 @@ VECTOR_T* bct::efficiency_local(const MATRIX_T* G) {
 	return E;
 }
 
-MATRIX_T* distance_inv(const MATRIX_T* g) {
+MATRIX_T* distance_inv(const MATRIX_T* G, const MATRIX_T* D) {
 	using namespace bct;
 	
-	// D=eye(length(g));
-	MATRIX_T* D = eye(length(g));
-	
-	// n=1;
-	int n = 1;
-	
-	// nPATH=g;
-	MATRIX_T* nPATH = copy(g);
-	
-	// L=(nPATH~=0);
-	MATRIX_T* L = compare_elements(nPATH, fp_not_equal, 0.0);
-	
-	// while find(L,1);
-	VECTOR_T* find_L = find(L, 1);
-	while (find_L != NULL) {
-		VECTOR_ID(free)(find_L);
-		
-		// D=D+n.*L;
-		MATRIX_ID(scale)(L, (FP_T)n);
-		MATRIX_ID(add)(D, L);
-		
-		// n=n+1;
-		n++;
-		
-		// nPATH=nPATH*g;
-		MATRIX_T* temp = mul(nPATH, g);
-		MATRIX_ID(free)(nPATH);
-		nPATH = temp;
-		
-		// L=(nPATH~=0).*(D==0);
-		MATRIX_ID(free)(L);
-		L = compare_elements(nPATH, fp_not_equal, 0.0);
-		MATRIX_T* D_eq_0 = compare_elements(D, fp_equal, 0.0);
-		MATRIX_ID(mul_elements)(L, D_eq_0);
-		MATRIX_ID(free)(D_eq_0);
-		
-		find_L = find(L, 1);
+	MATRIX_T* D_inv;
+	if (D == NULL) {
+		MATRIX_T* temp = distance_wei(G);
+		D_inv = invert_elements(temp);
+		MATRIX_ID(free)(temp);
+	} else {
+		D_inv = invert_elements(D);
 	}
-	
-	MATRIX_ID(free)(nPATH);
-	MATRIX_ID(free)(L);
-	
-	// D(~D)=inf;
-	MATRIX_T* not_D = logical_not(D);
-	logical_index_assign(D, not_D, GSL_POSINF);
-	MATRIX_ID(free)(not_D);
-	
-	// D=1./D;
-	MATRIX_T* temp = pow_elements(D, -1.0);
-	MATRIX_ID(free)(D);
-	D = temp;
-	
-	// D=D-eye(length(g));
-	MATRIX_T* eye_length_g = eye(length(g));
-	MATRIX_ID(sub)(D, eye_length_g);
-	MATRIX_ID(free)(eye_length_g);
-	
-	return D;
+	return D_inv;
 }
