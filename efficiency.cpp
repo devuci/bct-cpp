@@ -8,7 +8,7 @@ MATRIX_T* distance_inv(const MATRIX_T*, const MATRIX_T*);
  * Computes global efficiency.  Takes an optional distance matrix that is
  * computed if not given.
  */
-FP_T bct::efficiency_global(const MATRIX_T* G, const MATRIX_T* D) {
+FP_T BCT_NAMESPACE::efficiency_global(const MATRIX_T* G, const MATRIX_T* D) {
 	if (safe_mode) check_status(G, SQUARE, "efficiency_global");
 	
 	// N=length(G);
@@ -28,7 +28,7 @@ FP_T bct::efficiency_global(const MATRIX_T* G, const MATRIX_T* D) {
 /*
  * Computes local efficiency.
  */
-VECTOR_T* bct::efficiency_local(const MATRIX_T* G) {
+VECTOR_T* BCT_NAMESPACE::efficiency_local(const MATRIX_T* G) {
 	if (safe_mode) check_status(G, SQUARE, "efficiency_local");
 	
 	// N=length(G);
@@ -75,7 +75,7 @@ VECTOR_T* bct::efficiency_local(const MATRIX_T* G) {
 }
 
 MATRIX_T* distance_inv(const MATRIX_T* G, const MATRIX_T* D) {
-	using namespace bct;
+	using namespace BCT_NAMESPACE;
 	
 	MATRIX_T* D_inv;
 	if (D == NULL) {

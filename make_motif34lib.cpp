@@ -6,15 +6,15 @@
  * the 12-digit numbers required for the four-node motif library.
  */
 
-bct::motif_mode_enum bct::motif_mode = MILO;
+BCT_NAMESPACE::motif_mode_enum BCT_NAMESPACE::motif_mode = MILO;
 
-bct::motif_mode_enum bct::get_motif_mode() { return motif_mode; }
-void bct::set_motif_mode(motif_mode_enum motif_mode) { bct::motif_mode = motif_mode; }
+BCT_NAMESPACE::motif_mode_enum BCT_NAMESPACE::get_motif_mode() { return motif_mode; }
+void BCT_NAMESPACE::set_motif_mode(motif_mode_enum motif_mode) { BCT_NAMESPACE::motif_mode = motif_mode; }
 
 /*
  * Constructs the three-node motif library.
  */
-MATRIX_T* bct::motif3generate(VECTOR_T** ID, VECTOR_T** N) {
+MATRIX_T* BCT_NAMESPACE::motif3generate(VECTOR_T** ID, VECTOR_T** N) {
 	static MATRIX_T* M = NULL;
 	static VECTOR_T* _ID = NULL;
 	static VECTOR_T* _N = NULL;
@@ -155,7 +155,7 @@ MATRIX_T* bct::motif3generate(VECTOR_T** ID, VECTOR_T** N) {
 /*
  * Constructs the four-node motif library.
  */
-MATRIX_T* bct::motif4generate(VECTOR_T** ID, VECTOR_T** N) {
+MATRIX_T* BCT_NAMESPACE::motif4generate(VECTOR_T** ID, VECTOR_T** N) {
 	static MATRIX_T* M = NULL;
 	static VECTOR_T* _ID = NULL;
 	static VECTOR_T* _N = NULL;

@@ -3,15 +3,15 @@
 #include "bct.h"
 
 /*
- * WARNING: bct::normalized_path_length takes a distance matrix, but
- * bct::normalized_path_length_m takes a connection matrix.  Both should be
+ * WARNING: BCT_NAMESPACE::normalized_path_length takes a distance matrix, but
+ * BCT_NAMESPACE::normalized_path_length_m takes a connection matrix.  Both should be
  * lengths, not weights (called distances in CalcMetric).
  */
 
 /*
  * Given a distance matrix, computes the normalized shortest path length.
  */
-FP_T bct::normalized_path_length(const MATRIX_T* D, FP_T wmax) {
+FP_T BCT_NAMESPACE::normalized_path_length(const MATRIX_T* D, FP_T wmax) {
 	if (safe_mode) check_status(D, SQUARE, "normalized_path_length");
 	int N = D->size1;
 	FP_T dmin = 1.0 / wmax;
@@ -33,7 +33,7 @@ FP_T bct::normalized_path_length(const MATRIX_T* D, FP_T wmax) {
  * Computes the normalized shortest path length using dmax = N * lmean, where
  * lmean is the average distance between all directly connected nodes.
  */
-FP_T bct::normalized_path_length_m(const MATRIX_T* L, FP_T wmax) {
+FP_T BCT_NAMESPACE::normalized_path_length_m(const MATRIX_T* L, FP_T wmax) {
 	if (safe_mode) check_status(L, SQUARE, "normalized_path_length_m");
 	int N = L->size1;
 	int nonzeros = 0;

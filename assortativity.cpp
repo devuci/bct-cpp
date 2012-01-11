@@ -5,7 +5,7 @@ FP_T assortativity(const VECTOR_T*, const MATRIX_T*);
 /*
  * Computes assortativity for a directed graph.  Connection weights are ignored.
  */
-FP_T bct::assortativity_dir(const MATRIX_T* CIJ) {
+FP_T BCT_NAMESPACE::assortativity_dir(const MATRIX_T* CIJ) {
 	if (safe_mode) check_status(CIJ, SQUARE | DIRECTED, "assortativity_dir");
 	
 	// [id,od,deg] = degrees_dir(CIJ);
@@ -26,7 +26,7 @@ FP_T bct::assortativity_dir(const MATRIX_T* CIJ) {
  * Computes assortativity for an undirected graph.  Connection weights are
  * ignored.
  */
-FP_T bct::assortativity_und(const MATRIX_T* CIJ) {
+FP_T BCT_NAMESPACE::assortativity_und(const MATRIX_T* CIJ) {
 	if (safe_mode) check_status(CIJ, SQUARE | UNDIRECTED, "assortativity_und");
 	
 	// [deg] = degrees_und(m);
@@ -46,7 +46,7 @@ FP_T bct::assortativity_und(const MATRIX_T* CIJ) {
 }
 
 FP_T assortativity(const VECTOR_T* deg, const MATRIX_T* ij) {
-	using namespace bct;
+	using namespace BCT_NAMESPACE;
 	
 	VECTOR_ID(const_view) i = MATRIX_ID(const_column)(ij, 0);
 	VECTOR_ID(const_view) j = MATRIX_ID(const_column)(ij, 1);

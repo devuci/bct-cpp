@@ -3,7 +3,7 @@
 /*
  * Computes degree for an undirected graph.  Connection weights are ignored.
  */
-VECTOR_T* bct::degrees_und(const MATRIX_T* CIJ) {
+VECTOR_T* BCT_NAMESPACE::degrees_und(const MATRIX_T* CIJ) {
 	if (safe_mode) check_status(CIJ, SQUARE | UNDIRECTED, "degrees_und");
 	
 	// CIJ = FP_T(CIJ~=0);

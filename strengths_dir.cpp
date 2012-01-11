@@ -3,7 +3,7 @@
 /*
  * Computes strength, in-strength, and out-strength for a directed graph.
  */
-VECTOR_T* bct::strengths_dir(const MATRIX_T* CIJ, VECTOR_T** is, VECTOR_T** os) {
+VECTOR_T* BCT_NAMESPACE::strengths_dir(const MATRIX_T* CIJ, VECTOR_T** is, VECTOR_T** os) {
 	if (safe_mode) check_status(CIJ, SQUARE | DIRECTED, "strengths_dir");
 	
 	// is = sum(CIJ,1);

@@ -7,7 +7,7 @@
  * the diagonal and the remaining connections distributed randomly among them.
  * N must be a power of 2, and the cluster size is given by (2 ^ sz_cl).
  */
-MATRIX_T* bct::makeevenCIJ(int N, int K, int sz_cl) {
+MATRIX_T* BCT_NAMESPACE::makeevenCIJ(int N, int K, int sz_cl) {
 
 	// mx_lvl = floor(log2(N));
 	int mx_lvl = (int)std::floor(std::log((FP_T)N) / std::log(2.0));

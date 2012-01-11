@@ -8,7 +8,7 @@
  * (1 / (E ^ n)), where n is the hierarchical level index.  Cluster size is
  * given by (2 ^ sz_cl).
  */
-MATRIX_T* bct::makefractalCIJ(int mx_lvl, FP_T E, int sz_cl, int* K) {
+MATRIX_T* BCT_NAMESPACE::makefractalCIJ(int mx_lvl, FP_T E, int sz_cl, int* K) {
 	
 	// t = ones(2).*2;
 	MATRIX_T* t = MATRIX_ID(alloc)(2, 2);

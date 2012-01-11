@@ -2,16 +2,16 @@
 
 #include "bct.h"
 
-bool bct::safe_mode = true;
+bool BCT_NAMESPACE::safe_mode = true;
 
-bool bct::get_safe_mode() { return safe_mode; }
-void bct::set_safe_mode(bool safe_mode) { bct::safe_mode = safe_mode; }
+bool BCT_NAMESPACE::get_safe_mode() { return safe_mode; }
+void BCT_NAMESPACE::set_safe_mode(bool safe_mode) { BCT_NAMESPACE::safe_mode = safe_mode; }
 
 /*
  * Returns whether a matrix matches the given status flags.  If the check fails,
  * a message is printed to stderr starting with the given text.
  */
-bool bct::check_status(const MATRIX_T* m, int flags, const std::string& text) {
+bool BCT_NAMESPACE::check_status(const MATRIX_T* m, int flags, const std::string& text) {
 	status prop[] = {
 		SQUARE, RECTANGULAR,
 		UNDIRECTED, DIRECTED,
@@ -59,28 +59,28 @@ bool bct::check_status(const MATRIX_T* m, int flags, const std::string& text) {
 /*
  * Returns whether the given matrix is square.
  */
-bool bct::is_square(const MATRIX_T* m) {
+bool BCT_NAMESPACE::is_square(const MATRIX_T* m) {
 	return m->size1 == m->size2;
 }
 
 /*
  * Returns whether the given matrix is rectangular.
  */
-bool bct::is_rectangular(const MATRIX_T* m) {
+bool BCT_NAMESPACE::is_rectangular(const MATRIX_T* m) {
 	return m->size1 != m->size2;
 }
 
 /*
  * Returns whether the given matrix is undirected.
  */
-bool bct::is_undirected(const MATRIX_T* m) {
+bool BCT_NAMESPACE::is_undirected(const MATRIX_T* m) {
 	return !is_directed(m);
 }
 
 /*
  * Returns whether the given matrix is directed.
  */
-bool bct::is_directed(const MATRIX_T* m) {
+bool BCT_NAMESPACE::is_directed(const MATRIX_T* m) {
 	for (int i = 0; i < (int)m->size1; i++) {
 		for (int j = 0; j < (int)m->size2; j++) {
 			if (fp_not_equal(MATRIX_ID(get)(m, i, j), MATRIX_ID(get)(m, j, i))) {
@@ -94,14 +94,14 @@ bool bct::is_directed(const MATRIX_T* m) {
 /*
  * Returns whether the given matrix is binary.
  */
-bool bct::is_binary(const MATRIX_T* m) {
+bool BCT_NAMESPACE::is_binary(const MATRIX_T* m) {
 	return !is_weighted(m);
 }
 
 /*
  * Returns whether the given matrix is weighted.
  */
-bool bct::is_weighted(const MATRIX_T* m) {
+bool BCT_NAMESPACE::is_weighted(const MATRIX_T* m) {
 	for (int i = 0; i < (int)m->size1; i++) {
 		for (int j = 0; j < (int)m->size2; j++) {
 			FP_T value = MATRIX_ID(get)(m, i, j);
@@ -116,14 +116,14 @@ bool bct::is_weighted(const MATRIX_T* m) {
 /*
  * Returns whether the given matrix is positive.
  */
-bool bct::is_positive(const MATRIX_T* m) {
+bool BCT_NAMESPACE::is_positive(const MATRIX_T* m) {
 	return !is_signed(m);
 }
 
 /*
  * Returns whether the given matrix is signed.
  */
-bool bct::is_signed(const MATRIX_T* m) {
+bool BCT_NAMESPACE::is_signed(const MATRIX_T* m) {
 	for (int i = 0; i < (int)m->size1; i++) {
 		for (int j = 0; j < (int)m->size2; j++) {
 			if (MATRIX_ID(get)(m, i, j) < 0.0) {
@@ -137,14 +137,14 @@ bool bct::is_signed(const MATRIX_T* m) {
 /*
  * Returns whether the given matrix has loops.
  */
-bool bct::has_loops(const MATRIX_T* m) {
+bool BCT_NAMESPACE::has_loops(const MATRIX_T* m) {
 	return !has_no_loops(m);
 }
 
 /*
  * Returns whether the given matrix has no loops.
  */
-bool bct::has_no_loops(const MATRIX_T* m) {
+bool BCT_NAMESPACE::has_no_loops(const MATRIX_T* m) {
 	VECTOR_ID(const_view) diag_m = MATRIX_ID(const_diagonal)(m);
 	return VECTOR_ID(isnull)(&diag_m.vector) == 1;
 }

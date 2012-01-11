@@ -8,7 +8,7 @@
  * Marchiori and Latora (2000). Harmony in the small-world. Physica A 285:
  * 539-546.
  */
-FP_T bct::connectivity_length(const MATRIX_T* D) {
+FP_T BCT_NAMESPACE::connectivity_length(const MATRIX_T* D) {
 	if (safe_mode) check_status(D, SQUARE, "connectivity_length");
 	int N = D->size1;
 	FP_T sum = 0.0;

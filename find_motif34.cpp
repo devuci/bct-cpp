@@ -3,7 +3,7 @@
 /*
  * Returns all motif isomorphs for a given motif ID and size.
  */
-std::vector<MATRIX_T*> bct::find_motif34(int m, int n) {
+std::vector<MATRIX_T*> BCT_NAMESPACE::find_motif34(int m, int n) {
 	
 	// if n==3
 	if (n == 3) {
@@ -78,7 +78,7 @@ std::vector<MATRIX_T*> bct::find_motif34(int m, int n) {
 /*
  * Returns the motif ID for a given matrix.
  */
-int bct::find_motif34(const MATRIX_T* m) {
+int BCT_NAMESPACE::find_motif34(const MATRIX_T* m) {
 	if (safe_mode) check_status(m, SQUARE, "find_motif34");
 	
 	// n=size(m,1);

@@ -3,7 +3,7 @@
 /*
  * Computes density for an undirected graph.  Connection weights are ignored.
  */
-FP_T bct::density_und(const MATRIX_T* CIJ) {
+FP_T BCT_NAMESPACE::density_und(const MATRIX_T* CIJ) {
 	if (safe_mode) check_status(CIJ, SQUARE | UNDIRECTED, "density_und");
 	
 	// N = size(CIJ,1);

@@ -6,6 +6,8 @@
 #undef MATRIX_ID
 
 #ifdef GSL_FLOAT
+#define MATLAB_NAMESPACE matlab_float
+#define BCT_NAMESPACE bct_float
 #define FP_T float
 #define FP_ID(id) id##_##float
 #define VECTOR_T gsl_vector_float
@@ -17,6 +19,8 @@
 #endif
 
 #ifdef GSL_DOUBLE
+#define MATLAB_NAMESPACE matlab
+#define BCT_NAMESPACE bct
 #define FP_T double
 #define FP_ID(id) id##_##double
 #define VECTOR_T gsl_vector
@@ -28,6 +32,8 @@
 #endif
 
 #ifdef GSL_LONG_DOUBLE
+#define MATLAB_NAMESPACE matlab_long_double
+#define BCT_NAMESPACE bct_long_double
 #define FP_T long double
 #define FP_ID(id) id##_##long_double
 #define VECTOR_T gsl_vector_long_double

@@ -12,7 +12,7 @@
  * document instances where our version differs from the MATLAB version.
  */
 
-VECTOR_T* matlab::abs(const VECTOR_T* v) {
+VECTOR_T* MATLAB_NAMESPACE::abs(const VECTOR_T* v) {
 	VECTOR_T* abs_v = VECTOR_ID(alloc)(v->size);
 	for (int i = 0; i < (int)v->size; i++) {
 		VECTOR_ID(set)(abs_v, i, std::abs(VECTOR_ID(get)(v, i)));
@@ -20,7 +20,7 @@ VECTOR_T* matlab::abs(const VECTOR_T* v) {
 	return abs_v;
 }
 
-MATRIX_T* matlab::abs(const MATRIX_T* m) {
+MATRIX_T* MATLAB_NAMESPACE::abs(const MATRIX_T* m) {
 	MATRIX_T* abs_m = MATRIX_ID(alloc)(m->size1, m->size2);
 	for (int i = 0; i < (int)m->size1; i++) {
 		for (int j = 0; j < (int)m->size2; j++) {
@@ -30,7 +30,7 @@ MATRIX_T* matlab::abs(const MATRIX_T* m) {
 	return abs_m;
 }
 
-int matlab::all(const VECTOR_T* v) {
+int MATLAB_NAMESPACE::all(const VECTOR_T* v) {
 	for (int i = 0; i < (int)v->size; i++) {
 		if (fp_zero(VECTOR_ID(get)(v, i))) {
 			return 0;
@@ -39,7 +39,7 @@ int matlab::all(const VECTOR_T* v) {
 	return 1;
 }
 
-VECTOR_T* matlab::all(const MATRIX_T* m, int dim) {
+VECTOR_T* MATLAB_NAMESPACE::all(const MATRIX_T* m, int dim) {
 	if (dim == 1) {
 		VECTOR_T* all_v = VECTOR_ID(alloc)(m->size2);
 		for (int i = 0; i < (int)m->size2; i++) {
@@ -59,7 +59,7 @@ VECTOR_T* matlab::all(const MATRIX_T* m, int dim) {
 	}
 }
 
-int matlab::any(const VECTOR_T* v) {
+int MATLAB_NAMESPACE::any(const VECTOR_T* v) {
 	for (int i = 0; i < (int)v->size; i++) {
 		if (fp_nonzero(VECTOR_ID(get)(v, i))) {
 			return 1;
@@ -68,7 +68,7 @@ int matlab::any(const VECTOR_T* v) {
 	return 0;
 }
 
-VECTOR_T* matlab::any(const MATRIX_T* m, int dim) {
+VECTOR_T* MATLAB_NAMESPACE::any(const MATRIX_T* m, int dim) {
 	if (dim == 1) {
 		VECTOR_T* any_v = VECTOR_ID(alloc)(m->size2);
 		for (int i = 0; i < (int)m->size2; i++) {
@@ -88,11 +88,11 @@ VECTOR_T* matlab::any(const MATRIX_T* m, int dim) {
 	}
 }
 
-std::string matlab::dec2bin(int n) {
+std::string MATLAB_NAMESPACE::dec2bin(int n) {
 	return dec2bin(n, 0);
 }
 
-std::string matlab::dec2bin(int n, int len) {
+std::string MATLAB_NAMESPACE::dec2bin(int n, int len) {
 	if (n < 0) {
 		return "";
 	}
@@ -108,7 +108,7 @@ std::string matlab::dec2bin(int n, int len) {
 	return bin;
 }
 
-MATRIX_T* matlab::diag(const VECTOR_T* v, int k) {
+MATRIX_T* MATLAB_NAMESPACE::diag(const VECTOR_T* v, int k) {
 	int i0;
 	int j0;
 	if (k >= 0) { i0 = 0; j0 = k; }
@@ -121,7 +121,7 @@ MATRIX_T* matlab::diag(const VECTOR_T* v, int k) {
 	return diag_m;
 }
 
-VECTOR_T* matlab::diag(const MATRIX_T* m, int k) {
+VECTOR_T* MATLAB_NAMESPACE::diag(const MATRIX_T* m, int k) {
 	if (k <= -(int)m->size1 || k >= (int)m->size2) {
 		return NULL;
 	}
@@ -139,18 +139,18 @@ VECTOR_T* matlab::diag(const MATRIX_T* m, int k) {
 	return diag_v;
 }
 
-MATRIX_T* matlab::eye(int size) {
+MATRIX_T* MATLAB_NAMESPACE::eye(int size) {
 	return eye(size, size);
 }
 
-MATRIX_T* matlab::eye(int size1, int size2) {
+MATRIX_T* MATLAB_NAMESPACE::eye(int size1, int size2) {
 	MATRIX_T* eye_m = MATRIX_ID(calloc)(size1, size2);
 	VECTOR_ID(view) diag_eye_m = MATRIX_ID(diagonal)(eye_m);
 	VECTOR_ID(set_all)(&diag_eye_m.vector, 1.0);
 	return eye_m;
 }
 
-VECTOR_T* matlab::find(const VECTOR_T* v, int n, const std::string& direction) {
+VECTOR_T* MATLAB_NAMESPACE::find(const VECTOR_T* v, int n, const std::string& direction) {
 	int n_find = nnz(v);
 	if (n_find == 0 || n < 1) {
 		return NULL;
@@ -180,7 +180,7 @@ VECTOR_T* matlab::find(const VECTOR_T* v, int n, const std::string& direction) {
 	}
 }
 
-VECTOR_T* matlab::find(const MATRIX_T* m, int n, const std::string& direction) {
+VECTOR_T* MATLAB_NAMESPACE::find(const MATRIX_T* m, int n, const std::string& direction) {
 	VECTOR_T* v = to_vector(m);
 	VECTOR_T* find_v = find(v, n, direction);
 	VECTOR_ID(free)(v);
@@ -190,7 +190,7 @@ VECTOR_T* matlab::find(const MATRIX_T* m, int n, const std::string& direction) {
 /*
  * Emulates the two-return version of "find".
  */
-MATRIX_T* matlab::find_ij(const MATRIX_T* m, int n, const std::string& direction) {
+MATRIX_T* MATLAB_NAMESPACE::find_ij(const MATRIX_T* m, int n, const std::string& direction) {
 	VECTOR_T* find_v = find(m, n, direction);
 	if (find_v == NULL) {
 		return NULL;
@@ -208,7 +208,7 @@ MATRIX_T* matlab::find_ij(const MATRIX_T* m, int n, const std::string& direction
 	}
 }
 
-VECTOR_T* matlab::hist(const VECTOR_T* v, int n) {
+VECTOR_T* MATLAB_NAMESPACE::hist(const VECTOR_T* v, int n) {
 	VECTOR_T* centers = VECTOR_ID(alloc)(n);
 	FP_T min_value = min(v);
 	FP_T max_value = max(v);
@@ -221,7 +221,7 @@ VECTOR_T* matlab::hist(const VECTOR_T* v, int n) {
 	return hist_v;
 }
 
-VECTOR_T* matlab::hist(const VECTOR_T* v, const VECTOR_T* centers) {
+VECTOR_T* MATLAB_NAMESPACE::hist(const VECTOR_T* v, const VECTOR_T* centers) {
 	int n = centers->size;
 	VECTOR_T* hist_v = VECTOR_ID(calloc)(n);
 	for (int i = 0; i < (int)v->size; i++) {
@@ -248,7 +248,7 @@ VECTOR_T* matlab::hist(const VECTOR_T* v, const VECTOR_T* centers) {
 	return hist_v;
 }
 
-MATRIX_T* matlab::inv(const MATRIX_T* m) {
+MATRIX_T* MATLAB_NAMESPACE::inv(const MATRIX_T* m) {
 	if (m->size1 != m->size2) {
 		return NULL;
 	}
@@ -272,15 +272,15 @@ MATRIX_T* matlab::inv(const MATRIX_T* m) {
 	}
 }
 
-int matlab::length(const VECTOR_T* v) {
+int MATLAB_NAMESPACE::length(const VECTOR_T* v) {
 	return v->size;
 }
 
-int matlab::length(const MATRIX_T* m) {
+int MATLAB_NAMESPACE::length(const MATRIX_T* m) {
 	return (m->size1 > m->size2) ? m->size1 : m->size2;
 }
 
-FP_T matlab::max(FP_T x, FP_T y) {
+FP_T MATLAB_NAMESPACE::max(FP_T x, FP_T y) {
 	if (gsl_isnan((double)x) == 1) {
 		return y;
 	} else if (gsl_isnan((double)y) == 1) {
@@ -290,7 +290,7 @@ FP_T matlab::max(FP_T x, FP_T y) {
 	}
 }
 
-FP_T matlab::max(const VECTOR_T* v) {
+FP_T MATLAB_NAMESPACE::max(const VECTOR_T* v) {
 	FP_T max = (FP_T)GSL_NAN;
 	int i = 0;
 	for ( ; i < (int)v->size; i++) {
@@ -312,7 +312,7 @@ FP_T matlab::max(const VECTOR_T* v) {
 /*
  * Emulates (max(m)) or (max(m')).
  */
-VECTOR_T* matlab::max(const MATRIX_T* m, int dim) {
+VECTOR_T* MATLAB_NAMESPACE::max(const MATRIX_T* m, int dim) {
 	if (dim == 1) {
 		VECTOR_T* max_v = VECTOR_ID(alloc)(m->size2);
 		for (int i = 0; i < (int)m->size2; i++) {
@@ -334,7 +334,7 @@ VECTOR_T* matlab::max(const MATRIX_T* m, int dim) {
 	}
 }
 
-FP_T matlab::mean(const VECTOR_T* v, const std::string& opt) {
+FP_T MATLAB_NAMESPACE::mean(const VECTOR_T* v, const std::string& opt) {
 	if (opt == "a") {
 		FP_T sum = 0.0;
 		for (int i = 0; i < (int)v->size; i++) {
@@ -358,7 +358,7 @@ FP_T matlab::mean(const VECTOR_T* v, const std::string& opt) {
 	}
 }
 
-VECTOR_T* matlab::mean(const MATRIX_T* m, int dim, const std::string& opt) {
+VECTOR_T* MATLAB_NAMESPACE::mean(const MATRIX_T* m, int dim, const std::string& opt) {
 	if (dim == 1) {
 		VECTOR_T* mean_v = VECTOR_ID(alloc)(m->size2);
 		for (int i = 0; i < (int)m->size2; i++) {
@@ -380,7 +380,7 @@ VECTOR_T* matlab::mean(const MATRIX_T* m, int dim, const std::string& opt) {
 	}
 }
 
-FP_T matlab::min(FP_T x, FP_T y) {
+FP_T MATLAB_NAMESPACE::min(FP_T x, FP_T y) {
 	if (gsl_isnan((double)x) == 1) {
 		return y;
 	} else if (gsl_isnan((double)y) == 1) {
@@ -390,7 +390,7 @@ FP_T matlab::min(FP_T x, FP_T y) {
 	}
 }
 
-FP_T matlab::min(const VECTOR_T* v) {
+FP_T MATLAB_NAMESPACE::min(const VECTOR_T* v) {
 	FP_T min = (FP_T)GSL_NAN;
 	int i = 0;
 	for ( ; i < (int)v->size; i++) {
@@ -412,7 +412,7 @@ FP_T matlab::min(const VECTOR_T* v) {
 /*
  * Emulates (min(m)) or (min(m')).
  */
-VECTOR_T* matlab::min(const MATRIX_T* m, int dim) {
+VECTOR_T* MATLAB_NAMESPACE::min(const MATRIX_T* m, int dim) {
 	if (dim == 1) {
 		VECTOR_T* min_v = VECTOR_ID(alloc)(m->size2);
 		for (int i = 0; i < (int)m->size2; i++) {
@@ -434,7 +434,7 @@ VECTOR_T* matlab::min(const MATRIX_T* m, int dim) {
 	}
 }
 
-int matlab::nnz(const VECTOR_T* v) {
+int MATLAB_NAMESPACE::nnz(const VECTOR_T* v) {
 	int nnz = 0;
 	for (int i = 0; i < (int)v->size; i++) {
 		if (fp_nonzero(VECTOR_ID(get)(v, i))) {
@@ -444,14 +444,14 @@ int matlab::nnz(const VECTOR_T* v) {
 	return nnz;
 }
 
-int matlab::nnz(const MATRIX_T* m) {
+int MATLAB_NAMESPACE::nnz(const MATRIX_T* m) {
 	VECTOR_T* v = to_vector(m);
 	int nnz_v = nnz(v);
 	VECTOR_ID(free)(v);
 	return nnz_v;
 }
 
-VECTOR_T* matlab::nonzeros(const MATRIX_T* m) {
+VECTOR_T* MATLAB_NAMESPACE::nonzeros(const MATRIX_T* m) {
 	VECTOR_T* nz_v = find(m);
 	if (nz_v != NULL) {
 		for (int i = 0; i < (int)nz_v->size; i++) {
@@ -466,7 +466,7 @@ VECTOR_T* matlab::nonzeros(const MATRIX_T* m) {
 /*
  * Currently only supports p > 1.
  */
-FP_T matlab::norm(const VECTOR_T* v, int p) {
+FP_T MATLAB_NAMESPACE::norm(const VECTOR_T* v, int p) {
 	if (p > 1) {
 		FP_T sum = 0.0;
 		for (int i = 0; i < (int)v->size; i++) {
@@ -478,7 +478,7 @@ FP_T matlab::norm(const VECTOR_T* v, int p) {
 	}
 }
 
-VECTOR_T* matlab::normpdf(const VECTOR_T* v, FP_T mean, FP_T stdev) {
+VECTOR_T* MATLAB_NAMESPACE::normpdf(const VECTOR_T* v, FP_T mean, FP_T stdev) {
 	VECTOR_T* pdf_v = VECTOR_ID(alloc)(v->size);
 	for (int i = 0; i < (int)v->size; i++) {
 		double x = (double)VECTOR_ID(get)(v, i);
@@ -488,11 +488,11 @@ VECTOR_T* matlab::normpdf(const VECTOR_T* v, FP_T mean, FP_T stdev) {
 	return pdf_v;
 }
 
-MATRIX_T* matlab::ones(int size) {
+MATRIX_T* MATLAB_NAMESPACE::ones(int size) {
 	return ones(size, size);
 }
 
-MATRIX_T* matlab::ones(int size1, int size2) {
+MATRIX_T* MATLAB_NAMESPACE::ones(int size1, int size2) {
 	MATRIX_T* ones_m = MATRIX_ID(alloc)(size1, size2);
 	MATRIX_ID(set_all)(ones_m, 1.0);
 	return ones_m;
@@ -501,13 +501,13 @@ MATRIX_T* matlab::ones(int size1, int size2) {
 /*
  * Emulates (ones(size, 1)) or (ones(1, size)).
  */
-VECTOR_T* matlab::ones_vector(int size) {
+VECTOR_T* MATLAB_NAMESPACE::ones_vector(int size) {
 	VECTOR_T* ones_v = VECTOR_ID(alloc)(size);
 	VECTOR_ID(set_all)(ones_v, 1.0);
 	return ones_v;
 }
 
-FP_T matlab::prod(const VECTOR_T* v) {
+FP_T MATLAB_NAMESPACE::prod(const VECTOR_T* v) {
 	FP_T prod = 1.0;
 	for (int i = 0; i < (int)v->size; i++) {
 		prod *= VECTOR_ID(get)(v, i);
@@ -515,7 +515,7 @@ FP_T matlab::prod(const VECTOR_T* v) {
 	return prod;
 }
 
-VECTOR_T* matlab::prod(const MATRIX_T* m, int dim) {
+VECTOR_T* MATLAB_NAMESPACE::prod(const MATRIX_T* m, int dim) {
 	if (dim == 1) {
 		VECTOR_T* prod_v = VECTOR_ID(alloc)(m->size2);
 		VECTOR_ID(set_all)(prod_v, 1.0);
@@ -537,11 +537,11 @@ VECTOR_T* matlab::prod(const MATRIX_T* m, int dim) {
 	}
 }
 
-MATRIX_T* matlab::rand(int size) {
+MATRIX_T* MATLAB_NAMESPACE::rand(int size) {
 	return rand(size, size);
 }
 
-MATRIX_T* matlab::rand(int size1, int size2) {
+MATRIX_T* MATLAB_NAMESPACE::rand(int size1, int size2) {
 	gsl_rng* rng = get_rng();
 	MATRIX_T* rand_m = MATRIX_ID(alloc)(size1, size2);
 	for (int i = 0; i < size1; i++) {
@@ -552,7 +552,7 @@ MATRIX_T* matlab::rand(int size1, int size2) {
 	return rand_m;
 }
 
-VECTOR_T* matlab::rand_vector(int size) {
+VECTOR_T* MATLAB_NAMESPACE::rand_vector(int size) {
 	gsl_rng* rng = get_rng();
 	VECTOR_T* rand_v = VECTOR_ID(alloc)(size);
 	for (int i = 0; i < size; i++) {
@@ -565,7 +565,7 @@ VECTOR_T* matlab::rand_vector(int size) {
  * Generates a permutation of the integers 0 to (size - 1), whereas the MATLAB
  * version uses the integers 1 to size.
  */
-gsl_permutation* matlab::randperm(int size) {
+gsl_permutation* MATLAB_NAMESPACE::randperm(int size) {
 	gsl_rng* rng = get_rng();
 	FP_T values[size];
 	for (int i = 0; i < size; i++) {
@@ -577,7 +577,7 @@ gsl_permutation* matlab::randperm(int size) {
 	return values_p;
 }
 
-VECTOR_T* matlab::reverse(const VECTOR_T* v) {
+VECTOR_T* MATLAB_NAMESPACE::reverse(const VECTOR_T* v) {
 	VECTOR_T* rev_v = VECTOR_ID(alloc)(v->size);
 	for (int i = 0; i < (int)v->size; i++) {
 		VECTOR_ID(set)(rev_v, i, VECTOR_ID(get)(v, v->size - 1 - i));
@@ -585,7 +585,7 @@ VECTOR_T* matlab::reverse(const VECTOR_T* v) {
 	return rev_v;
 }
 
-VECTOR_T* matlab::setxor(const VECTOR_T* v1, const VECTOR_T* v2) {
+VECTOR_T* MATLAB_NAMESPACE::setxor(const VECTOR_T* v1, const VECTOR_T* v2) {
 	if (v1 == NULL && v2 == NULL) {
 		return NULL;
 	}
@@ -643,7 +643,7 @@ VECTOR_T* matlab::setxor(const VECTOR_T* v1, const VECTOR_T* v2) {
 	}
 }
 
-VECTOR_T* matlab::sort(const VECTOR_T* v, const std::string& mode, VECTOR_T** ind) {
+VECTOR_T* MATLAB_NAMESPACE::sort(const VECTOR_T* v, const std::string& mode, VECTOR_T** ind) {
 	if (mode != "ascend" && mode != "descend") {
 		return NULL;
 	}
@@ -669,7 +669,7 @@ VECTOR_T* matlab::sort(const VECTOR_T* v, const std::string& mode, VECTOR_T** in
 	return sort_v;
 }
 
-MATRIX_T* matlab::sort(const MATRIX_T* m, int dim, const std::string& mode, MATRIX_T** ind) {
+MATRIX_T* MATLAB_NAMESPACE::sort(const MATRIX_T* m, int dim, const std::string& mode, MATRIX_T** ind) {
 	if (mode != "ascend" && mode != "descend") {
 		return NULL;
 	}
@@ -721,11 +721,11 @@ MATRIX_T* matlab::sort(const MATRIX_T* m, int dim, const std::string& mode, MATR
 /*
  * Emulates (sortrows(v)) for a column vector.
  */
-VECTOR_T* matlab::sortrows(const VECTOR_T* v, VECTOR_T** ind) {
+VECTOR_T* MATLAB_NAMESPACE::sortrows(const VECTOR_T* v, VECTOR_T** ind) {
 	return sort(v, "ascend", ind);
 }
 
-MATRIX_T* matlab::sortrows(const MATRIX_T* m, VECTOR_T** ind) {
+MATRIX_T* MATLAB_NAMESPACE::sortrows(const MATRIX_T* m, VECTOR_T** ind) {
 	VECTOR_T* rows[m->size1];
 	for (int i = 0; i < (int)m->size1; i++) {
 		rows[i] = VECTOR_ID(alloc)(m->size2);
@@ -751,7 +751,7 @@ MATRIX_T* matlab::sortrows(const MATRIX_T* m, VECTOR_T** ind) {
 	return sort_m;
 }
 
-FP_T matlab::std(const VECTOR_T* v, int opt) {
+FP_T MATLAB_NAMESPACE::std(const VECTOR_T* v, int opt) {
 	FP_T mu = mean(v);
 	FP_T err = 0.0;
 	for (int i = 0; i < (int)v->size; i++) {
@@ -766,12 +766,12 @@ FP_T matlab::std(const VECTOR_T* v, int opt) {
 	}
 }
 
-VECTOR_T* matlab::std(const MATRIX_T* m, int opt, int dim) {
+VECTOR_T* MATLAB_NAMESPACE::std(const MATRIX_T* m, int opt, int dim) {
 	if (dim == 1) {
 		VECTOR_T* std_v = VECTOR_ID(alloc)(m->size2);
 		for (int i = 0; i < (int)m->size2; i++) {
 			VECTOR_ID(const_view) m_col_i = MATRIX_ID(const_column)(m, i);
-			FP_T value = matlab::std(&m_col_i.vector, opt);
+			FP_T value = MATLAB_NAMESPACE::std(&m_col_i.vector, opt);
 			VECTOR_ID(set)(std_v, i, value);
 		}
 		return std_v;
@@ -779,7 +779,7 @@ VECTOR_T* matlab::std(const MATRIX_T* m, int opt, int dim) {
 		VECTOR_T* std_v = VECTOR_ID(alloc)(m->size1);
 		for (int i = 0; i < (int)m->size1; i++) {
 			VECTOR_ID(const_view) m_row_i = MATRIX_ID(const_row)(m, i);
-			FP_T value = matlab::std(&m_row_i.vector, opt);
+			FP_T value = MATLAB_NAMESPACE::std(&m_row_i.vector, opt);
 			VECTOR_ID(set)(std_v, i, value);
 		}
 		return std_v;
@@ -788,7 +788,7 @@ VECTOR_T* matlab::std(const MATRIX_T* m, int opt, int dim) {
 	}
 }
 
-FP_T matlab::sum(const VECTOR_T* v) {
+FP_T MATLAB_NAMESPACE::sum(const VECTOR_T* v) {
 	FP_T sum = 0.0;
 	for (int i = 0; i < (int)v->size; i++) {
 		sum += VECTOR_ID(get)(v, i);
@@ -796,7 +796,7 @@ FP_T matlab::sum(const VECTOR_T* v) {
 	return sum;
 }
 
-VECTOR_T* matlab::sum(const MATRIX_T* m, int dim) {
+VECTOR_T* MATLAB_NAMESPACE::sum(const MATRIX_T* m, int dim) {
 	if (dim == 1) {
 		VECTOR_T* sum_v = VECTOR_ID(calloc)(m->size2);
 		for (int i = 0; i < (int)m->size1; i++) {
@@ -816,7 +816,7 @@ VECTOR_T* matlab::sum(const MATRIX_T* m, int dim) {
 	}
 }
 
-MATRIX_T* matlab::toeplitz(const VECTOR_T* column, const VECTOR_T* row) {
+MATRIX_T* MATLAB_NAMESPACE::toeplitz(const VECTOR_T* column, const VECTOR_T* row) {
 	const VECTOR_T* _row;
 	if (row == NULL) {
 		_row = column;
@@ -838,7 +838,7 @@ MATRIX_T* matlab::toeplitz(const VECTOR_T* column, const VECTOR_T* row) {
 	return toe_m;
 }
 
-MATRIX_T* matlab::tril(const MATRIX_T* m, int k) {
+MATRIX_T* MATLAB_NAMESPACE::tril(const MATRIX_T* m, int k) {
 	if (k < -(int)m->size1 || k > (int)m->size2) {
 		return NULL;
 	}
@@ -853,7 +853,7 @@ MATRIX_T* matlab::tril(const MATRIX_T* m, int k) {
 	return tril_m;
 }
 
-MATRIX_T* matlab::triu(const MATRIX_T* m, int k) {
+MATRIX_T* MATLAB_NAMESPACE::triu(const MATRIX_T* m, int k) {
 	if (k < -(int)m->size1 || k > (int)m->size2) {
 		return NULL;
 	}
@@ -868,7 +868,7 @@ MATRIX_T* matlab::triu(const MATRIX_T* m, int k) {
 	return triu_m;
 }
 
-VECTOR_T* matlab::unique(const VECTOR_T* v, const std::string& first_or_last, VECTOR_T** i, VECTOR_T** j) {
+VECTOR_T* MATLAB_NAMESPACE::unique(const VECTOR_T* v, const std::string& first_or_last, VECTOR_T** i, VECTOR_T** j) {
 	if (first_or_last != "first" && first_or_last != "last") {
 		return NULL;
 	}
@@ -915,7 +915,7 @@ VECTOR_T* matlab::unique(const VECTOR_T* v, const std::string& first_or_last, VE
 	return unique_v;
 }
 
-VECTOR_T* matlab::unique(const MATRIX_T* m, const std::string& first_or_last, VECTOR_T** i, VECTOR_T** j) {
+VECTOR_T* MATLAB_NAMESPACE::unique(const MATRIX_T* m, const std::string& first_or_last, VECTOR_T** i, VECTOR_T** j) {
 	VECTOR_T* v = to_vector(m);
 	VECTOR_T* unique_v = unique(v, first_or_last, i, j);
 	VECTOR_ID(free)(v);
@@ -925,7 +925,7 @@ VECTOR_T* matlab::unique(const MATRIX_T* m, const std::string& first_or_last, VE
 /*
  * Emulates (unique(m, "rows", first_or_last)).
  */
-MATRIX_T* matlab::unique_rows(const MATRIX_T* m, const std::string& first_or_last, VECTOR_T** i, VECTOR_T** j) {
+MATRIX_T* MATLAB_NAMESPACE::unique_rows(const MATRIX_T* m, const std::string& first_or_last, VECTOR_T** i, VECTOR_T** j) {
 	if (first_or_last != "first" && first_or_last != "last") {
 		return NULL;
 	}
@@ -977,17 +977,17 @@ MATRIX_T* matlab::unique_rows(const MATRIX_T* m, const std::string& first_or_las
 	return unique_m;
 }
 
-MATRIX_T* matlab::zeros(int size) {
+MATRIX_T* MATLAB_NAMESPACE::zeros(int size) {
 	return MATRIX_ID(calloc)(size, size);
 }
 
-MATRIX_T* matlab::zeros(int size1, int size2) {
+MATRIX_T* MATLAB_NAMESPACE::zeros(int size1, int size2) {
 	return MATRIX_ID(calloc)(size1, size2);
 }
 
 /*
  * Emulates (zeros(size, 1)) or (zeros(1, size)).
  */
-VECTOR_T* matlab::zeros_vector(int size) {
+VECTOR_T* MATLAB_NAMESPACE::zeros_vector(int size) {
 	return VECTOR_ID(calloc)(size);
 }

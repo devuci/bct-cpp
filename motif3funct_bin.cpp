@@ -3,7 +3,7 @@
 /*
  * Counts occurrences of three-node functional motifs in a binary graph.
  */
-VECTOR_T* bct::motif3funct_bin(const MATRIX_T* W, MATRIX_T** F) {
+VECTOR_T* BCT_NAMESPACE::motif3funct_bin(const MATRIX_T* W, MATRIX_T** F) {
 	if (safe_mode) check_status(W, SQUARE | BINARY, "motif3funct_bin");
 	
 	// load motif34lib M3 ID3 N3

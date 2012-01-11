@@ -3,7 +3,7 @@
 /*
  * Generates a random directed binary graph with a lattice organization.
  */
-MATRIX_T* bct::makelatticeCIJ(int N, int K) {
+MATRIX_T* BCT_NAMESPACE::makelatticeCIJ(int N, int K) {
 	
 	// CIJ = zeros(N);
 	MATRIX_T* CIJ = zeros(N);

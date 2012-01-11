@@ -6,7 +6,7 @@
  * Counts occurrences of three-node structural motifs in a weighted graph.
  * Returns intensity and (optionally) coherence and motif counts.
  */
-MATRIX_T* bct::motif3struct_wei(const MATRIX_T* W, MATRIX_T** Q, MATRIX_T** F) {
+MATRIX_T* BCT_NAMESPACE::motif3struct_wei(const MATRIX_T* W, MATRIX_T** Q, MATRIX_T** F) {
 	if (safe_mode) check_status(W, SQUARE | WEIGHTED, "motif3struct_wei");
 	
 	// load motif34lib M3 M3n ID3 N3
@@ -174,7 +174,7 @@ MATRIX_T* bct::motif3struct_wei(const MATRIX_T* W, MATRIX_T** Q, MATRIX_T** F) {
 /*
  * Returns per-motif metrics instead of per-motif, per-node metrics.
  */
-VECTOR_T* bct::motif3struct_wei_v(const MATRIX_T* W, VECTOR_T** Q, VECTOR_T** F) {
+VECTOR_T* BCT_NAMESPACE::motif3struct_wei_v(const MATRIX_T* W, VECTOR_T** Q, VECTOR_T** F) {
 	MATRIX_T* _Q;
 	MATRIX_T* _F;
 	MATRIX_T* _I = motif3struct_wei(W, &_Q, &_F);

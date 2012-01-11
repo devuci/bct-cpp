@@ -6,7 +6,7 @@
  * Returns a random number generator that is guaranteed to be seeded only once
  * during program execution.  This generator should not be freed by the caller.
  */
-gsl_rng* matlab::get_rng() {
+gsl_rng* MATLAB_NAMESPACE::get_rng() {
 	static gsl_rng* rng = NULL;
 	if (rng == NULL) {
 		gsl_rng_default_seed = std::time(NULL);
@@ -18,14 +18,14 @@ gsl_rng* matlab::get_rng() {
 /*
  * Seeds the given random number generator.
  */
-void matlab::seed_rng(const gsl_rng* rng, unsigned long seed) {
+void MATLAB_NAMESPACE::seed_rng(const gsl_rng* rng, unsigned long seed) {
 	gsl_rng_set(rng, seed);
 }
 
 /*
  * Permutes the elements of a vector.
  */
-VECTOR_T* matlab::permute(const gsl_permutation* p, const VECTOR_T* v) {
+VECTOR_T* MATLAB_NAMESPACE::permute(const gsl_permutation* p, const VECTOR_T* v) {
 	if (p->size != v->size) return NULL;
 	VECTOR_T* permuted_v = VECTOR_ID(alloc)(v->size);
 	for (int i = 0; i < (int)p->size; i++) {
@@ -39,7 +39,7 @@ VECTOR_T* matlab::permute(const gsl_permutation* p, const VECTOR_T* v) {
 /*
  * Permutes the columns of a matrix.
  */
-MATRIX_T* matlab::permute_columns(const gsl_permutation* p, const MATRIX_T* m) {
+MATRIX_T* MATLAB_NAMESPACE::permute_columns(const gsl_permutation* p, const MATRIX_T* m) {
 	if (p->size != m->size2) return NULL;
 	MATRIX_T* permuted_m = MATRIX_ID(alloc)(m->size1, m->size2);
 	for (int i = 0; i < (int)p->size; i++) {
@@ -53,7 +53,7 @@ MATRIX_T* matlab::permute_columns(const gsl_permutation* p, const MATRIX_T* m) {
 /*
  * Permutes the rows of a matrix.
  */
-MATRIX_T* matlab::permute_rows(const gsl_permutation* p, const MATRIX_T* m) {
+MATRIX_T* MATLAB_NAMESPACE::permute_rows(const gsl_permutation* p, const MATRIX_T* m) {
 	if (p->size != m->size1) return NULL;
 	MATRIX_T* permuted_m = MATRIX_ID(alloc)(m->size1, m->size2);
 	for (int i = 0; i < (int)p->size; i++) {

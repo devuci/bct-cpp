@@ -8,7 +8,7 @@ void reachdist2(const MATRIX_T*, MATRIX_T**, MATRIX_T**, MATRIX_T**, int, int*, 
  * Computes reachability and distance matrices based on the power of the
  * adjacency matrix.
  */
-MATRIX_T* bct::reachdist(const MATRIX_T* CIJ, MATRIX_T** D) {
+MATRIX_T* BCT_NAMESPACE::reachdist(const MATRIX_T* CIJ, MATRIX_T** D) {
 	if (safe_mode) check_status(CIJ, SQUARE, "reachdist");
 	
 	// R = CIJ;
@@ -98,7 +98,7 @@ MATRIX_T* bct::reachdist(const MATRIX_T* CIJ, MATRIX_T** D) {
 }
 
 void reachdist2(const MATRIX_T* CIJ, MATRIX_T** CIJpwr, MATRIX_T** R, MATRIX_T** D, int N, int* powr, VECTOR_T* col, VECTOR_T* row) {
-	using namespace bct;
+	using namespace BCT_NAMESPACE;
 	
 	// CIJpwr = CIJpwr*CIJ;
 	MATRIX_T* temp = mul(*CIJpwr, CIJ);

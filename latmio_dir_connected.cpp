@@ -8,7 +8,7 @@
  * edge is rewired ITER times.  Out-strength is preserved for weighted graphs,
  * while in-strength is not.
  */
-MATRIX_T* bct::latmio_dir_connected(const MATRIX_T* R, int ITER) {
+MATRIX_T* BCT_NAMESPACE::latmio_dir_connected(const MATRIX_T* R, int ITER) {
 	if (safe_mode) check_status(R, SQUARE | DIRECTED, "latmio_dir_connected");
 	
 	gsl_rng* rng = get_rng();

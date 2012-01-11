@@ -124,14 +124,14 @@ const FP_T macaque71[71 * 71] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0
 };
 
-MATRIX_T* bct::get_macaque47() {
+MATRIX_T* BCT_NAMESPACE::get_macaque47() {
 	MATRIX_ID(const_view) mv = MATRIX_ID(const_view_array)(macaque47, 47, 47);
 	MATRIX_T* m = MATRIX_ID(alloc)(47, 47);
 	MATRIX_ID(memcpy)(m, &mv.matrix);
 	return m;
 }
 
-MATRIX_T* bct::get_macaque71() {
+MATRIX_T* BCT_NAMESPACE::get_macaque71() {
 	MATRIX_ID(const_view) mv = MATRIX_ID(const_view_array)(macaque71, 71, 71);
 	MATRIX_T* m = MATRIX_ID(alloc)(71, 71);
 	MATRIX_ID(memcpy)(m, &mv.matrix);

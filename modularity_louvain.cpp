@@ -9,7 +9,7 @@ bool modularity_louvain_und(const MATRIX_T*, FP_T*, VECTOR_T**, int);
  * makes use of an additional argument N that specifies the maximum number of
  * node permutations to attempt when maximizing modularity.
  */
-FP_T bct::modularity_louvain_und(const MATRIX_T* W, VECTOR_T** Ci, int N) {
+FP_T BCT_NAMESPACE::modularity_louvain_und(const MATRIX_T* W, VECTOR_T** Ci, int N) {
 	if (safe_mode) check_status(W, SQUARE | UNDIRECTED, "modularity_louvain_und");
 	
 	FP_T Q;
@@ -22,7 +22,7 @@ FP_T bct::modularity_louvain_und(const MATRIX_T* W, VECTOR_T** Ci, int N) {
 }
 
 bool modularity_louvain_und(const MATRIX_T* W, FP_T* Q, VECTOR_T** Ci, int N) {
-	using namespace bct;
+	using namespace BCT_NAMESPACE;
 	
 	// n=length(W);
 	int n = length(W);

@@ -1,15 +1,40 @@
-#ifndef BCT_H
-#define BCT_H
-
 #include "precision.h"
+
+#undef SKIP
+
+#ifdef GSL_FLOAT
+#ifdef BCT_FLOAT_H
+#define SKIP
+#else
+#define BCT_FLOAT_H
+#endif
+#endif
+
+#ifdef GSL_DOUBLE
+#ifdef BCT_H
+#define SKIP
+#else
+#define BCT_H
+#endif
+#endif
+
+#ifdef GSL_LONG_DOUBLE
+#ifdef BCT_LONG_DOUBLE_H
+#define SKIP
+#else
+#define BCT_LONG_DOUBLE_H
+#endif
+#endif
+
+#ifndef SKIP
 
 #include <stdexcept>
 #include <vector>
 
 #include "matlab/matlab.h"
 
-namespace bct {
-	using namespace matlab;
+namespace BCT_NAMESPACE {
+	using namespace MATLAB_NAMESPACE;
 	
 	class bct_exception : public std::runtime_error {
 	public:

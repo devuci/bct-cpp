@@ -3,7 +3,7 @@
 /*
  * Counts occurrences of four-node structural motifs in a binary graph.
  */
-VECTOR_T* bct::motif4struct_bin(const MATRIX_T* A, MATRIX_T** F) {
+VECTOR_T* BCT_NAMESPACE::motif4struct_bin(const MATRIX_T* A, MATRIX_T** F) {
 	if (safe_mode) check_status(A, SQUARE | BINARY, "motif4struct_bin");
 	
 	// load motif34lib M4n ID4

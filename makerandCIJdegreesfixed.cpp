@@ -7,7 +7,7 @@
  * degree sequences.  Returns NULL if the algorithm failed to generate a graph
  * satisfying the given degree sequences.
  */
-MATRIX_T* bct::makerandCIJdegreesfixed(const VECTOR_T* in, const VECTOR_T* out) {
+MATRIX_T* BCT_NAMESPACE::makerandCIJdegreesfixed(const VECTOR_T* in, const VECTOR_T* out) {
 	gsl_rng* rng = get_rng();
 	
 	// n = length(in);
@@ -155,7 +155,7 @@ MATRIX_T* bct::makerandCIJdegreesfixed(const VECTOR_T* in, const VECTOR_T* out) 
  * necessarily valid, this function should not return NULL unless the given
  * matrix contains nonzero entries on the main diagonal.
  */
-MATRIX_T* bct::makerandCIJdegreesfixed(const MATRIX_T* m) {
+MATRIX_T* BCT_NAMESPACE::makerandCIJdegreesfixed(const MATRIX_T* m) {
 	if (safe_mode) check_status(m, SQUARE | NO_LOOPS, "makerandCIJdegreesfixed");
 	MATRIX_T* ret;
 	do {

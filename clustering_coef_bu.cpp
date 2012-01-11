@@ -3,7 +3,7 @@
 /*
  * Computes the clustering coefficient for a binary undirected graph.
  */
-VECTOR_T* bct::clustering_coef_bu(const MATRIX_T* G) {
+VECTOR_T* BCT_NAMESPACE::clustering_coef_bu(const MATRIX_T* G) {
 	if (safe_mode) check_status(G, SQUARE | BINARY | UNDIRECTED, "clustering_coef_bu");
 	
 	// n=length(G);

@@ -6,7 +6,7 @@
  * Preserves a given proportion of the strongest weights in a directed graph.
  * All other weights, as well as those on the main diagonal, are set to zero.
  */
-MATRIX_T* bct::threshold_proportional_dir(const MATRIX_T* W, FP_T p) {
+MATRIX_T* BCT_NAMESPACE::threshold_proportional_dir(const MATRIX_T* W, FP_T p) {
 	if (safe_mode) check_status(W, SQUARE | DIRECTED, "threshold_proportional_dir");
 	
 	// n=size(W,1);
@@ -46,7 +46,7 @@ MATRIX_T* bct::threshold_proportional_dir(const MATRIX_T* W, FP_T p) {
  * Preserves a given proportion of the strongest weights in an undirected graph.
  * All other weights, as well as those on the main diagonal, are set to zero.
  */
-MATRIX_T* bct::threshold_proportional_und(const MATRIX_T* W, FP_T p) {
+MATRIX_T* BCT_NAMESPACE::threshold_proportional_und(const MATRIX_T* W, FP_T p) {
 	if (safe_mode) check_status(W, SQUARE | UNDIRECTED, "threshold_proportional_und");
 	
 	// n=size(W,1);

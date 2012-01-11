@@ -4,7 +4,7 @@
  * Counts occurrences of four-node functional motifs in a weighted graph.
  * Returns intensity and (optionally) coherence and motif counts.
  */
-MATRIX_T* bct::motif4funct_wei(const MATRIX_T* W, MATRIX_T** Q, MATRIX_T** F) {
+MATRIX_T* BCT_NAMESPACE::motif4funct_wei(const MATRIX_T* W, MATRIX_T** Q, MATRIX_T** F) {
 	if (safe_mode) check_status(W, SQUARE | WEIGHTED, "motif4funct_wei");
 	
 	// load motif4lib M4 ID4 N4
@@ -311,7 +311,7 @@ MATRIX_T* bct::motif4funct_wei(const MATRIX_T* W, MATRIX_T** Q, MATRIX_T** F) {
 /*
  * Returns per-motif metrics instead of per-motif, per-node metrics.
  */
-VECTOR_T* bct::motif4funct_wei_v(const MATRIX_T* W, VECTOR_T** Q, VECTOR_T** F) {
+VECTOR_T* BCT_NAMESPACE::motif4funct_wei_v(const MATRIX_T* W, VECTOR_T** Q, VECTOR_T** F) {
 	MATRIX_T* _Q;
 	MATRIX_T* _F;
 	MATRIX_T* _I = motif4funct_wei(W, &_Q, &_F);

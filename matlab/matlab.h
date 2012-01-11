@@ -1,7 +1,32 @@
-#ifndef MATLAB_H
-#define MATLAB_H
-
 #include "../precision.h"
+
+#undef SKIP
+
+#ifdef GSL_FLOAT
+#ifdef MATLAB_FLOAT_H
+#define SKIP
+#else
+#define MATLAB_FLOAT_H
+#endif
+#endif
+
+#ifdef GSL_DOUBLE
+#ifdef MATLAB_H
+#define SKIP
+#else
+#define MATLAB_H
+#endif
+#endif
+
+#ifdef GSL_LONG_DOUBLE
+#ifdef MATLAB_LONG_DOUBLE_H
+#define SKIP
+#else
+#define MATLAB_LONG_DOUBLE_H
+#endif
+#endif
+
+#ifndef SKIP
 
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_permutation.h>
@@ -10,7 +35,7 @@
 #include <limits>
 #include <string>
 
-namespace matlab {
+namespace MATLAB_NAMESPACE {
 	
 	// Functions
 	VECTOR_T* abs(const VECTOR_T* v);

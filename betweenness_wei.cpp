@@ -5,7 +5,7 @@
 /*
  * Computes node betweenness for a weighted graph.
  */
-VECTOR_T* bct::betweenness_wei(const MATRIX_T* G) {
+VECTOR_T* BCT_NAMESPACE::betweenness_wei(const MATRIX_T* G) {
 	VECTOR_T* BC;
 	MATRIX_T* EBC = edge_betweenness_wei(G, &BC);
 	MATRIX_ID(free)(EBC);
@@ -15,7 +15,7 @@ VECTOR_T* bct::betweenness_wei(const MATRIX_T* G) {
 /*
  * Computes node and edge betweenness for a weighted graph.
  */
-MATRIX_T* bct::edge_betweenness_wei(const MATRIX_T* G, VECTOR_T** BC) {
+MATRIX_T* BCT_NAMESPACE::edge_betweenness_wei(const MATRIX_T* G, VECTOR_T** BC) {
 	if (safe_mode) check_status(G, SQUARE | WEIGHTED, "edge_betweenness_wei");
 	
 	// n=length(G);

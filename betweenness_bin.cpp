@@ -3,7 +3,7 @@
 /*
  * Computes node betweenness for a binary graph.
  */
-VECTOR_T* bct::betweenness_bin(const MATRIX_T* G) {
+VECTOR_T* BCT_NAMESPACE::betweenness_bin(const MATRIX_T* G) {
 	VECTOR_T* BC;
 	MATRIX_T* EBC = edge_betweenness_bin(G, &BC);
 	MATRIX_ID(free)(EBC);
@@ -13,7 +13,7 @@ VECTOR_T* bct::betweenness_bin(const MATRIX_T* G) {
 /*
  * Computes node and edge betweenness for a binary graph.
  */
-MATRIX_T* bct::edge_betweenness_bin(const MATRIX_T* G, VECTOR_T** BC) {
+MATRIX_T* BCT_NAMESPACE::edge_betweenness_bin(const MATRIX_T* G, VECTOR_T** BC) {
 	if (safe_mode) check_status(G, SQUARE | BINARY, "edge_betweenness_bin");
 	
 	// n=length(G);

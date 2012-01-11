@@ -5,7 +5,7 @@
 /*
  * Computes the distance matrix for a binary graph.
  */
-MATRIX_T* bct::distance_bin(const MATRIX_T* G) {
+MATRIX_T* BCT_NAMESPACE::distance_bin(const MATRIX_T* G) {
 	if (safe_mode) check_status(G, SQUARE | BINARY, "distance_bin");
 	
 	// D=eye(length(G));

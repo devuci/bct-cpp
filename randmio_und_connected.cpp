@@ -6,7 +6,7 @@
  * each edge is rewired ITER times.  Strength distributions are not preserved
  * for weighted graphs.
  */
-MATRIX_T* bct::randmio_und_connected(const MATRIX_T* R, int ITER) {
+MATRIX_T* BCT_NAMESPACE::randmio_und_connected(const MATRIX_T* R, int ITER) {
 	if (safe_mode) check_status(R, SQUARE | UNDIRECTED, "randmio_und_connected");
 	
 	gsl_rng* rng = get_rng();

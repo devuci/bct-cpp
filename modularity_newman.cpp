@@ -11,7 +11,7 @@ VECTOR_T* modularity(const MATRIX_T* B, int N, FP_T m);
  * solves eigensystems differently from MATLAB, communities may be numbered
  * differently.
  */
-FP_T bct::modularity_dir(const MATRIX_T* A, VECTOR_T** Ci) {
+FP_T BCT_NAMESPACE::modularity_dir(const MATRIX_T* A, VECTOR_T** Ci) {
 	if (safe_mode) check_status(A, SQUARE | DIRECTED, "modularity_dir");
 	
 	// Ki=sum(A,1);
@@ -81,7 +81,7 @@ FP_T bct::modularity_dir(const MATRIX_T* A, VECTOR_T** Ci) {
  * solves eigensystems differently from MATLAB, communities may be numbered
  * differently.
  */
-FP_T bct::modularity_und(const MATRIX_T* A, VECTOR_T** Ci) {
+FP_T BCT_NAMESPACE::modularity_und(const MATRIX_T* A, VECTOR_T** Ci) {
 	if (safe_mode) check_status(A, SQUARE | UNDIRECTED, "modularity_und");
 	
 	// K=sum(A);
@@ -135,7 +135,7 @@ FP_T bct::modularity_und(const MATRIX_T* A, VECTOR_T** Ci) {
 }
 
 VECTOR_T* modularity(const MATRIX_T* B, int N, FP_T m) {
-	using namespace bct;
+	using namespace BCT_NAMESPACE;
 	
 	// Ci=ones(N,1);
 	VECTOR_T* Ci = ones_vector(N);

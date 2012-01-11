@@ -7,7 +7,7 @@
  * corresponding community structure.  For a directed graph, computes "out-
  * neighbor" participation coefficient.
  */
-VECTOR_T* bct::participation_coef(const MATRIX_T* A, const VECTOR_T* Ci) {
+VECTOR_T* BCT_NAMESPACE::participation_coef(const MATRIX_T* A, const VECTOR_T* Ci) {
 	if (safe_mode) check_status(A, SQUARE | BINARY, "participation_coef");
 	
 	// n=length(A);

@@ -4,7 +4,7 @@
  * Computes degree, in-degree, and out-degree for a directed graph.  Connection
  * weights are ignored.
  */
-VECTOR_T* bct::degrees_dir(const MATRIX_T* CIJ, VECTOR_T** id, VECTOR_T** od) {
+VECTOR_T* BCT_NAMESPACE::degrees_dir(const MATRIX_T* CIJ, VECTOR_T** id, VECTOR_T** od) {
 	if (safe_mode) check_status(CIJ, SQUARE | DIRECTED, "degrees_dir");
 	
 	// CIJ = FP_T(CIJ~=0);

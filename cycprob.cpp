@@ -3,7 +3,7 @@
 /*
  * Computes the fraction of all paths that are cycles.
  */
-VECTOR_T* bct::cycprob_fcyc(const std::vector<MATRIX_T*>& Pq) {
+VECTOR_T* BCT_NAMESPACE::cycprob_fcyc(const std::vector<MATRIX_T*>& Pq) {
 	
 	// fcyc = zeros(1,size(Pq,3));
 	VECTOR_T* fcyc = zeros_vector(Pq.size());
@@ -31,7 +31,7 @@ VECTOR_T* bct::cycprob_fcyc(const std::vector<MATRIX_T*>& Pq) {
  * Computes the probability that a non-cyclic path of length (q - 1) can be
  * extended to form a cycle of length q.
  */
-VECTOR_T* bct::cycprob_pcyc(const std::vector<MATRIX_T*>& Pq) {
+VECTOR_T* BCT_NAMESPACE::cycprob_pcyc(const std::vector<MATRIX_T*>& Pq) {
 	
 	// pcyc = zeros(1,size(Pq,3));
 	VECTOR_T* pcyc = zeros_vector(Pq.size());

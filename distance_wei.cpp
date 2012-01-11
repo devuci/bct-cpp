@@ -5,7 +5,7 @@
 /*
  * Computes the distance matrix for a weighted graph.
  */
-MATRIX_T* bct::distance_wei(const MATRIX_T* G) {
+MATRIX_T* BCT_NAMESPACE::distance_wei(const MATRIX_T* G) {
 	if (safe_mode) check_status(G, SQUARE | WEIGHTED, "distance_wei");
 	
 	// n=length(G);

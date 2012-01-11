@@ -16,7 +16,7 @@
 
 // Vector-by-vector indexing
 
-VECTOR_T* matlab::ordinal_index(const VECTOR_T* v, const VECTOR_T* indices) {
+VECTOR_T* MATLAB_NAMESPACE::ordinal_index(const VECTOR_T* v, const VECTOR_T* indices) {
 	VECTOR_T* index_v = VECTOR_ID(alloc)(indices->size);
 	for (int i = 0; i < (int)indices->size; i++) {
 		int index = (int)VECTOR_ID(get)(indices, i);
@@ -26,14 +26,14 @@ VECTOR_T* matlab::ordinal_index(const VECTOR_T* v, const VECTOR_T* indices) {
 	return index_v;
 }
 
-void matlab::ordinal_index_assign(VECTOR_T* v, const VECTOR_T* indices, FP_T value) {
+void MATLAB_NAMESPACE::ordinal_index_assign(VECTOR_T* v, const VECTOR_T* indices, FP_T value) {
 	for (int i = 0; i < (int)indices->size; i++) {
 		int index = (int)VECTOR_ID(get)(indices, i);
 		VECTOR_ID(set)(v, index, value);
 	}
 }
 
-void matlab::ordinal_index_assign(VECTOR_T* v, const VECTOR_T* indices, const VECTOR_T* values) {
+void MATLAB_NAMESPACE::ordinal_index_assign(VECTOR_T* v, const VECTOR_T* indices, const VECTOR_T* values) {
 	for (int i = 0; i < (int)indices->size; i++) {
 		int index = (int)VECTOR_ID(get)(indices, i);
 		FP_T value = VECTOR_ID(get)(values, i);
@@ -41,7 +41,7 @@ void matlab::ordinal_index_assign(VECTOR_T* v, const VECTOR_T* indices, const VE
 	}
 }
 
-VECTOR_T* matlab::logical_index(const VECTOR_T* v, const VECTOR_T* logical_v) {
+VECTOR_T* MATLAB_NAMESPACE::logical_index(const VECTOR_T* v, const VECTOR_T* logical_v) {
 	int n_index = nnz(logical_v);
 	if (n_index == 0) {
 		return NULL;
@@ -56,7 +56,7 @@ VECTOR_T* matlab::logical_index(const VECTOR_T* v, const VECTOR_T* logical_v) {
 	return index_v;
 }
 
-void matlab::logical_index_assign(VECTOR_T* v, const VECTOR_T* logical_v, FP_T value) {
+void MATLAB_NAMESPACE::logical_index_assign(VECTOR_T* v, const VECTOR_T* logical_v, FP_T value) {
 	for (int i = 0; i < (int)logical_v->size; i++) {
 		if (fp_nonzero(VECTOR_ID(get)(logical_v, i))) {
 			VECTOR_ID(set)(v, i, value);
@@ -64,7 +64,7 @@ void matlab::logical_index_assign(VECTOR_T* v, const VECTOR_T* logical_v, FP_T v
 	}
 }
 
-void matlab::logical_index_assign(VECTOR_T* v, const VECTOR_T* logical_v, const VECTOR_T* values) {
+void MATLAB_NAMESPACE::logical_index_assign(VECTOR_T* v, const VECTOR_T* logical_v, const VECTOR_T* values) {
 	for (int i = 0, index = 0; i < (int)logical_v->size; i++) {
 		if (fp_nonzero(VECTOR_ID(get)(logical_v, i))) {
 			FP_T value = VECTOR_ID(get)(values, index++);
@@ -75,13 +75,13 @@ void matlab::logical_index_assign(VECTOR_T* v, const VECTOR_T* logical_v, const 
 
 // Matrix-by-integer indexing
 
-FP_T matlab::ordinal_index(const MATRIX_T* m, int index) {
+FP_T MATLAB_NAMESPACE::ordinal_index(const MATRIX_T* m, int index) {
 	int row = index % (int)m->size1;
 	int column = index / (int)m->size1;
 	return MATRIX_ID(get)(m, row, column);
 }
 
-void matlab::ordinal_index_assign(MATRIX_T* m, int index, FP_T value) {
+void MATLAB_NAMESPACE::ordinal_index_assign(MATRIX_T* m, int index, FP_T value) {
 	int row = index % (int)m->size1;
 	int column = index / (int)m->size1;
 	MATRIX_ID(set)(m, row, column, value);
@@ -89,7 +89,7 @@ void matlab::ordinal_index_assign(MATRIX_T* m, int index, FP_T value) {
 
 // Matrix-by-vector indexing
 
-VECTOR_T* matlab::ordinal_index(const MATRIX_T* m, const VECTOR_T* indices) {
+VECTOR_T* MATLAB_NAMESPACE::ordinal_index(const MATRIX_T* m, const VECTOR_T* indices) {
 	VECTOR_T* index_v = VECTOR_ID(alloc)(indices->size);
 	for (int i = 0; i < (int)indices->size; i++) {
 		int index = (int)VECTOR_ID(get)(indices, i);
@@ -99,14 +99,14 @@ VECTOR_T* matlab::ordinal_index(const MATRIX_T* m, const VECTOR_T* indices) {
 	return index_v;
 }
 
-void matlab::ordinal_index_assign(MATRIX_T* m, const VECTOR_T* indices, FP_T value) {
+void MATLAB_NAMESPACE::ordinal_index_assign(MATRIX_T* m, const VECTOR_T* indices, FP_T value) {
 	for (int i = 0; i < (int)indices->size; i++) {
 		int index = (int)VECTOR_ID(get)(indices, i);
 		ordinal_index_assign(m, index, value);
 	}
 }
 
-void matlab::ordinal_index_assign(MATRIX_T* m, const VECTOR_T* indices, const VECTOR_T* values) {
+void MATLAB_NAMESPACE::ordinal_index_assign(MATRIX_T* m, const VECTOR_T* indices, const VECTOR_T* values) {
 	for (int i = 0; i < (int)indices->size; i++) {
 		int index = (int)VECTOR_ID(get)(indices, i);
 		FP_T value = VECTOR_ID(get)(values, i);
@@ -114,7 +114,7 @@ void matlab::ordinal_index_assign(MATRIX_T* m, const VECTOR_T* indices, const VE
 	}
 }
 
-VECTOR_T* matlab::logical_index(const MATRIX_T* m, const VECTOR_T* logical_v) {
+VECTOR_T* MATLAB_NAMESPACE::logical_index(const MATRIX_T* m, const VECTOR_T* logical_v) {
 	int n_index = nnz(logical_v);
 	if (n_index == 0) {
 		return NULL;
@@ -129,7 +129,7 @@ VECTOR_T* matlab::logical_index(const MATRIX_T* m, const VECTOR_T* logical_v) {
 	return index_v;
 }
 
-void matlab::logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_v, FP_T value) {
+void MATLAB_NAMESPACE::logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_v, FP_T value) {
 	for (int i = 0; i < (int)logical_v->size; i++) {
 		if (fp_nonzero(VECTOR_ID(get)(logical_v, i))) {
 			ordinal_index_assign(m, i, value);
@@ -137,7 +137,7 @@ void matlab::logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_v, FP_T v
 	}
 }
 
-void matlab::logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_v, const VECTOR_T* values) {
+void MATLAB_NAMESPACE::logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_v, const VECTOR_T* values) {
 	for (int i = 0, index = 0; i < (int)logical_v->size; i++) {
 		if (fp_nonzero(VECTOR_ID(get)(logical_v, i))) {
 			FP_T value = VECTOR_ID(get)(values, index++);
@@ -148,7 +148,7 @@ void matlab::logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_v, const 
 
 // Matrix-by-two-vectors indexing (non-mixed)
 
-MATRIX_T* matlab::ordinal_index(const MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* columns) {
+MATRIX_T* MATLAB_NAMESPACE::ordinal_index(const MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* columns) {
 	MATRIX_T* index_m = MATRIX_ID(alloc)(rows->size, columns->size);
 	for (int i = 0; i < (int)rows->size; i++) {
 		int row = (int)VECTOR_ID(get)(rows, i);
@@ -161,7 +161,7 @@ MATRIX_T* matlab::ordinal_index(const MATRIX_T* m, const VECTOR_T* rows, const V
 	return index_m;
 }
 
-void matlab::ordinal_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* columns, FP_T value) {
+void MATLAB_NAMESPACE::ordinal_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* columns, FP_T value) {
 	for (int i = 0; i < (int)rows->size; i++) {
 		int row = (int)VECTOR_ID(get)(rows, i);
 		for (int j = 0; j < (int)columns->size; j++) {
@@ -171,7 +171,7 @@ void matlab::ordinal_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTO
 	}
 }
 
-void matlab::ordinal_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* columns, const MATRIX_T* values) {
+void MATLAB_NAMESPACE::ordinal_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* columns, const MATRIX_T* values) {
 	for (int i = 0; i < (int)rows->size; i++) {
 		int row = (int)VECTOR_ID(get)(rows, i);
 		for (int j = 0; j < (int)columns->size; j++) {
@@ -182,7 +182,7 @@ void matlab::ordinal_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTO
 	}
 }
 
-MATRIX_T* matlab::logical_index(const MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* logical_columns) {
+MATRIX_T* MATLAB_NAMESPACE::logical_index(const MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* logical_columns) {
 	int n_rows = nnz(logical_rows);
 	int n_columns = nnz(logical_columns);
 	if (n_rows == 0 || n_columns == 0) {
@@ -204,7 +204,7 @@ MATRIX_T* matlab::logical_index(const MATRIX_T* m, const VECTOR_T* logical_rows,
 	return index_m;
 }
 
-void matlab::logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* logical_columns, FP_T value) {
+void MATLAB_NAMESPACE::logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* logical_columns, FP_T value) {
 	for (int i = 0; i < (int)logical_rows->size; i++) {
 		if (fp_nonzero(VECTOR_ID(get)(logical_rows, i))) {
 			for (int j = 0; j < (int)logical_columns->size; j++) {
@@ -216,7 +216,7 @@ void matlab::logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, con
 	}
 }
 
-void matlab::logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* logical_columns, const MATRIX_T* values) {
+void MATLAB_NAMESPACE::logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* logical_columns, const MATRIX_T* values) {
 	for (int i = 0, row = 0; i < (int)logical_rows->size; i++) {
 		if (fp_nonzero(VECTOR_ID(get)(logical_rows, i))) {
 			for (int j = 0, column = 0; j < (int)logical_columns->size; j++) {
@@ -233,7 +233,7 @@ void matlab::logical_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, con
 
 // Matrix-by-two-vectors indexing (mixed)
 
-MATRIX_T* matlab::ord_log_index(const MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* logical_columns) {
+MATRIX_T* MATLAB_NAMESPACE::ord_log_index(const MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* logical_columns) {
 	int n_columns = nnz(logical_columns);
 	if (n_columns == 0) {
 		return NULL;
@@ -252,7 +252,7 @@ MATRIX_T* matlab::ord_log_index(const MATRIX_T* m, const VECTOR_T* rows, const V
 	return index_m;
 }
 
-void matlab::ord_log_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* logical_columns, FP_T value) {
+void MATLAB_NAMESPACE::ord_log_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* logical_columns, FP_T value) {
 	for (int j = 0; j < (int)logical_columns->size; j++) {
 		if (fp_nonzero(VECTOR_ID(get)(logical_columns, j))) {
 			for (int i = 0; i < (int)rows->size; i++) {
@@ -263,7 +263,7 @@ void matlab::ord_log_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTO
 	}
 }
 
-void matlab::ord_log_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* logical_columns, const MATRIX_T* values) {
+void MATLAB_NAMESPACE::ord_log_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTOR_T* logical_columns, const MATRIX_T* values) {
 	for (int j = 0, column = 0; j < (int)logical_columns->size; j++) {
 		if (fp_nonzero(VECTOR_ID(get)(logical_columns, j))) {
 			for (int i = 0; i < (int)rows->size; i++) {
@@ -276,7 +276,7 @@ void matlab::ord_log_index_assign(MATRIX_T* m, const VECTOR_T* rows, const VECTO
 	}
 }
 
-MATRIX_T* matlab::log_ord_index(const MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* columns) {
+MATRIX_T* MATLAB_NAMESPACE::log_ord_index(const MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* columns) {
 	int n_rows = nnz(logical_rows);
 	if (n_rows == 0) {
 		return NULL;
@@ -295,7 +295,7 @@ MATRIX_T* matlab::log_ord_index(const MATRIX_T* m, const VECTOR_T* logical_rows,
 	return index_m;
 }
 
-void matlab::log_ord_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* columns, FP_T value) {
+void MATLAB_NAMESPACE::log_ord_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* columns, FP_T value) {
 	for (int i = 0; i < (int)logical_rows->size; i++) {
 		if (fp_nonzero(VECTOR_ID(get)(logical_rows, i))) {
 			for (int j = 0; j < (int)columns->size; j++) {
@@ -306,7 +306,7 @@ void matlab::log_ord_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, con
 	}
 }
 
-void matlab::log_ord_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* columns, const MATRIX_T* values) {
+void MATLAB_NAMESPACE::log_ord_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, const VECTOR_T* columns, const MATRIX_T* values) {
 	for (int i = 0, row = 0; i < (int)logical_rows->size; i++) {
 		if (fp_nonzero(VECTOR_ID(get)(logical_rows, i))) {
 			for (int j = 0; j < (int)columns->size; j++) {
@@ -321,7 +321,7 @@ void matlab::log_ord_index_assign(MATRIX_T* m, const VECTOR_T* logical_rows, con
 
 // Matrix-by-matrix indexing
 
-MATRIX_T* matlab::ordinal_index(const MATRIX_T* m, const MATRIX_T* indices) {
+MATRIX_T* MATLAB_NAMESPACE::ordinal_index(const MATRIX_T* m, const MATRIX_T* indices) {
 	MATRIX_T* index_m = MATRIX_ID(alloc)(indices->size1, indices->size2);
 	for (int i = 0; i < (int)indices->size1; i++) {
 		for (int j = 0; j < (int)indices->size2; j++) {
@@ -333,7 +333,7 @@ MATRIX_T* matlab::ordinal_index(const MATRIX_T* m, const MATRIX_T* indices) {
 	return index_m;
 }
 
-void matlab::ordinal_index_assign(MATRIX_T* m, const MATRIX_T* indices, FP_T value) {
+void MATLAB_NAMESPACE::ordinal_index_assign(MATRIX_T* m, const MATRIX_T* indices, FP_T value) {
 	for (int i = 0; i < (int)indices->size1; i++) {
 		for (int j = 0; j < (int)indices->size2; j++) {
 			int index = (int)MATRIX_ID(get)(indices, i, j);
@@ -342,7 +342,7 @@ void matlab::ordinal_index_assign(MATRIX_T* m, const MATRIX_T* indices, FP_T val
 	}
 }
 
-void matlab::ordinal_index_assign(MATRIX_T* m, const MATRIX_T* indices, const MATRIX_T* values) {
+void MATLAB_NAMESPACE::ordinal_index_assign(MATRIX_T* m, const MATRIX_T* indices, const MATRIX_T* values) {
 	for (int i = 0; i < (int)indices->size1; i++) {
 		for (int j = 0; j < (int)indices->size2; j++) {
 			int index = (int)MATRIX_ID(get)(indices, i, j);
@@ -352,7 +352,7 @@ void matlab::ordinal_index_assign(MATRIX_T* m, const MATRIX_T* indices, const MA
 	}
 }
 
-VECTOR_T* matlab::logical_index(const MATRIX_T* m, const MATRIX_T* logical_m) {
+VECTOR_T* MATLAB_NAMESPACE::logical_index(const MATRIX_T* m, const MATRIX_T* logical_m) {
 	int n_index = nnz(logical_m);
 	if (n_index == 0) {
 		return NULL;
@@ -369,7 +369,7 @@ VECTOR_T* matlab::logical_index(const MATRIX_T* m, const MATRIX_T* logical_m) {
 	return index_v;
 }
 
-void matlab::logical_index_assign(MATRIX_T* m, const MATRIX_T* logical_m, FP_T value) {
+void MATLAB_NAMESPACE::logical_index_assign(MATRIX_T* m, const MATRIX_T* logical_m, FP_T value) {
 	for (int j = 0; j < (int)logical_m->size2; j++) {
 		for (int i = 0; i < (int)logical_m->size1; i++) {
 			if (fp_nonzero(MATRIX_ID(get)(logical_m, i, j))) {
@@ -379,7 +379,7 @@ void matlab::logical_index_assign(MATRIX_T* m, const MATRIX_T* logical_m, FP_T v
 	}
 }
 
-void matlab::logical_index_assign(MATRIX_T* m, const MATRIX_T* logical_m, const VECTOR_T* values) {
+void MATLAB_NAMESPACE::logical_index_assign(MATRIX_T* m, const MATRIX_T* logical_m, const VECTOR_T* values) {
 	for (int j = 0, index = 0; j < (int)logical_m->size2; j++) {
 		for (int i = 0; i < (int)logical_m->size1; i++) {
 			if (fp_nonzero(MATRIX_ID(get)(logical_m, i, j))) {

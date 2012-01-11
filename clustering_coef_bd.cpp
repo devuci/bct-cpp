@@ -5,7 +5,7 @@
 /*
  * Computes clustering coefficient for a binary directed graph.
  */
-VECTOR_T* bct::clustering_coef_bd(const MATRIX_T* A) {
+VECTOR_T* BCT_NAMESPACE::clustering_coef_bd(const MATRIX_T* A) {
 	if (safe_mode) check_status(A, SQUARE | BINARY | DIRECTED, "clustering_coef_bd");
 	
 	// S=A+A.';

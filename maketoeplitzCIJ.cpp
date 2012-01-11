@@ -3,7 +3,7 @@
 /*
  * Generates a random directed binary graph with a Toeplitz organization.
  */
-MATRIX_T* bct::maketoeplitzCIJ(int N, int K, FP_T s) {
+MATRIX_T* BCT_NAMESPACE::maketoeplitzCIJ(int N, int K, FP_T s) {
 	
 	// profile = normpdf([1:N-1],0.5,s);
 	VECTOR_T* indices = sequence(1, N - 1);

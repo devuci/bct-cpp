@@ -8,7 +8,7 @@
  * 0 precedes node i or that node i is unreachable.  Check distance(i) for
  * GSL_POSINF to differentiate between these two cases.
  */
-VECTOR_T* bct::breadth(const MATRIX_T* CIJ, int source, VECTOR_T** branch) {
+VECTOR_T* BCT_NAMESPACE::breadth(const MATRIX_T* CIJ, int source, VECTOR_T** branch) {
 	if (safe_mode) check_status(CIJ, SQUARE, "breadth");
 	
 	// N = size(CIJ,1);

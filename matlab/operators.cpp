@@ -6,7 +6,7 @@
 /*
  * Emulates ([v x]) for a row vector or ([v ; x]) for a column vector.
  */
-VECTOR_T* matlab::concatenate(const VECTOR_T* v, FP_T x) {
+VECTOR_T* MATLAB_NAMESPACE::concatenate(const VECTOR_T* v, FP_T x) {
 	if (v == NULL) {
 		VECTOR_T* cat_v = VECTOR_ID(alloc)(1);
 		VECTOR_ID(set)(cat_v, 0, x);
@@ -22,7 +22,7 @@ VECTOR_T* matlab::concatenate(const VECTOR_T* v, FP_T x) {
 /*
  * Emulates ([x v]) for a row vector or ([x ; v]) for a column vector.
  */
-VECTOR_T* matlab::concatenate(FP_T x, const VECTOR_T* v) {
+VECTOR_T* MATLAB_NAMESPACE::concatenate(FP_T x, const VECTOR_T* v) {
 	if (v == NULL) {
 		VECTOR_T* cat_v = VECTOR_ID(alloc)(1);
 		VECTOR_ID(set)(cat_v, 0, x);
@@ -38,7 +38,7 @@ VECTOR_T* matlab::concatenate(FP_T x, const VECTOR_T* v) {
 /*
  * Emulates ([v1 v2]) for row vectors or ([v1 ; v2]) for column vectors.
  */
-VECTOR_T* matlab::concatenate(const VECTOR_T* v1, const VECTOR_T* v2) {
+VECTOR_T* MATLAB_NAMESPACE::concatenate(const VECTOR_T* v1, const VECTOR_T* v2) {
 	if (v1 == NULL && v2 == NULL) {
 		return NULL;
 	} else if (v1 == NULL) {
@@ -57,7 +57,7 @@ VECTOR_T* matlab::concatenate(const VECTOR_T* v1, const VECTOR_T* v2) {
 /*
  * Emulates ([v1 ; v2]) for row vectors.
  */
-MATRIX_T* matlab::concatenate_columns(const VECTOR_T* v1, const VECTOR_T* v2) {
+MATRIX_T* MATLAB_NAMESPACE::concatenate_columns(const VECTOR_T* v1, const VECTOR_T* v2) {
 	if (v1 == NULL && v2 == NULL) {
 		return NULL;
 	} else if (v1 == NULL) {
@@ -76,7 +76,7 @@ MATRIX_T* matlab::concatenate_columns(const VECTOR_T* v1, const VECTOR_T* v2) {
 /*
  * Emulates ([m ; v]) for a row vector.
  */
-MATRIX_T* matlab::concatenate_columns(const MATRIX_T* m, const VECTOR_T* v) {
+MATRIX_T* MATLAB_NAMESPACE::concatenate_columns(const MATRIX_T* m, const VECTOR_T* v) {
 	if (m == NULL && v == NULL) {
 		return NULL;
 	} else if (m == NULL) {
@@ -96,7 +96,7 @@ MATRIX_T* matlab::concatenate_columns(const MATRIX_T* m, const VECTOR_T* v) {
 /*
  * Emulates ([v ; m]) for a row vector.
  */
-MATRIX_T* matlab::concatenate_columns(const VECTOR_T* v, const MATRIX_T* m) {
+MATRIX_T* MATLAB_NAMESPACE::concatenate_columns(const VECTOR_T* v, const MATRIX_T* m) {
 	if (m == NULL && v == NULL) {
 		return NULL;
 	} else if (m == NULL) {
@@ -116,7 +116,7 @@ MATRIX_T* matlab::concatenate_columns(const VECTOR_T* v, const MATRIX_T* m) {
 /*
  * Emulates ([m1 ; m2]).
  */
-MATRIX_T* matlab::concatenate_columns(const MATRIX_T* m1, const MATRIX_T* m2) {
+MATRIX_T* MATLAB_NAMESPACE::concatenate_columns(const MATRIX_T* m1, const MATRIX_T* m2) {
 	if (m1 == NULL && m2 == NULL) {
 		return NULL;
 	} else if (m1 == NULL) {
@@ -137,7 +137,7 @@ MATRIX_T* matlab::concatenate_columns(const MATRIX_T* m1, const MATRIX_T* m2) {
 /*
  * Emulates ([v1 v2]) for column vectors.
  */
-MATRIX_T* matlab::concatenate_rows(const VECTOR_T* v1, const VECTOR_T* v2) {
+MATRIX_T* MATLAB_NAMESPACE::concatenate_rows(const VECTOR_T* v1, const VECTOR_T* v2) {
 	if (v1 == NULL && v2 == NULL) {
 		return NULL;
 	} else if (v1 == NULL) {
@@ -156,7 +156,7 @@ MATRIX_T* matlab::concatenate_rows(const VECTOR_T* v1, const VECTOR_T* v2) {
 /*
  * Emulates ([m v]) for a column vector.
  */
-MATRIX_T* matlab::concatenate_rows(const MATRIX_T* m, const VECTOR_T* v) {
+MATRIX_T* MATLAB_NAMESPACE::concatenate_rows(const MATRIX_T* m, const VECTOR_T* v) {
 	if (m == NULL && v == NULL) {
 		return NULL;
 	} else if (m == NULL) {
@@ -176,7 +176,7 @@ MATRIX_T* matlab::concatenate_rows(const MATRIX_T* m, const VECTOR_T* v) {
 /*
  * Emulates ([v m]) for a column vector.
  */
-MATRIX_T* matlab::concatenate_rows(const VECTOR_T* v, const MATRIX_T* m) {
+MATRIX_T* MATLAB_NAMESPACE::concatenate_rows(const VECTOR_T* v, const MATRIX_T* m) {
 	if (m == NULL && v == NULL) {
 		return NULL;
 	} else if (m == NULL) {
@@ -196,7 +196,7 @@ MATRIX_T* matlab::concatenate_rows(const VECTOR_T* v, const MATRIX_T* m) {
 /*
  * Emulates ([m1 m2]).
  */
-MATRIX_T* matlab::concatenate_rows(const MATRIX_T* m1, const MATRIX_T* m2) {
+MATRIX_T* MATLAB_NAMESPACE::concatenate_rows(const MATRIX_T* m1, const MATRIX_T* m2) {
 	if (m1 == NULL && m2 == NULL) {
 		return NULL;
 	} else if (m1 == NULL) {
@@ -217,7 +217,7 @@ MATRIX_T* matlab::concatenate_rows(const MATRIX_T* m1, const MATRIX_T* m2) {
 /*
  * Emulates copy assignment.
  */
-VECTOR_T* matlab::copy(const VECTOR_T* v) {
+VECTOR_T* MATLAB_NAMESPACE::copy(const VECTOR_T* v) {
 	VECTOR_T* copy_v = VECTOR_ID(alloc)(v->size);
 	VECTOR_ID(memcpy)(copy_v, v);
 	return copy_v;
@@ -226,7 +226,7 @@ VECTOR_T* matlab::copy(const VECTOR_T* v) {
 /*
  * Emulates copy assignment.
  */
-MATRIX_T* matlab::copy(const MATRIX_T* m) {
+MATRIX_T* MATLAB_NAMESPACE::copy(const MATRIX_T* m) {
 	MATRIX_T* copy_m = MATRIX_ID(alloc)(m->size1, m->size2);
 	MATRIX_ID(memcpy)(copy_m, m);
 	return copy_m;
@@ -235,7 +235,7 @@ MATRIX_T* matlab::copy(const MATRIX_T* m) {
 /*
  * Emulates (m1 \ m2) = (inv(m1) * m2).
  */
-MATRIX_T* matlab::div_left(const MATRIX_T* m1, const MATRIX_T* m2) {
+MATRIX_T* MATLAB_NAMESPACE::div_left(const MATRIX_T* m1, const MATRIX_T* m2) {
 	if (m1->size1 != m1->size2 || m2->size1 != m2->size2 || m1->size1 != m2->size1) {
 		return NULL;
 	}
@@ -248,7 +248,7 @@ MATRIX_T* matlab::div_left(const MATRIX_T* m1, const MATRIX_T* m2) {
 /*
  * Emulates (m1 / m2) = ((inv(m2') * m1')').
  */
-MATRIX_T* matlab::div_right(const MATRIX_T* m1, const MATRIX_T* m2) {
+MATRIX_T* MATLAB_NAMESPACE::div_right(const MATRIX_T* m1, const MATRIX_T* m2) {
 	if (m1->size1 != m1->size2 || m2->size1 != m2->size2 || m1->size1 != m2->size1) {
 		return NULL;
 	}
@@ -268,7 +268,7 @@ MATRIX_T* matlab::div_right(const MATRIX_T* m1, const MATRIX_T* m2) {
 /*
  * Emulates (v1 & v2).
  */
-VECTOR_T* matlab::logical_and(const VECTOR_T* v1, const VECTOR_T* v2) {
+VECTOR_T* MATLAB_NAMESPACE::logical_and(const VECTOR_T* v1, const VECTOR_T* v2) {
 	if (v1->size != v2->size) {
 		return NULL;
 	}
@@ -284,7 +284,7 @@ VECTOR_T* matlab::logical_and(const VECTOR_T* v1, const VECTOR_T* v2) {
 /*
  * Emulates (m1 & m2).
  */
-MATRIX_T* matlab::logical_and(const MATRIX_T* m1, const MATRIX_T* m2) {
+MATRIX_T* MATLAB_NAMESPACE::logical_and(const MATRIX_T* m1, const MATRIX_T* m2) {
 	if (m1->size1 != m2->size1 || m1->size2 != m2->size2) {
 		return NULL;
 	}
@@ -302,7 +302,7 @@ MATRIX_T* matlab::logical_and(const MATRIX_T* m1, const MATRIX_T* m2) {
 /*
  * Emulates (~v).
  */
-VECTOR_T* matlab::logical_not(const VECTOR_T* v) {
+VECTOR_T* MATLAB_NAMESPACE::logical_not(const VECTOR_T* v) {
 	VECTOR_T* not_v = VECTOR_ID(alloc)(v->size);
 	for (int i = 0; i < (int)v->size; i++) {
 		bool z = fp_zero(VECTOR_ID(get)(v, i));
@@ -314,7 +314,7 @@ VECTOR_T* matlab::logical_not(const VECTOR_T* v) {
 /*
  * Emulates (~m)
  */
-MATRIX_T* matlab::logical_not(const MATRIX_T* m) {
+MATRIX_T* MATLAB_NAMESPACE::logical_not(const MATRIX_T* m) {
 	MATRIX_T* not_m = MATRIX_ID(alloc)(m->size1, m->size2);
 	for (int i = 0; i < (int)m->size1; i++) {
 		for (int j = 0; j < (int)m->size2; j++) {
@@ -328,7 +328,7 @@ MATRIX_T* matlab::logical_not(const MATRIX_T* m) {
 /*
  * Emulates (v1 | v2).
  */
-VECTOR_T* matlab::logical_or(const VECTOR_T* v1, const VECTOR_T* v2) {
+VECTOR_T* MATLAB_NAMESPACE::logical_or(const VECTOR_T* v1, const VECTOR_T* v2) {
 	if (v1->size != v2->size) {
 		return NULL;
 	}
@@ -344,7 +344,7 @@ VECTOR_T* matlab::logical_or(const VECTOR_T* v1, const VECTOR_T* v2) {
 /*
  * Emulates (m1 | m2).
  */
-MATRIX_T* matlab::logical_or(const MATRIX_T* m1, const MATRIX_T* m2) {
+MATRIX_T* MATLAB_NAMESPACE::logical_or(const MATRIX_T* m1, const MATRIX_T* m2) {
 	if (m1->size1 != m2->size1 || m1->size2 != m2->size2) {
 		return NULL;
 	}
@@ -362,7 +362,7 @@ MATRIX_T* matlab::logical_or(const MATRIX_T* m1, const MATRIX_T* m2) {
 /*
  * Emulates (m1 * m2).
  */
-MATRIX_T* matlab::mul(const MATRIX_T* m1, const MATRIX_T* m2) {
+MATRIX_T* MATLAB_NAMESPACE::mul(const MATRIX_T* m1, const MATRIX_T* m2) {
 	if (m1->size2 != m2->size1) {
 		return NULL;
 	}
@@ -384,7 +384,7 @@ MATRIX_T* matlab::mul(const MATRIX_T* m1, const MATRIX_T* m2) {
 /*
  * Emulates (m ^ power).
  */
-MATRIX_T* matlab::pow(const MATRIX_T* m, int power) {
+MATRIX_T* MATLAB_NAMESPACE::pow(const MATRIX_T* m, int power) {
 	if (m->size1 != m->size2 || power < 1) {
 		return NULL;
 	}
@@ -400,7 +400,7 @@ MATRIX_T* matlab::pow(const MATRIX_T* m, int power) {
 /*
  * Emulates (v .^ power).
  */
-VECTOR_T* matlab::pow_elements(const VECTOR_T* v, FP_T power) {
+VECTOR_T* MATLAB_NAMESPACE::pow_elements(const VECTOR_T* v, FP_T power) {
 	VECTOR_T* pow_v = VECTOR_ID(alloc)(v->size);
 	for (int i = 0; i < (int)v->size; i++) {
 		FP_T value = std::pow(VECTOR_ID(get)(v, i), power);
@@ -412,7 +412,7 @@ VECTOR_T* matlab::pow_elements(const VECTOR_T* v, FP_T power) {
 /*
  * Emulates (v .^ powers).
  */
-VECTOR_T* matlab::pow_elements(const VECTOR_T* v, const VECTOR_T* powers) {
+VECTOR_T* MATLAB_NAMESPACE::pow_elements(const VECTOR_T* v, const VECTOR_T* powers) {
 	if (v->size != powers->size) {
 		return NULL;
 	}
@@ -427,7 +427,7 @@ VECTOR_T* matlab::pow_elements(const VECTOR_T* v, const VECTOR_T* powers) {
 /*
  * Emulates (m .^ power).
  */
-MATRIX_T* matlab::pow_elements(const MATRIX_T* m, FP_T power) {
+MATRIX_T* MATLAB_NAMESPACE::pow_elements(const MATRIX_T* m, FP_T power) {
 	MATRIX_T* pow_m = MATRIX_ID(alloc)(m->size1, m->size2);
 	for (int i = 0; i < (int)m->size1; i++) {
 		for (int j = 0; j < (int)m->size2; j++) {
@@ -441,7 +441,7 @@ MATRIX_T* matlab::pow_elements(const MATRIX_T* m, FP_T power) {
 /*
  * Emulates (m .^ powers).
  */
-MATRIX_T* matlab::pow_elements(const MATRIX_T* m, const MATRIX_T* powers) {
+MATRIX_T* MATLAB_NAMESPACE::pow_elements(const MATRIX_T* m, const MATRIX_T* powers) {
 	if (m->size1 != powers->size1 || m->size2 != powers->size2) {
 		return NULL;
 	}
@@ -458,14 +458,14 @@ MATRIX_T* matlab::pow_elements(const MATRIX_T* m, const MATRIX_T* powers) {
 /* 
  * Emulates (start:end).
  */
-VECTOR_T* matlab::sequence(int start, int end) {
+VECTOR_T* MATLAB_NAMESPACE::sequence(int start, int end) {
 	return sequence(start, 1, end);
 }
 
 /*
  * Emulates (start:step:end).
  */
-VECTOR_T* matlab::sequence(int start, int step, int end) {
+VECTOR_T* MATLAB_NAMESPACE::sequence(int start, int step, int end) {
 	int n_seq = (end - start) / step + 1;
 	if (n_seq <= 0) {
 		return NULL;

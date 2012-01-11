@@ -5,7 +5,7 @@
  * element (u, v) is the number of nodes with u outgoing connections and v
  * incoming connections.
  */
-MATRIX_T* bct::jdegree(const MATRIX_T* CIJ) {
+MATRIX_T* BCT_NAMESPACE::jdegree(const MATRIX_T* CIJ) {
 	if (safe_mode) check_status(CIJ, SQUARE, "jdegree");
 	
 	// CIJ = FP_T(CIJ~=0);
@@ -47,7 +47,7 @@ MATRIX_T* bct::jdegree(const MATRIX_T* CIJ) {
  * Given a joint degree distribution matrix, returns the number of nodes with
  * in-degree = out-degree.
  */
-int bct::jdegree_bl(const MATRIX_T* J) {
+int BCT_NAMESPACE::jdegree_bl(const MATRIX_T* J) {
 	
 	// J_bl = sum(diag(J));
 	VECTOR_ID(const_view) diag_J = MATRIX_ID(const_diagonal)(J);
@@ -58,7 +58,7 @@ int bct::jdegree_bl(const MATRIX_T* J) {
  * Given a joint degree distribution matrix, returns the number of nodes with
  * in-degree > out-degree.
  */
-int bct::jdegree_id(const MATRIX_T* J) {
+int BCT_NAMESPACE::jdegree_id(const MATRIX_T* J) {
 	
 	// J_id = sum(sum(tril(J,-1)));
 	MATRIX_T* tril_J = tril(J, -1);
@@ -73,7 +73,7 @@ int bct::jdegree_id(const MATRIX_T* J) {
  * Given a joint degree distribution matrix, returns the number of nodes with
  * out-degree > in-degree.
  */
-int bct::jdegree_od(const MATRIX_T* J) {
+int BCT_NAMESPACE::jdegree_od(const MATRIX_T* J) {
 	
 	// J_od = sum(sum(triu(J,1)));
 	MATRIX_T* triu_J = triu(J, 1);

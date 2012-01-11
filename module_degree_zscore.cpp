@@ -6,7 +6,7 @@
  * Computes z-score for a binary graph and its corresponding community
  * structure.  For a directed graph, computes out-neighbor z-score.
  */
-VECTOR_T* bct::module_degree_zscore(const MATRIX_T* A, const VECTOR_T* Ci) {
+VECTOR_T* BCT_NAMESPACE::module_degree_zscore(const MATRIX_T* A, const VECTOR_T* Ci) {
 	if (safe_mode) check_status(A, SQUARE | BINARY, "module_degree_zscore");
 	
 	// n=length(A);
@@ -25,7 +25,7 @@ VECTOR_T* bct::module_degree_zscore(const MATRIX_T* A, const VECTOR_T* Ci) {
 		MATRIX_ID(free)(A_idx);
 		
 		// Z(Ci==i)=(Koi-mean(Koi))./std(Koi);
-		FP_T std_Koi = matlab::std(Koi);
+		FP_T std_Koi = MATLAB_NAMESPACE::std(Koi);
 		VECTOR_ID(add_constant)(Koi, -mean(Koi));
 		VECTOR_ID(scale)(Koi, 1.0 / std_Koi);
 		logical_index_assign(Z, Ci_eq_i, Koi);

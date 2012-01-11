@@ -4,7 +4,7 @@
  * Generates a random undirected binary graph with N nodes and K edges.  No
  * edges are placed on the main diagonal.
  */
-MATRIX_T* bct::makerandCIJ_bu(int N, int K) {
+MATRIX_T* BCT_NAMESPACE::makerandCIJ_bu(int N, int K) {
 	
 	// ind = triu(~eye(N));
 	MATRIX_T* eye_N = eye(N);

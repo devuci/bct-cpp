@@ -5,7 +5,7 @@
 /*
  * Computes the clustering coefficient for a weighted undirected graph.
  */
-VECTOR_T* bct::clustering_coef_wu(const MATRIX_T* W) {
+VECTOR_T* BCT_NAMESPACE::clustering_coef_wu(const MATRIX_T* W) {
 	if (safe_mode) check_status(W, SQUARE | WEIGHTED | UNDIRECTED, "clustering_coef_wu");
 	
 	// K=sum(W~=0,2);

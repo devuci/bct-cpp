@@ -5,7 +5,7 @@
  * a C++ long.  Wq (the main return) and wlq are indexed by path length.  They
  * therefore contain no valid data at index 0.
  */
-std::vector<MATRIX_T*> bct::findwalks(const MATRIX_T* CIJ, VECTOR_T** wlq) {
+std::vector<MATRIX_T*> BCT_NAMESPACE::findwalks(const MATRIX_T* CIJ, VECTOR_T** wlq) {
 	if (safe_mode) check_status(CIJ, SQUARE, "findwalks");
 	
 	// CIJ = FP_T(CIJ~=0);

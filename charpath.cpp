@@ -3,15 +3,15 @@
 #include "bct.h"
 
 /*
- * WARNING: bct::charpath_lambda takes a distance matrix, but
- * bct::capped_charpath_lambda takes a connection matrix.  Both should be
+ * WARNING: BCT_NAMESPACE::charpath_lambda takes a distance matrix, but
+ * BCT_NAMESPACE::capped_charpath_lambda takes a connection matrix.  Both should be
  * lengths, not weights (called distances in CalcMetric).
  */
 
 /*
  * Given a distance matrix, computes characteristic path length.
  */
-FP_T bct::charpath_lambda(const MATRIX_T* D) {
+FP_T BCT_NAMESPACE::charpath_lambda(const MATRIX_T* D) {
 	if (safe_mode) check_status(D, SQUARE, "charpath_lambda");
 	
 	// lambda = sum(sum(D(D~=Inf)))/length(nonzeros(D~=Inf));
@@ -27,7 +27,7 @@ FP_T bct::charpath_lambda(const MATRIX_T* D) {
 /*
  * Given a connection matrix, computes capped characteristic path length.
  */
-FP_T bct::capped_charpath_lambda(const MATRIX_T* L) {
+FP_T BCT_NAMESPACE::capped_charpath_lambda(const MATRIX_T* L) {
 	if (safe_mode) check_status(L, SQUARE, "capped_charpath_lambda");
 	int N = L->size1;
 	int nonzeros = 0;
@@ -65,7 +65,7 @@ FP_T bct::capped_charpath_lambda(const MATRIX_T* L) {
 /*
  * Given a distance matrix, computes eccentricity, radius, and diameter.
  */
-VECTOR_T* bct::charpath_ecc(const MATRIX_T* D, FP_T* radius, FP_T* diameter) {
+VECTOR_T* BCT_NAMESPACE::charpath_ecc(const MATRIX_T* D, FP_T* radius, FP_T* diameter) {
 	if (safe_mode) check_status(D, SQUARE, "charpath_ecc");
 	
 	// ecc = max(D.*(D~=Inf),[],2);

@@ -7,7 +7,7 @@
  * are chosen uniformly between wmin and wmax.  No edges are placed on the main
  * diagonal.
  */
-MATRIX_T* bct::makerandCIJ_wd(int N, int K, FP_T wmin, FP_T wmax) {
+MATRIX_T* BCT_NAMESPACE::makerandCIJ_wd(int N, int K, FP_T wmin, FP_T wmax) {
 	gsl_rng* rng = get_rng();
 	VECTOR_T* w = VECTOR_ID(alloc)(K);
 	for (int i = 0; i < K; i++) {
@@ -49,7 +49,7 @@ MATRIX_T* bct::makerandCIJ_wd(int N, int K, FP_T wmin, FP_T wmax) {
  * placed on the main diagonal.  The given matrix should therefore not contain
  * nonzero entries on the main diagonal.
  */
-MATRIX_T* bct::makerandCIJ_wd_wp(const MATRIX_T* m) {
+MATRIX_T* BCT_NAMESPACE::makerandCIJ_wd_wp(const MATRIX_T* m) {
 	if (safe_mode) check_status(m, SQUARE | NO_LOOPS, "makerandCIJ_wd_wp");
 	int N = m->size1;
 	int K = N * (N - 1);

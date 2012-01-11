@@ -7,7 +7,7 @@
  * weighted undirected graph.  On average, each edge is rewired ITER time.
  * Strength distributions are not preserved for weighted graphs.
  */
-MATRIX_T* bct::latmio_und(const MATRIX_T* R, int ITER) {
+MATRIX_T* BCT_NAMESPACE::latmio_und(const MATRIX_T* R, int ITER) {
 	if (safe_mode) check_status(R, SQUARE | UNDIRECTED, "latmio_und");
 	
 	gsl_rng* rng = get_rng();

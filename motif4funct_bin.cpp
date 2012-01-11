@@ -3,7 +3,7 @@
 /*
  * Counts occurrences of four-node functional motifs in a binary graph.
  */
-VECTOR_T* bct::motif4funct_bin(const MATRIX_T* W, MATRIX_T** F) {
+VECTOR_T* BCT_NAMESPACE::motif4funct_bin(const MATRIX_T* W, MATRIX_T** F) {
 	if (safe_mode) check_status(W, SQUARE | BINARY, "motif4funct_bin");
 	
 	// load motif34lib M4 ID4 N4

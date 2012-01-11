@@ -5,7 +5,7 @@
 /*
  * Computes reachability and distance matrices using breadth-first search.
  */
-MATRIX_T* bct::breadthdist(const MATRIX_T* CIJ, MATRIX_T** D) {
+MATRIX_T* BCT_NAMESPACE::breadthdist(const MATRIX_T* CIJ, MATRIX_T** D) {
 	if (safe_mode) check_status(CIJ, SQUARE, "breadthdist");
 	
 	// N = size(CIJ,1);

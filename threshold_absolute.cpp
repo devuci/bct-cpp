@@ -4,7 +4,7 @@
  * Applies an absolute weight threshold to a graph.  All weights below this
  * threshold, as well as those on the main diagonal, are set to zero.
  */
-MATRIX_T* bct::threshold_absolute(const MATRIX_T* W, FP_T thr) {
+MATRIX_T* BCT_NAMESPACE::threshold_absolute(const MATRIX_T* W, FP_T thr) {
 	if (safe_mode) check_status(W, SQUARE, "threshold_absolute");
 	
 	MATRIX_T* W_thr = copy(W);

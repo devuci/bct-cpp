@@ -11,7 +11,7 @@
  * plq, and util are indexed by path length.  They therefore have (qmax + 1)
  * elements and contain no valid data at index 0.
  */
-std::vector<MATRIX_T*> bct::findpaths(const MATRIX_T* CIJ, const VECTOR_T* sources, int qmax, VECTOR_T** plq, int* qstop, MATRIX_T** allpths, MATRIX_T** util) {
+std::vector<MATRIX_T*> BCT_NAMESPACE::findpaths(const MATRIX_T* CIJ, const VECTOR_T* sources, int qmax, VECTOR_T** plq, int* qstop, MATRIX_T** allpths, MATRIX_T** util) {
 	if (safe_mode) check_status(CIJ, SQUARE, "findpaths");
 	
 	// CIJ = FP_T(CIJ~=0);

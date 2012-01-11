@@ -5,7 +5,7 @@ FP_T matching_ind(const VECTOR_T*, const VECTOR_T*, int, int, int);
 /*
  * Computes matching index for all connections.
  */
-MATRIX_T* bct::matching_ind(const MATRIX_T* CIJ) {
+MATRIX_T* BCT_NAMESPACE::matching_ind(const MATRIX_T* CIJ) {
 	if (safe_mode) check_status(CIJ, SQUARE, "matching_ind");
 	
 	// N = size(CIJ,1);
@@ -43,7 +43,7 @@ MATRIX_T* bct::matching_ind(const MATRIX_T* CIJ) {
 /*
  * Computes matching index for incoming connections.
  */
-MATRIX_T* bct::matching_ind_in(const MATRIX_T* CIJ) {
+MATRIX_T* BCT_NAMESPACE::matching_ind_in(const MATRIX_T* CIJ) {
 	if (safe_mode) check_status(CIJ, SQUARE, "matching_ind_in");
 	
 	// N = size(CIJ,1);
@@ -74,7 +74,7 @@ MATRIX_T* bct::matching_ind_in(const MATRIX_T* CIJ) {
 /*
  * Computes matching index for outgoing connections.
  */
-MATRIX_T* bct::matching_ind_out(const MATRIX_T* CIJ) {
+MATRIX_T* BCT_NAMESPACE::matching_ind_out(const MATRIX_T* CIJ) {
 	if (safe_mode) check_status(CIJ, SQUARE, "matching_ind_out");
 	
 	// N = size(CIJ,1);
@@ -103,7 +103,7 @@ MATRIX_T* bct::matching_ind_out(const MATRIX_T* CIJ) {
 }
 
 FP_T matching_ind(const VECTOR_T* c1, const VECTOR_T* c2, int i, int j, int N) {
-	using namespace bct;
+	using namespace BCT_NAMESPACE;
 	
 	// use = ~(~c1&~c2);
 	VECTOR_T* use = logical_or(c1, c2);

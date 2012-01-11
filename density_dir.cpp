@@ -3,7 +3,7 @@
 /*
  * Computes density for a directed graph.  Connection weights are ignored.
  */
-FP_T bct::density_dir(const MATRIX_T* CIJ) {
+FP_T BCT_NAMESPACE::density_dir(const MATRIX_T* CIJ) {
 	if (safe_mode) check_status(CIJ, SQUARE | DIRECTED, "density_dir");
 	
 	// N = size(CIJ,1);

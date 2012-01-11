@@ -1,3 +1,6 @@
+# TODO: -arch doesn't work anymore?
+# TODO: -m32 needed on 64-bit machines, otherwise SWIG won't work?
+
 CXXFLAGS                 = -Wall
 # OUTPUT_OPTION            = -o .obj/$@
 swig_flags               = -Wall -c++ -python -outputtuple
@@ -107,21 +110,28 @@ install: libbct.a
 		mkdir $(install_dir)/include/bct/matlab; \
 	fi
 	if [[ "$(CXXFLAGS)" == *GSL_FLOAT* ]]; then \
-		cat bct_float.h bct.h > _bct.h; \
+		cat bct_float.h bct.h > $(install_dir)/include/bct/bct_float.h; \
 	elif [[ "$(CXXFLAGS)" == *GSL_DOUBLE* ]]; then \
-		cat bct_double.h bct.h > _bct.h; \
+		cat bct_double.h bct.h > $(install_dir)/include/bct/bct.h; \
 	elif [[ "$(CXXFLAGS)" == *GSL_LONG_DOUBLE* ]]; then \
-		cat bct_long_double.h bct.h > _bct.h; \
+		cat bct_long_double.h bct.h > $(install_dir)/include/bct/bct_long_double.h; \
 	fi
-	mv _bct.h $(install_dir)/include/bct/bct.h
 	cp matlab/matlab.h $(install_dir)/include/bct/matlab
 	cp matlab/sort.h $(install_dir)/include/bct/matlab
 	cp precision.h $(install_dir)/include/bct
-	cp libbct.a $(install_dir)/lib
+	if [[ "$(CXXFLAGS)" == *GSL_FLOAT* ]]; then \
+		cp libbct.a $(install_dir)/lib/libbct_float.a; \
+	elif [[ "$(CXXFLAGS)" == *GSL_DOUBLE* ]]; then \
+		cp libbct.a $(install_dir)/lib/libbct.a; \
+	elif [[ "$(CXXFLAGS)" == *GSL_LONG_DOUBLE* ]]; then \
+		cp libbct.a $(install_dir)/lib/libbct_long_double.a; \
+	fi
 
 uninstall:
 	-rm -rf $(install_dir)/include/bct
+	-rm $(install_dir)/lib/libbct_float.a
 	-rm $(install_dir)/lib/libbct.a
+	-rm $(install_dir)/lib/libbct_long_double.a
 
 clean:
 	-rm _bct_gsl.so _bct_py.so bct_gsl.py bct_py.py bct_gsl.pyc bct_py.pyc bct_gsl_wrap.cpp bct_py_wrap.cpp bct_gsl_wrap.o bct_py_wrap.o libbct.a $(objects)

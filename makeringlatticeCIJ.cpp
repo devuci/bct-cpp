@@ -3,7 +3,7 @@
 /*
  * Generates a random directed binary graph with a ring lattice organization.
  */
-MATRIX_T* bct::makeringlatticeCIJ(int N, int K) {
+MATRIX_T* BCT_NAMESPACE::makeringlatticeCIJ(int N, int K) {
 	
 	// CIJ = zeros(N);
 	MATRIX_T* CIJ = zeros(N);

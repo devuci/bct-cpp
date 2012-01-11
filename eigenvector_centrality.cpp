@@ -9,7 +9,7 @@
  * http://www.mathworks.de/matlabcentral/fx_files/7978/1/mPowerEig.c
  * http://en.wikipedia.org/wiki/Power_iteration
  */
-VECTOR_T* bct::eigenvector_centrality(const MATRIX_T* G) {
+VECTOR_T* BCT_NAMESPACE::eigenvector_centrality(const MATRIX_T* G) {
 	if (safe_mode) check_status(G, SQUARE, "eigenvector_centrality");
 	
 	FP_T tol = 1e-6;  // Ensures that the average value is stable at 1e-6

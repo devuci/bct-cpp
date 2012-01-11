@@ -6,7 +6,7 @@
  * Computes the range for each edge (i.e., the shortest path length between the
  * nodes it connects after the edge has been removed from the graph)
  */
-MATRIX_T* bct::erange(const MATRIX_T* CIJ, FP_T* eta, MATRIX_T** Eshort, FP_T* fs) {
+MATRIX_T* BCT_NAMESPACE::erange(const MATRIX_T* CIJ, FP_T* eta, MATRIX_T** Eshort, FP_T* fs) {
 	if (safe_mode) check_status(CIJ, SQUARE, "erange");
 	
 	// N = size(CIJ,1);
