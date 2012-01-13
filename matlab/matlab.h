@@ -159,7 +159,7 @@ namespace MATLAB_NAMESPACE {
 	void ordinal_index_assign(VECTOR_T* v, const VECTOR_T* indices, FP_T value);
 	void ordinal_index_assign(VECTOR_T* v, const VECTOR_T* indices, const VECTOR_T* values);
 	VECTOR_T* logical_index(const VECTOR_T* v, const VECTOR_T* logical_v);
-	void logical_index_assign(VECTOR_T* v, const VECTOR_T* logical_v, FP_T values);
+	void logical_index_assign(VECTOR_T* v, const VECTOR_T* logical_v, FP_T value);
 	void logical_index_assign(VECTOR_T* v, const VECTOR_T* logical_v, const VECTOR_T* values);
 	
 	// Matrix-by-integer indexing

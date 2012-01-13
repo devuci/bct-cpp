@@ -6,7 +6,7 @@
 VECTOR_T* BCT_NAMESPACE::degrees_und(const MATRIX_T* CIJ) {
 	if (safe_mode) check_status(CIJ, SQUARE | UNDIRECTED, "degrees_und");
 	
-	// CIJ = FP_T(CIJ~=0);
+	// CIJ = double(CIJ~=0);
 	// deg = sum(CIJ);
 	VECTOR_T* deg = VECTOR_ID(alloc)(CIJ->size2);
 

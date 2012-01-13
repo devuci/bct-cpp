@@ -28,7 +28,7 @@ MATRIX_T* BCT_NAMESPACE::breadthdist(const MATRIX_T* CIJ, MATRIX_T** D) {
 	logical_index_assign(_D, D_eq_0, GSL_POSINF);
 	MATRIX_ID(free)(D_eq_0);
 	
-	// R = FP_T(D~=Inf);
+	// R = double(D~=Inf);
 	MATRIX_T* R = compare_elements(_D, fp_not_equal, GSL_POSINF);
 	
 	if (D != NULL) *D = _D; else MATRIX_ID(free)(_D);

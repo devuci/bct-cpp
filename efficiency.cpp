@@ -59,7 +59,7 @@ VECTOR_T* BCT_NAMESPACE::efficiency_local(const MATRIX_T* G) {
 				MATRIX_T* e = distance_inv(G_idx, NULL);
 				MATRIX_ID(free)(G_idx);
 				
-				// E(u)=sum(e(:))./(k.^2-k);
+				// E(u)=sum(e(:))./(k^2-k);
 				VECTOR_T* e_v = to_vector(e);
 				MATRIX_ID(free)(e);
 				FP_T sum_e = sum(e_v);

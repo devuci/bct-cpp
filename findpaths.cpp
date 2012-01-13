@@ -14,7 +14,7 @@
 std::vector<MATRIX_T*> BCT_NAMESPACE::findpaths(const MATRIX_T* CIJ, const VECTOR_T* sources, int qmax, VECTOR_T** plq, int* qstop, MATRIX_T** allpths, MATRIX_T** util) {
 	if (safe_mode) check_status(CIJ, SQUARE, "findpaths");
 	
-	// CIJ = FP_T(CIJ~=0);
+	// CIJ = double(CIJ~=0);
 	MATRIX_T* _CIJ = compare_elements(CIJ, fp_not_equal, 0.0);
 	
 	// N = size(CIJ,1);

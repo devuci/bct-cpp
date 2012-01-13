@@ -7,7 +7,7 @@
 VECTOR_T* BCT_NAMESPACE::degrees_dir(const MATRIX_T* CIJ, VECTOR_T** id, VECTOR_T** od) {
 	if (safe_mode) check_status(CIJ, SQUARE | DIRECTED, "degrees_dir");
 	
-	// CIJ = FP_T(CIJ~=0);
+	// CIJ = double(CIJ~=0);
 	// id = sum(CIJ,1);
 	VECTOR_T* _id = VECTOR_ID(alloc)(CIJ->size2);
 	for (int i = 0; i < (int)CIJ->size2; i++) {

@@ -14,14 +14,23 @@ VECTOR_T* modularity(const MATRIX_T* B, int N, FP_T m);
 FP_T BCT_NAMESPACE::modularity_dir(const MATRIX_T* A, VECTOR_T** Ci) {
 	if (safe_mode) check_status(A, SQUARE | DIRECTED, "modularity_dir");
 	
-	// Ki=sum(A,1);
-	VECTOR_T* Ki = sum(A, 1);
-	
-	// Ko=sum(A,2);
-	VECTOR_T* Ko = sum(A, 2);
-	
 	// N=length(A);
 	int N = length(A);
+	
+	// n_perm = randperm(N);
+	gsl_permutation* n_perm = randperm(N);
+	
+	// A = A(n_perm,n_perm);
+	VECTOR_T* n_perm_v to_vector(n_perm);
+	gsl_permutation_free(n_perm);
+	MATRIX_T* A_perm = MATRIX_ID(alloc)(N, N);
+	ordinal_index_assign(A_perm, n_perm_v, n_perm_v, A);
+	
+	// Ki=sum(A,1);
+	VECTOR_T* Ki = sum(A_perm, 1);
+	
+	// Ko=sum(A,2);
+	VECTOR_T* Ko = sum(A_perm, 2);
 	
 	// m=sum(Ki);
 	FP_T m = sum(Ki);
@@ -36,7 +45,8 @@ FP_T BCT_NAMESPACE::modularity_dir(const MATRIX_T* A, VECTOR_T** Ci) {
 	MATRIX_ID(free)(Ki_m);
 	MATRIX_ID(transpose)(Ko_mul_Ki_transpose);
 	MATRIX_ID(scale)(Ko_mul_Ki_transpose, 1.0 / m);
-	MATRIX_T* b = copy(A);
+	MATRIX_T* b = copy(A_perm);
+	MATRIX_ID(free)(A_perm);
 	MATRIX_ID(sub)(b, Ko_mul_Ki_transpose);
 	MATRIX_ID(free)(Ko_mul_Ki_transpose);
 	
@@ -72,6 +82,21 @@ FP_T BCT_NAMESPACE::modularity_dir(const MATRIX_T* A, VECTOR_T** Ci) {
 	FP_T Q = sum(sum_Q_m);
 	VECTOR_ID(free)(sum_Q_m);
 	
+	// Ci_corrected = zeros(N,1);
+	VECTOR_T* _Ci_corrected = VECTOR_ID(alloc)(N);
+	
+	// Ci_corrected(n_perm) = Ci;
+	for (int i = 0; i < N; i++) {
+		int index = (int)VECTOR_ID(get)(n_perm_v, i);
+		FP_T value = VECTOR_ID(get)(_Ci, i);
+		VECTOR_ID(set)(_Ci_corrected, index, value);
+	}
+	VECTOR_ID(free)(n_perm_v);
+	
+	// Ci = Ci_corrected;
+	VECTOR_ID(free)(_Ci);
+	_Ci = _Ci_corrected;
+	
 	if (Ci != NULL) *Ci = _Ci; else VECTOR_ID(free)(_Ci);
 	return Q;
 }
@@ -84,11 +109,20 @@ FP_T BCT_NAMESPACE::modularity_dir(const MATRIX_T* A, VECTOR_T** Ci) {
 FP_T BCT_NAMESPACE::modularity_und(const MATRIX_T* A, VECTOR_T** Ci) {
 	if (safe_mode) check_status(A, SQUARE | UNDIRECTED, "modularity_und");
 	
-	// K=sum(A);
-	VECTOR_T* K = sum(A);
-	
 	// N=length(A);
 	int N = length(A);
+	
+	// n_perm = randperm(N);
+	gsl_permutation* n_perm = randperm(N);
+	
+	// A = A(n_perm,n_perm);
+	VECTOR_T* n_perm_v to_vector(n_perm);
+	gsl_permutation_free(n_perm);
+	MATRIX_T* A_perm = MATRIX_ID(alloc)(N, N);
+	ordinal_index_assign(A_perm, n_perm_v, n_perm_v, A);
+	
+	// K=sum(A);
+	VECTOR_T* K = sum(A_perm);
 	
 	// m=sum(K);
 	FP_T m = sum(K);
@@ -101,7 +135,8 @@ FP_T BCT_NAMESPACE::modularity_und(const MATRIX_T* A, VECTOR_T** Ci) {
 	MATRIX_ID(free)(K_m_transpose);
 	MATRIX_ID(free)(K_m);
 	MATRIX_ID(scale)(K_m_transpose_mul_K_m, 1.0 / m);
-	MATRIX_T* B = copy(A);
+	MATRIX_T* B = copy(A_perm);
+	MATRIX_ID(free)(A_perm);
 	MATRIX_ID(sub)(B, K_m_transpose_mul_K_m);
 	MATRIX_ID(free)(K_m_transpose_mul_K_m);
 	
@@ -129,6 +164,21 @@ FP_T BCT_NAMESPACE::modularity_und(const MATRIX_T* A, VECTOR_T** Ci) {
 	MATRIX_ID(free)(Q_m);
 	FP_T Q = sum(sum_Q_m);
 	VECTOR_ID(free)(sum_Q_m);
+	
+	// Ci_corrected = zeros(N,1);
+	VECTOR_T* _Ci_corrected = VECTOR_ID(alloc)(N);
+	
+	// Ci_corrected(n_perm) = Ci;
+	for (int i = 0; i < N; i++) {
+		int index = (int)VECTOR_ID(get)(n_perm_v, i);
+		FP_T value = VECTOR_ID(get)(_Ci, i);
+		VECTOR_ID(set)(_Ci_corrected, index, value);
+	}
+	VECTOR_ID(free)(n_perm_v);
+	
+	// Ci = Ci_corrected;
+	VECTOR_ID(free)(_Ci);
+	_Ci = _Ci_corrected;
 	
 	if (Ci != NULL) *Ci = _Ci; else VECTOR_ID(free)(_Ci);
 	return Q;

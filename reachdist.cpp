@@ -105,7 +105,7 @@ void reachdist2(const MATRIX_T* CIJ, MATRIX_T** CIJpwr, MATRIX_T** R, MATRIX_T**
 	MATRIX_ID(free)(*CIJpwr);
 	*CIJpwr = temp;
 	
-	// R = FP_T(R | ((CIJpwr)~=0));
+	// R = double(R | ((CIJpwr)~=0));
 	MATRIX_T* CIJpwr_neq_0 = compare_elements(*CIJpwr, fp_not_equal, 0.0);
 	MATRIX_T* R_or_CIJpwr_neq_0 = logical_or(*R, CIJpwr_neq_0);
 	MATRIX_ID(free)(CIJpwr_neq_0);

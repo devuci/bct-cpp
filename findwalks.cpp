@@ -8,7 +8,7 @@
 std::vector<MATRIX_T*> BCT_NAMESPACE::findwalks(const MATRIX_T* CIJ, VECTOR_T** wlq) {
 	if (safe_mode) check_status(CIJ, SQUARE, "findwalks");
 	
-	// CIJ = FP_T(CIJ~=0);
+	// CIJ = double(CIJ~=0);
 	MATRIX_T* _CIJ = compare_elements(CIJ, fp_not_equal, 0.0);
 	
 	// N = size(CIJ,1);
