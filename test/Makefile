@@ -70,10 +70,21 @@ filenames                = assortativity_dir_cpp \
                            threshold_absolute_cpp \
                            threshold_proportional_dir_cpp \
                            threshold_proportional_und_cpp
-objects                 := $(foreach f, $(filenames), $(f).o)
-oct_files               := $(foreach f, $(filenames), $(f).oct)
+objects                  = $(addsuffix .o, $(filenames))
+oct_files                = $(addsuffix .oct, $(filenames))
 m_files                  = bct_test.m \
-                           bct_test_all.m
+                           bct_test_all.m \
+                           bct_test_centrality.m \
+                           bct_test_clustering.m \
+                           bct_test_degree.m \
+                           bct_test_distance.m \
+                           bct_test_modularity.m \
+                           bct_test_motifs.m \
+                           bct_test_random.m \
+                           bct_test_setup.m \
+                           bct_test_synthetic.m \
+                           bct_test_teardown.m \
+                           bct_test_utility.m
 
 include ../Makefile.vars
 
@@ -81,12 +92,10 @@ include ../Makefile.vars
 
 all: $(oct_files)
 
-.SECONDEXPANSION:
+%.oct: %.cpp bct_test.h bct_test.cpp
+	mkoctfile -Wall -lbct -lgsl -lgslcblas -o $@ $<
 
-$(oct_files): bct_test.h bct_test.cpp $$(basename $$@).cpp
-	mkoctfile -Wall -lbct -lgsl -lgslcblas $(basename $@).cpp
-
-install:
+install: $(oct_files) $(m_files)
 	if [ ! -d $(install_dir)/share/bct ]; then \
 		mkdir $(install_dir)/share/bct; \
 	fi

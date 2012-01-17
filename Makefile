@@ -1,10 +1,7 @@
-# TODO: -arch doesn't work anymore?
-# TODO: -m32 needed on 64-bit machines, otherwise SWIG won't work?
-
 CXXFLAGS                 = -Wall
-# OUTPUT_OPTION            = -o .obj/$@
 swig_flags               = -Wall -c++ -python -outputtuple
-objects                  = assortativity.o \
+object_dir               = .obj
+object_filenames         = assortativity.o \
                            betweenness_bin.o \
                            betweenness_wei.o \
                            breadth.o \
@@ -80,29 +77,30 @@ objects                  = assortativity.o \
                            threshold_absolute.o \
                            threshold_proportional.o \
                            utility.o
+objects                  = $(addprefix $(object_dir)/, $(object_filenames))
 
 include Makefile.vars
-
-# To make a multi-architecture library:
-# Compile once for each architecture by adding -arch to CXXFLAGS and LDFLAGS during compilation
-# Then execute "lipo -create <architecture-specific libraries> -output <universal library>"
 
 .PHONY: all clean install swig uninstall
 
 all: libbct.a
 
 libbct.a: $(objects)
-	$(AR) rcs libbct.a $(objects)
+	$(AR) rcs libbct.a $^
 
 swig: $(objects)
 	swig $(swig_flags) -o bct_gsl_wrap.cpp bct_gsl.i
 	swig $(swig_flags) -o bct_py_wrap.cpp bct_py.i
 	$(CXX) $(CXXFLAGS) -c -I$(python_dir) bct_gsl_wrap.cpp
 	$(CXX) $(CXXFLAGS) -c -I$(python_dir) bct_py_wrap.cpp
-	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct_gsl.so $(objects) bct_gsl_wrap.o
-	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct_py.so $(objects) bct_py_wrap.o
+	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct_gsl.so $^ bct_gsl_wrap.o
+	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct_py.so $^ bct_py_wrap.o
 
-$(objects): matlab/matlab.h bct.h
+$(object_dir)/%.o: %.cpp bct.h matlab/matlab.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(object_dir)/matlab/%.o: matlab/%.cpp matlab/matlab.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 install: libbct.a
 	if [ ! -d $(install_dir)/include/bct ]; then \
