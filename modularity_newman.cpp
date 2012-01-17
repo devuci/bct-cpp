@@ -21,7 +21,7 @@ FP_T BCT_NAMESPACE::modularity_dir(const MATRIX_T* A, VECTOR_T** Ci) {
 	gsl_permutation* n_perm = randperm(N);
 	
 	// A = A(n_perm,n_perm);
-	VECTOR_T* n_perm_v to_vector(n_perm);
+	VECTOR_T* n_perm_v = to_vector(n_perm);
 	gsl_permutation_free(n_perm);
 	MATRIX_T* A_perm = MATRIX_ID(alloc)(N, N);
 	ordinal_index_assign(A_perm, n_perm_v, n_perm_v, A);
@@ -116,7 +116,7 @@ FP_T BCT_NAMESPACE::modularity_und(const MATRIX_T* A, VECTOR_T** Ci) {
 	gsl_permutation* n_perm = randperm(N);
 	
 	// A = A(n_perm,n_perm);
-	VECTOR_T* n_perm_v to_vector(n_perm);
+	VECTOR_T* n_perm_v = to_vector(n_perm);
 	gsl_permutation_free(n_perm);
 	MATRIX_T* A_perm = MATRIX_ID(alloc)(N, N);
 	ordinal_index_assign(A_perm, n_perm_v, n_perm_v, A);
