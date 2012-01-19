@@ -1,5 +1,4 @@
 CXXFLAGS                 = -Wall
-swig_flags               = -Wall -c++ -python -outputtuple
 object_dir               = .obj
 object_filenames         = assortativity.o \
                            betweenness_bin.o \
@@ -81,26 +80,21 @@ objects                  = $(addprefix $(object_dir)/, $(object_filenames))
 
 include Makefile.vars
 
-.PHONY: all clean install swig uninstall
+.PHONY: all clean install uninstall swig swig-clean swig-install
 
 all: libbct.a
 
 libbct.a: $(objects)
 	$(AR) rcs libbct.a $^
 
-swig: $(objects)
-	swig $(swig_flags) -o bct_gsl_wrap.cpp bct_gsl.i
-	swig $(swig_flags) -o bct_py_wrap.cpp bct_py.i
-	$(CXX) $(CXXFLAGS) -c -I$(python_dir) bct_gsl_wrap.cpp
-	$(CXX) $(CXXFLAGS) -c -I$(python_dir) bct_py_wrap.cpp
-	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct_gsl.so $^ bct_gsl_wrap.o
-	$(CXX) $(CXXFLAGS) -lgsl -lgslcblas $(swig_lib_flags) -o _bct_py.so $^ bct_py_wrap.o
-
 $(object_dir)/%.o: %.cpp bct.h matlab/matlab.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 $(object_dir)/matlab/%.o: matlab/%.cpp matlab/matlab.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+clean:
+	-rm $(objects) libbct.a
 
 install: libbct.a
 	if [ ! -d $(install_dir)/include/bct ]; then \
@@ -131,5 +125,11 @@ uninstall:
 	-rm $(install_dir)/lib/libbct.a
 	-rm $(install_dir)/lib/libbct_long_double.a
 
-clean:
-	-rm _bct_gsl.so _bct_py.so bct_gsl.py bct_py.py bct_gsl.pyc bct_py.pyc bct_gsl_wrap.cpp bct_py_wrap.cpp bct_gsl_wrap.o bct_py_wrap.o libbct.a $(objects)
+swig: $(objects)
+	python setup.py build_ext
+
+swig-clean:
+	-rm -rf bct_gsl_wrap.cpp bct_gsl.py bct_py_wrap.cpp bct_py.py build
+
+swig-install:
+	python setup.py install

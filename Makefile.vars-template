@@ -3,14 +3,3 @@
 
 CXXFLAGS                += -DGSL_DOUBLE
 install_dir              = /usr/local
-
-# The following variables are only needed for SWIG
-# If you aren't generating Python bindings, you don't need to worry about them
-
-python_dir_apple         = /Library/Frameworks/Python.framework/Versions/2.6/include/python2.6
-python_dir_linux         = /usr/include/python2.6
-python_dir               =
-
-swig_lib_flags_apple     = -bundle -flat_namespace -undefined suppress
-swig_lib_flags_linux     = -shared
-swig_lib_flags           =
