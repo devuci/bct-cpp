@@ -1,4 +1,5 @@
 CXXFLAGS                 = -Wall
+swig_flags               = -Wall -c++ -python -outputtuple
 object_dir               = .obj
 object_filenames         = assortativity.o \
                            betweenness_bin.o \
@@ -80,7 +81,7 @@ objects                  = $(addprefix $(object_dir)/, $(object_filenames))
 
 include Makefile.vars
 
-.PHONY: all clean install uninstall swig swig-clean swig-install
+.PHONY: all clean install uninstall swig swig-clean swig-install swig-manual swig-manual-clean
 
 all: libbct.a
 
@@ -133,3 +134,14 @@ swig-clean:
 
 swig-install:
 	python setup.py install
+
+swig-manual:
+	swig $(swig_flags) -o bct_gsl_wrap.cpp bct_gsl.i
+	swig $(swig_flags) -o bct_py_wrap.cpp bct_py.i
+	$(CXX) $(CXXFLAGS) $(swig_cxx_flags) -c -I$(python_dir) bct_gsl_wrap.cpp
+	$(CXX) $(CXXFLAGS) $(swig_cxx_flags) -c -I$(python_dir) bct_py_wrap.cpp
+	$(CXX) $(CXXFLAGS) -lbct -lgsl -lgslcblas $(swig_lib_flags) -o _bct_gsl.so $^ bct_gsl_wrap.o
+	$(CXX) $(CXXFLAGS) -lbct -lgsl -lgslcblas $(swig_lib_flags) -o _bct_py.so $^ bct_py_wrap.o
+
+swig-manual-clean:
+	-rm bct_gsl_wrap.cpp bct_py_wrap.cpp bct_gsl_wrap.o bct_py_wrap.o bct_gsl.py bct_py.py bct_gsl.pyc bct_py.pyc _bct_gsl.so _bct_py.so
