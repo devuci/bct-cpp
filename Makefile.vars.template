@@ -4,9 +4,13 @@
 CXXFLAGS                += -DGSL_DOUBLE
 install_dir              = /usr/local
 
-python_dir_apple         = /Library/Frameworks/Python.framework/Versions/2.6/include/python2.6
-python_dir_linux         = /usr/include/python2.6
-python_dir               =
+python_include_dir_apple = /Library/Frameworks/Python.framework/Versions/2.6/include/python2.6
+python_include_dir_linux = /usr/include/python2.6
+python_include_dir       =
+
+python_package_dir_apple = /Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/site-packages
+python_package_dir_linux = /usr/lib/python2.6/site-packages
+python_package_dir       =
 
 swig_cxx_flags_linux     = -fPIC
 swig_cxx_flags           =

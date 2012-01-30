@@ -1,5 +1,6 @@
 CXXFLAGS                 = -Wall
 swig_flags               = -Wall -c++ -python -outputtuple
+swig-manual_dir          = build/swig-manual
 object_dir               = .obj
 object_filenames         = assortativity.o \
                            betweenness_bin.o \
@@ -81,7 +82,7 @@ objects                  = $(addprefix $(object_dir)/, $(object_filenames))
 
 include Makefile.vars
 
-.PHONY: all clean install uninstall swig swig-clean swig-install swig-manual swig-manual-clean
+.PHONY: all clean install uninstall swig swig-clean swig-install swig-manual swig-manual-clean swig-manual-install
 
 all: libbct.a
 
@@ -136,12 +137,18 @@ swig-install:
 	python setup.py install
 
 swig-manual:
+	if [ ! -d $(swig-manual_dir) ]; then \
+		mkdir -p $(swig-manual_dir); \
+	fi
 	swig $(swig_flags) -o bct_gsl_wrap.cpp bct_gsl.i
 	swig $(swig_flags) -o bct_py_wrap.cpp bct_py.i
-	$(CXX) $(CXXFLAGS) $(swig_cxx_flags) -c -I$(python_dir) bct_gsl_wrap.cpp
-	$(CXX) $(CXXFLAGS) $(swig_cxx_flags) -c -I$(python_dir) bct_py_wrap.cpp
-	$(CXX) $(CXXFLAGS) -lbct -lgsl -lgslcblas $(swig_lib_flags) -o _bct_gsl.so $^ bct_gsl_wrap.o
-	$(CXX) $(CXXFLAGS) -lbct -lgsl -lgslcblas $(swig_lib_flags) -o _bct_py.so $^ bct_py_wrap.o
+	$(CXX) $(CXXFLAGS) $(swig_cxx_flags) -c -I$(python_include_dir) -o $(swig-manual_dir)/bct_gsl_wrap.o bct_gsl_wrap.cpp
+	$(CXX) $(CXXFLAGS) $(swig_cxx_flags) -c -I$(python_include_dir) -o $(swig-manual_dir)/bct_py_wrap.o bct_py_wrap.cpp
+	$(CXX) $(CXXFLAGS) -lbct -lgsl -lgslcblas $(swig_lib_flags) -o $(swig-manual_dir)/_bct_gsl.so $^ $(swig-manual_dir)/bct_gsl_wrap.o
+	$(CXX) $(CXXFLAGS) -lbct -lgsl -lgslcblas $(swig_lib_flags) -o $(swig-manual_dir)/_bct_py.so $^ $(swig-manual_dir)/bct_py_wrap.o
 
 swig-manual-clean:
-	-rm bct_gsl_wrap.cpp bct_py_wrap.cpp bct_gsl_wrap.o bct_py_wrap.o bct_gsl.py bct_py.py bct_gsl.pyc bct_py.pyc _bct_gsl.so _bct_py.so
+	-rm -rf bct_gsl_wrap.cpp bct_gsl.py bct_py_wrap.cpp bct_py.py build
+
+swig-manual-install:
+	cp bct_gsl.py bct_py.py $(swig-manual_dir)/_bct_gsl.so $(swig-manual_dir)/_bct_py.so $(python_package_dir)
