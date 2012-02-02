@@ -96,7 +96,7 @@ $(object_dir)/matlab/%.o: matlab/%.cpp matlab/matlab.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	-rm $(objects) libbct.a
+	-rm -f $(objects) libbct.a
 
 install: libbct.a
 	if [ ! -d $(install_dir)/include/bct ]; then \
@@ -144,8 +144,8 @@ swig-manual:
 	swig $(swig_flags) -o bct_py_wrap.cpp bct_py.i
 	$(CXX) $(CXXFLAGS) $(swig_cxx_flags) -c -I$(python_include_dir) -o $(swig-manual_dir)/bct_gsl_wrap.o bct_gsl_wrap.cpp
 	$(CXX) $(CXXFLAGS) $(swig_cxx_flags) -c -I$(python_include_dir) -o $(swig-manual_dir)/bct_py_wrap.o bct_py_wrap.cpp
-	$(CXX) $(CXXFLAGS) -lbct -lgsl -lgslcblas $(swig_lib_flags) -o $(swig-manual_dir)/_bct_gsl.so $^ $(swig-manual_dir)/bct_gsl_wrap.o
-	$(CXX) $(CXXFLAGS) -lbct -lgsl -lgslcblas $(swig_lib_flags) -o $(swig-manual_dir)/_bct_py.so $^ $(swig-manual_dir)/bct_py_wrap.o
+	$(CXX) $(CXXFLAGS) -L $(install_dir)/lib -lbct -lgsl -lgslcblas $(swig_lib_flags) -o $(swig-manual_dir)/_bct_gsl.so $^ $(swig-manual_dir)/bct_gsl_wrap.o
+	$(CXX) $(CXXFLAGS) -L $(install_dir)/lib -lbct -lgsl -lgslcblas $(swig_lib_flags) -o $(swig-manual_dir)/_bct_py.so $^ $(swig-manual_dir)/bct_py_wrap.o
 
 swig-manual-clean:
 	-rm -rf bct_gsl_wrap.cpp bct_gsl.py bct_py_wrap.cpp bct_py.py build
