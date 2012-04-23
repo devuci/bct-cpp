@@ -79,7 +79,9 @@ MATRIX_T* distance_inv(const MATRIX_T* G, const MATRIX_T* D) {
 	
 	MATRIX_T* D_inv;
 	if (D == NULL) {
-		MATRIX_T* temp = distance_wei(G);
+		MATRIX_T* G_inv = invert_elements(G);
+		MATRIX_T* temp = distance_wei(G_inv);
+		MATRIX_ID(free)(G_inv);
 		D_inv = invert_elements(temp);
 		MATRIX_ID(free)(temp);
 	} else {
