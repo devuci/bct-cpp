@@ -1,7 +1,7 @@
 # See the bct-cpp user's guide for help with this file:
 # http://code.google.com/p/bct-cpp/wiki/UsersGuide
 
-CXXFLAGS                    += -DGSL_DOUBLE -fopenmp
+CXXFLAGS                    += -DGSL_DOUBLE
 install_dir                  = /usr/local
 
 python_version               = 2.6
