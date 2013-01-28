@@ -22,4 +22,3 @@ swig_cxx_flags               =
 swig_lib_flags_apple         = -bundle -flat_namespace -undefined suppress
 swig_lib_flags_linux         = -shared
 swig_lib_flags               =
-
