@@ -2,7 +2,7 @@
 
 /*
  * Returns a randomized graph with equivalent degree sequence to the original
- * weighted undirected graph.  On average, each edge is rewired ITER time.
+ * weighted undirected graph.  On average, each edge is rewired ITER times.
  * Strength distributions are not preserved for weighted graphs.
  */
 MATRIX_T* BCT_NAMESPACE::randmio_und(const MATRIX_T* R, int ITER) {
